@@ -73,6 +73,49 @@
 - SearchSuggestions, HighlightText
 - StarRating, RatingModal, RatingDistribution
 
+## [0.4.0] - 2026-02-06
+
+### Changed - Major Migration (Firebase → Supabase)
+이번 버전은 백엔드를 Firebase에서 Supabase로 마이그레이션하는 메이저 업데이트입니다.
+
+#### Authentication
+- Firebase Auth → Supabase Auth로 전환
+- `AuthContext.tsx`를 Supabase 브릿지로 변경 (기존 호환성 유지)
+- `SupabaseAuthContext.tsx` 신규 추가 (권장 사용 방식)
+- 카카오/구글 OAuth 지원 유지
+- Firebase 호환 User 인터페이스 (`uid` 프로퍼티) 추가
+
+#### Database Services
+- PostgreSQL 스키마 설계 및 타입 정의 (`lib/database.types.ts`)
+- Supabase 클라이언트 설정 (`lib/supabase.ts`)
+- 서비스 레이어 Supabase 마이그레이션:
+  - UserService (사용자 프로필)
+  - BookmarkService (북마크)
+  - RatingService (평점)
+  - TagService (태그)
+  - SearchService (검색)
+  - SocialService (소셜 활동)
+  - ProfileImageService (프로필 이미지)
+  - PostImageService (게시물 이미지)
+
+#### Configuration
+- 환경 변수 전환 (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`)
+- `.env.example` 업데이트 (Supabase 우선, Firebase deprecated)
+- `index.tsx` Supabase 설정 안내 화면 추가
+
+### Added
+- `lib/services/index.ts` - 통합 서비스 export
+- `UserService.incrementStat()` / `decrementStat()` - 사용자 통계 업데이트
+
+### Deprecated
+- `services/firebase.ts` - 점진적 마이그레이션 완료 후 삭제 예정
+- Firebase 환경 변수 (VITE_FIREBASE_*) - 주석 처리 권장
+
+### Notes
+- 일부 컴포넌트(ForumList, ForumView 등)는 아직 Firebase Firestore를 직접 사용
+- 완전한 마이그레이션은 향후 버전에서 진행 예정
+- Firebase 의존성은 rollback 대비로 유지
+
 ## [Unreleased]
 
 ### Planned
@@ -80,4 +123,5 @@
 - 다크 모드 토글 기능
 - 반응형 디자인 개선
 - 성능 최적화
-- 추가 기능 개발
+- 컴포넌트 레벨 Supabase 완전 마이그레이션
+- Firebase 의존성 완전 제거

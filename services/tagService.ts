@@ -354,12 +354,15 @@ export class TagService {
             }
 
             const snapshot = await getDocs(q);
-            return snapshot.docs.map(doc => ({
-                name: doc.data().name,
-                count: doc.data().count,
-                type: doc.data().type,
-                lastUsedAt: doc.data().lastUsedAt
-            })) as TagStats[];
+            return snapshot.docs.map(doc => {
+                const data = doc.data() as { name: string; count: number; type: string; lastUsedAt: string };
+                return {
+                    name: data.name,
+                    count: data.count,
+                    type: data.type,
+                    lastUsedAt: data.lastUsedAt
+                };
+            }) as TagStats[];
         } catch (error) {
             console.error('태그 목록 조회 실패:', error);
             return [];
