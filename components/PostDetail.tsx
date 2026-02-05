@@ -6,12 +6,9 @@ import ImageGallery from './ImageGallery';
 import { ArrowLeftIcon } from './icons';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { db } from '../services/firebase';
-import { doc, getDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, serverTimestamp, increment } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UserProfileService } from '../services/userProfile';
-import { PostImageService } from '../services/postImageService';
-import { SocialService } from '../services/socialService';
+import { UserService, PostImageService, SocialService } from '../lib/services';
 import { LikeIcon } from './icons/LikeIcon';
 
 interface PostDetailProps {
@@ -40,7 +37,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     useEffect(() => {
         const loadAuthorProfile = async () => {
             try {
-                const profile = await UserProfileService.getUserProfile(post.author.uid);
+                const profile = await UserService.getUserProfile(post.author.uid);
                 setAuthorProfile(profile);
             } catch (error) {
                 console.error('작성자 프로필 로딩 실패:', error);
@@ -53,25 +50,111 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     }, [post.author.uid]);
 
     useEffect(() => {
-        if (currentUser && post.likes) {
-            setIsLiked(post.likes.includes(currentUser.uid));
-        }
-    }, [currentUser, post.likes]);
+        const checkLikeStatus = async () => {
+            if (currentUser) {
+                try {
+                    // 사용자 ID 조회
+                    const { data: userData } = await supabase
+                        .from('users')
+                        .select('id')
+                        .eq('auth_id', currentUser.uid)
+                        .single();
+
+                    if (userData) {
+                        const liked = await SocialService.isLiked(userData.id, 'post', post.id);
+                        setIsLiked(liked);
+                    }
+                } catch (error) {
+                    console.error('좋아요 상태 확인 실패:', error);
+                }
+            }
+        };
+        checkLikeStatus();
+    }, [currentUser, post.id]);
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(
-            query(
-                collection(db, 'forums', isbn, 'posts', post.id, 'comments'),
-                orderBy('createdAt', 'asc')
-            ),
-            snapshot => {
-                const commentsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Comment[];
-                setComments(commentsData);
-            }
-        );
+        const loadComments = async () => {
+            const { data: commentsData, error } = await supabase
+                .from('comments')
+                .select(`
+                    id,
+                    content,
+                    author_id,
+                    created_at,
+                    updated_at,
+                    like_count
+                `)
+                .eq('post_id', post.id)
+                .order('created_at', { ascending: true });
 
-        return () => unsubscribe();
-    }, [isbn, post.id]);
+            if (error) {
+                console.error('댓글 로드 실패:', error);
+                return;
+            }
+
+            // 작성자 정보 조회
+            const authorIds = [...new Set((commentsData || []).map((c: { author_id: string }) => c.author_id))];
+            const { data: authors } = await supabase
+                .from('users')
+                .select('id, auth_id, email, display_name, nickname')
+                .in('id', authorIds);
+
+            const authorMap = new Map((authors || []).map((a: { id: string; auth_id: string; email: string; display_name: string | null; nickname: string | null }) => [a.id, a]));
+
+            // 좋아요 조회
+            const commentIds = (commentsData || []).map((c: { id: string }) => c.id);
+            const { data: commentLikes } = await supabase
+                .from('comment_likes')
+                .select('comment_id, user_id')
+                .in('comment_id', commentIds);
+
+            const likesByComment = new Map<string, string[]>();
+            commentLikes?.forEach((cl: { comment_id: string; user_id: string }) => {
+                const likes = likesByComment.get(cl.comment_id) || [];
+                likes.push(cl.user_id);
+                likesByComment.set(cl.comment_id, likes);
+            });
+
+            const comments: Comment[] = (commentsData || []).map((comment: {
+                id: string;
+                content: string;
+                author_id: string;
+                created_at: string;
+                updated_at: string | null;
+                like_count: number;
+            }) => {
+                const author = authorMap.get(comment.author_id);
+                return {
+                    id: comment.id,
+                    content: comment.content,
+                    author: {
+                        uid: author?.auth_id || comment.author_id,
+                        email: author?.email || '',
+                    },
+                    createdAt: comment.created_at ? new Date(comment.created_at) : new Date(),
+                    updatedAt: comment.updated_at ? new Date(comment.updated_at) : undefined,
+                    likeCount: comment.like_count,
+                    likes: likesByComment.get(comment.id) || [],
+                };
+            });
+
+            setComments(comments);
+        };
+
+        loadComments();
+
+        // 실시간 구독
+        const subscription = supabase
+            .channel(`comments_${post.id}`)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'comments', filter: `post_id=eq.${post.id}` }, () => {
+                loadComments();
+            })
+            .subscribe();
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [post.id]);
 
     const handleUserClick = (user: UserProfile) => {
         setSelectedUser(user);
@@ -88,12 +171,21 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         }
 
         try {
+            // 사용자 ID 조회
+            const { data: userData } = await supabase
+                .from('users')
+                .select('id')
+                .eq('auth_id', currentUser.uid)
+                .single();
+
+            if (!userData) {
+                throw new Error('사용자 정보를 찾을 수 없습니다.');
+            }
+
             const newIsLiked = await SocialService.toggleLike(
-                currentUser.uid,
+                userData.id,
                 'post',
-                post.id,
-                isbn,
-                post.id // 게시물의 경우 postId는 자기 자신
+                post.id
             );
 
             setIsLiked(newIsLiked);
@@ -159,24 +251,45 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         if (!currentUser || newComment.trim() === '') return;
 
         try {
-            const commentsRef = collection(db, 'forums', isbn, 'posts', post.id, 'comments');
-            await addDoc(commentsRef, {
-                content: newComment,
-                author: {
-                    uid: currentUser.uid,
-                    email: currentUser.email,
-                },
-                createdAt: serverTimestamp(),
-            });
+            // 사용자 ID 조회
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('id')
+                .eq('auth_id', currentUser.uid)
+                .single();
+
+            if (userError || !userData) {
+                throw new Error('사용자 정보를 찾을 수 없습니다.');
+            }
+
+            // 댓글 생성
+            const { error: commentError } = await supabase
+                .from('comments')
+                .insert({
+                    content: newComment,
+                    author_id: userData.id,
+                    post_id: post.id,
+                    like_count: 0,
+                });
+
+            if (commentError) {
+                throw commentError;
+            }
 
             // 게시물의 댓글 수 업데이트
-            const postRef = doc(db, 'forums', isbn, 'posts', post.id);
-            await updateDoc(postRef, {
-                commentCount: increment(1)
-            });
+            const { data: postData } = await supabase
+                .from('posts')
+                .select('comment_count')
+                .eq('id', post.id)
+                .single();
+
+            await supabase
+                .from('posts')
+                .update({ comment_count: (postData?.comment_count || 0) + 1 })
+                .eq('id', post.id);
 
             // 사용자 통계 업데이트
-            await UserProfileService.updateUserStats(currentUser.uid, 'comment', true);
+            await UserService.updateUserStats(currentUser.uid, 'comment', true);
 
             setNewComment('');
             setShowMentionList(false);
@@ -197,12 +310,18 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         }
 
         try {
-            const postRef = doc(db, 'forums', isbn, 'posts', post.id);
-            await updateDoc(postRef, {
-                title: editTitle,
-                content: editContent,
-                updatedAt: serverTimestamp(),
-            });
+            const { error } = await supabase
+                .from('posts')
+                .update({
+                    title: editTitle,
+                    content: editContent,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', post.id);
+
+            if (error) {
+                throw error;
+            }
 
             setIsEditing(false);
         } catch (error) {
@@ -225,17 +344,29 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                 }
 
                 // 게시물 삭제
-                const postRef = doc(db, 'forums', isbn, 'posts', post.id);
-                await deleteDoc(postRef);
+                const { error: deleteError } = await supabase
+                    .from('posts')
+                    .delete()
+                    .eq('id', post.id);
+
+                if (deleteError) {
+                    throw deleteError;
+                }
 
                 // 포럼의 게시물 수 업데이트
-                const forumRef = doc(db, 'forums', isbn);
-                await updateDoc(forumRef, {
-                    postCount: increment(-1)
-                });
+                const { data: forumData } = await supabase
+                    .from('forums')
+                    .select('post_count')
+                    .eq('isbn', isbn)
+                    .single();
+
+                await supabase
+                    .from('forums')
+                    .update({ post_count: Math.max(0, (forumData?.post_count || 1) - 1) })
+                    .eq('isbn', isbn);
 
                 // 사용자 통계 업데이트
-                await UserProfileService.updateUserStats(currentUser.uid, 'post', false);
+                await UserService.updateUserStats(currentUser.uid, 'post', false);
 
                 onBack();
             } catch (error) {

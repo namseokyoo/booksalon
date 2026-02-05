@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NotificationService } from '../services/notificationService';
+import { NotificationService } from '../services/notificationService'; // TODO: Supabase 마이그레이션 필요
 import { useAuth } from '../contexts/AuthContext';
 import type { Notification } from '../types';
 import { formatDistanceToNow } from 'date-fns';

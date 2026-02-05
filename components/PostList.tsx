@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Post, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { UserProfileService } from '../services/userProfile';
+import { UserService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 
 interface PostListProps {
@@ -24,7 +24,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
     useEffect(() => {
         const loadAuthorProfile = async () => {
             try {
-                const profile = await UserProfileService.getUserProfile(post.author.uid);
+                const profile = await UserService.getUserProfile(post.author.uid);
                 setAuthorProfile(profile);
             } catch (error) {
                 console.error('작성자 프로필 로딩 실패:', error);

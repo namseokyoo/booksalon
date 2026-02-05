@@ -6,10 +6,10 @@
  *
  * 완전한 마이그레이션 후 이 파일은 삭제됩니다.
  */
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Firebase 설정 (점진적 마이그레이션용, 추후 제거 예정)
 export const firebaseConfig = {
@@ -22,10 +22,25 @@ export const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Firebase 초기화
-const app = initializeApp(firebaseConfig);
+// Firebase 초기화 (환경변수 없으면 비활성화)
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
 
-// Firebase 서비스 내보내기
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+try {
+  // 환경변수가 없으면 초기화하지 않음
+  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+  } else {
+    console.warn('[Firebase] 환경변수 미설정. Firebase 기능이 비활성화됩니다.');
+  }
+} catch (error) {
+  console.warn('[Firebase] 초기화 실패. Firebase 기능이 비활성화됩니다:', error);
+}
+
+// Firebase 서비스 내보내기 (null일 수 있음)
+export { auth, db, storage };

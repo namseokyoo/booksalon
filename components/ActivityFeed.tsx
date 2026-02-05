@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { SocialService } from '../services/socialService';
+import { SocialService } from '../lib/services';
 import type { Activity } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';

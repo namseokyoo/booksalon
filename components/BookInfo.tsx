@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Book, Forum, RatingDistribution as RatingDistributionType } from '../types';
-import { RatingService } from '../services/ratingService';
+import { RatingService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import StarRating from './StarRating';
 import RatingDistribution from './RatingDistribution';

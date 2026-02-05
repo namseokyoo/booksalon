@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessagingService } from '../services/messagingService';
-import { UserProfileService } from '../services/userProfile';
+import { MessagingService } from '../services/messagingService'; // TODO: Supabase 마이그레이션 필요
+import { UserService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Message, ChatRoom, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';

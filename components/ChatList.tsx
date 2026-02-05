@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { MessagingService } from '../services/messagingService';
-import { UserProfileService } from '../services/userProfile';
+import { MessagingService } from '../services/messagingService'; // TODO: Supabase 마이그레이션 필요
+import { UserService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { ChatRoom, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
@@ -29,7 +29,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
     useEffect(() => {
         const loadOtherUser = async () => {
             try {
-                const user = await UserProfileService.getUserProfile(otherUserId);
+                const user = await UserService.getUserProfile(otherUserId);
                 setOtherUser(user);
             } catch (error) {
                 console.error('사용자 정보 로딩 실패:', error);
@@ -126,7 +126,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
         if (!otherUserId) return null;
 
         try {
-            return await UserProfileService.getUserProfile(otherUserId);
+            return await UserService.getUserProfile(otherUserId);
         } catch (error) {
             console.error('사용자 정보 로딩 실패:', error);
             return null;

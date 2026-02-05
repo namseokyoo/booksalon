@@ -19,9 +19,26 @@ import {
 } from 'firebase/firestore';
 import type { Message, ChatRoom, UserProfile } from '../types';
 
+/**
+ * @deprecated v0.4.0부터 Firebase 대신 Supabase 사용
+ * 이 서비스는 Firebase 환경변수가 없으면 비활성화됩니다.
+ * 추후 Supabase 기반으로 마이그레이션 예정입니다.
+ */
 export class MessagingService {
+    // Firebase 비활성화 시 경고 출력 및 빈 값 반환
+    private static checkFirebaseAvailable(): boolean {
+        if (!db) {
+            console.warn('[MessagingService] Firebase가 비활성화되어 있습니다. 이 기능은 현재 사용할 수 없습니다.');
+            return false;
+        }
+        return true;
+    }
+
     // 채팅방 생성 또는 기존 채팅방 찾기
     static async getOrCreateChatRoom(userId1: string, userId2: string): Promise<ChatRoom> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            throw new Error('메시징 서비스를 사용할 수 없습니다. (Firebase 비활성화)');
+        }
         // 기존 채팅방 찾기
         const chatRoomsRef = collection(db, 'chatRooms');
         const q = query(
@@ -62,6 +79,9 @@ export class MessagingService {
         messageType: 'text' | 'image' | 'file' = 'text',
         metadata?: any
     ): Promise<string> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            throw new Error('메시지를 전송할 수 없습니다. (Firebase 비활성화)');
+        }
         const messagesRef = collection(db, 'chatRooms', chatRoomId, 'messages');
 
         const message: any = {
@@ -99,6 +119,9 @@ export class MessagingService {
 
     // 채팅방 목록 조회
     static async getChatRooms(userId: string): Promise<ChatRoom[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const chatRoomsRef = collection(db, 'chatRooms');
         const q = query(
             chatRoomsRef,
@@ -121,6 +144,9 @@ export class MessagingService {
 
     // 메시지 목록 조회
     static async getMessages(chatRoomId: string, limitCount: number = 50): Promise<Message[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const messagesRef = collection(db, 'chatRooms', chatRoomId, 'messages');
         const q = query(
             messagesRef,
@@ -137,6 +163,10 @@ export class MessagingService {
         chatRoomId: string,
         callback: (messages: Message[]) => void
     ): () => void {
+        if (!this.checkFirebaseAvailable() || !db) {
+            callback([]);
+            return () => {}; // 빈 unsubscribe 함수 반환
+        }
         const messagesRef = collection(db, 'chatRooms', chatRoomId, 'messages');
         const q = query(
             messagesRef,
@@ -152,6 +182,9 @@ export class MessagingService {
 
     // 메시지 읽음 처리
     static async markAsRead(chatRoomId: string, userId: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const chatRoomRef = doc(db, 'chatRooms', chatRoomId);
         await updateDoc(chatRoomRef, {
             [`unreadCount.${userId}`]: 0
@@ -160,12 +193,18 @@ export class MessagingService {
 
     // 채팅방 삭제
     static async deleteChatRoom(chatRoomId: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const chatRoomRef = doc(db, 'chatRooms', chatRoomId);
         await deleteDoc(chatRoomRef);
     }
 
     // 사용자 검색 (메시징용)
     static async searchUsersForMessaging(searchTerm: string, currentUserId: string): Promise<UserProfile[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const usersRef = collection(db, 'users');
         const q = query(
             usersRef,

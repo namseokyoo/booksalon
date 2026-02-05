@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { UserProfile } from '../types';
-import { MessagingService } from '../services/messagingService';
+import { MessagingService } from '../services/messagingService'; // TODO: Supabase 마이그레이션 필요
 import { useAuth } from '../contexts/AuthContext';
 
 interface UserMenuProps {

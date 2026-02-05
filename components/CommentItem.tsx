@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 import type { Comment, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { UserProfileService } from '../services/userProfile';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { db } from '../services/firebase';
-import { doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { SocialService } from '../services/socialService';
+import { UserService, SocialService } from '../lib/services';
 import { LikeIcon } from './icons/LikeIcon';
 
 interface CommentItemProps {
@@ -28,7 +26,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
   useEffect(() => {
     const loadAuthorProfile = async () => {
       try {
-        const profile = await UserProfileService.getUserProfile(comment.author.uid);
+        const profile = await UserService.getUserProfile(comment.author.uid);
         setAuthorProfile(profile);
       } catch (error) {
         console.error('작성자 프로필 로딩 실패:', error);
@@ -41,10 +39,26 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
   }, [comment.author.uid]);
 
   useEffect(() => {
-    if (currentUser && comment.likes) {
-      setIsLiked(comment.likes.includes(currentUser.uid));
-    }
-  }, [currentUser, comment.likes]);
+    const checkLikeStatus = async () => {
+      if (currentUser) {
+        try {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('id')
+            .eq('auth_id', currentUser.uid)
+            .single();
+
+          if (userData) {
+            const liked = await SocialService.isLiked(userData.id, 'comment', comment.id);
+            setIsLiked(liked);
+          }
+        } catch (error) {
+          console.error('좋아요 상태 확인 실패:', error);
+        }
+      }
+    };
+    checkLikeStatus();
+  }, [currentUser, comment.id]);
 
   const formatDate = (timestamp: any) => {
     if (timestamp && typeof timestamp.toDate === 'function') {
@@ -65,12 +79,20 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
     }
 
     try {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', currentUser.uid)
+        .single();
+
+      if (!userData) {
+        throw new Error('사용자 정보를 찾을 수 없습니다.');
+      }
+
       const newIsLiked = await SocialService.toggleLike(
-        currentUser.uid,
+        userData.id,
         'comment',
-        comment.id,
-        isbn,
-        postId
+        comment.id
       );
 
       setIsLiked(newIsLiked);
@@ -92,11 +114,17 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
     }
 
     try {
-      const commentRef = doc(db, 'forums', isbn, 'posts', postId, 'comments', comment.id);
-      await updateDoc(commentRef, {
-        content: editContent,
-        updatedAt: serverTimestamp(),
-      });
+      const { error } = await supabase
+        .from('comments')
+        .update({
+          content: editContent,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', comment.id);
+
+      if (error) {
+        throw error;
+      }
 
       setIsEditing(false);
     } catch (error) {
@@ -112,8 +140,16 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
 
     if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
       try {
-        const commentRef = doc(db, 'forums', isbn, 'posts', postId, 'comments', comment.id);
-        await deleteDoc(commentRef);
+        const { error } = await supabase
+          .from('comments')
+          .delete()
+          .eq('id', comment.id);
+
+        if (error) {
+          throw error;
+        }
+
+        // 게시물 댓글 수 감소 처리는 DB trigger 또는 별도 로직으로
       } catch (error) {
         console.error('댓글 삭제 실패:', error);
       }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AdminService } from '../services/adminService';
+import { AdminService } from '../services/adminService'; // TODO: Supabase 마이그레이션 필요
 import { useAuth } from '../contexts/AuthContext';
 import type { AdminUser, Report, UserProfile, Forum } from '../types';
 

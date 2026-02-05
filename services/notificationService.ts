@@ -16,7 +16,21 @@ import {
 } from 'firebase/firestore';
 import type { Notification } from '../types';
 
+/**
+ * @deprecated v0.4.0부터 Firebase 대신 Supabase 사용
+ * 이 서비스는 Firebase 환경변수가 없으면 비활성화됩니다.
+ * 추후 Supabase 기반으로 마이그레이션 예정입니다.
+ */
 export class NotificationService {
+    // Firebase 비활성화 시 경고 출력 및 빈 값 반환
+    private static checkFirebaseAvailable(): boolean {
+        if (!db) {
+            console.warn('[NotificationService] Firebase가 비활성화되어 있습니다. 이 기능은 현재 사용할 수 없습니다.');
+            return false;
+        }
+        return true;
+    }
+
     // 알림 생성
     static async createNotification(
         userId: string,
@@ -25,6 +39,10 @@ export class NotificationService {
         content: string,
         metadata?: Notification['metadata']
     ): Promise<string> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            console.warn('[NotificationService] 알림을 생성할 수 없습니다. (Firebase 비활성화)');
+            return '';
+        }
         const notificationsRef = collection(db, 'notifications');
 
         const notification = {
@@ -43,6 +61,9 @@ export class NotificationService {
 
     // 사용자 알림 목록 조회
     static async getUserNotifications(userId: string, limitCount: number = 50): Promise<Notification[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const notificationsRef = collection(db, 'notifications');
         const q = query(
             notificationsRef,
@@ -60,6 +81,10 @@ export class NotificationService {
         userId: string,
         callback: (notifications: Notification[]) => void
     ): () => void {
+        if (!this.checkFirebaseAvailable() || !db) {
+            callback([]);
+            return () => {}; // 빈 unsubscribe 함수 반환
+        }
         const notificationsRef = collection(db, 'notifications');
         const q = query(
             notificationsRef,
@@ -76,6 +101,9 @@ export class NotificationService {
 
     // 알림 읽음 처리
     static async markAsRead(notificationId: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const notificationRef = doc(db, 'notifications', notificationId);
         await updateDoc(notificationRef, {
             isRead: true,
@@ -85,6 +113,9 @@ export class NotificationService {
 
     // 모든 알림 읽음 처리
     static async markAllAsRead(userId: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const notificationsRef = collection(db, 'notifications');
         const q = query(
             notificationsRef,
@@ -105,6 +136,9 @@ export class NotificationService {
 
     // 읽지 않은 알림 수 조회
     static async getUnreadCount(userId: string): Promise<number> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return 0;
+        }
         const notificationsRef = collection(db, 'notifications');
         const q = query(
             notificationsRef,
@@ -118,6 +152,9 @@ export class NotificationService {
 
     // 알림 삭제
     static async deleteNotification(notificationId: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const notificationRef = doc(db, 'notifications', notificationId);
         await deleteDoc(notificationRef);
     }

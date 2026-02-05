@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import ChatList from '../components/ChatList';
 import ChatComponent from '../components/ChatComponent';
 import UserSearch from '../components/UserSearch';
-import { MessagingService } from '../services/messagingService';
+import { MessagingService } from '../services/messagingService'; // TODO: Supabase 마이그레이션 필요
 import { useAuth } from '../contexts/AuthContext';
-import { UserProfileService } from '../services/userProfile';
+import { UserService } from '../lib/services';
 import type { UserProfile } from '../types';
 
 interface MessagingPageProps {
@@ -25,7 +25,7 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ targetUserId }) => {
             if (!targetUserId || !currentUser) return;
 
             try {
-                const userProfile = await UserProfileService.getUserProfile(targetUserId);
+                const userProfile = await UserService.getUserProfile(targetUserId);
                 if (!userProfile) return;
 
                 const chatRoom = await MessagingService.getOrCreateChatRoom(

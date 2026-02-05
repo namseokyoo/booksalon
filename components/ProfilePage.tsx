@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { UserProfileService } from '../services/userProfile';
-import { BookmarkService } from '../services/bookmarkService';
-import { ProfileImageService } from '../services/profileImageService';
+import { UserService, BookmarkService, ProfileImageService } from '../lib/services';
 import type { UserProfile, Post, Comment, Forum } from '../types';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -43,9 +41,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
         try {
             setLoading(true);
             const [profileData, postsData, commentsData, bookmarksData] = await Promise.all([
-                UserProfileService.getUserProfile(currentUser.uid),
-                UserProfileService.getUserPosts(currentUser.uid),
-                UserProfileService.getUserComments(currentUser.uid),
+                UserService.getUserProfile(currentUser.uid),
+                UserService.getUserPosts(currentUser.uid),
+                UserService.getUserComments(currentUser.uid),
                 BookmarkService.getBookmarkedForums(currentUser.uid)
             ]);
 
@@ -77,7 +75,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
         if (!currentUser || !profile) return;
 
         try {
-            await UserProfileService.updateProfile(currentUser.uid, {
+            await UserService.updateProfile(currentUser.uid, {
                 displayName: editForm.displayName,
                 nickname: editForm.nickname,
                 bio: editForm.bio,

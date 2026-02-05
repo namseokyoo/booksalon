@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { TagService } from '../services/tagService';
+import { TagService } from '../lib/services';
 import { FilterService } from '../services/filterService';
 import TagBadge from './TagBadge';
 

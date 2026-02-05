@@ -17,9 +17,26 @@ import {
 } from 'firebase/firestore';
 import type { AdminUser, Report, UserProfile, Forum, Post, Comment } from '../types';
 
+/**
+ * @deprecated v0.4.0부터 Firebase 대신 Supabase 사용
+ * 이 서비스는 Firebase 환경변수가 없으면 비활성화됩니다.
+ * 추후 Supabase 기반으로 마이그레이션 예정입니다.
+ */
 export class AdminService {
+    // Firebase 비활성화 시 경고 출력 및 빈 값 반환
+    private static checkFirebaseAvailable(): boolean {
+        if (!db) {
+            console.warn('[AdminService] Firebase가 비활성화되어 있습니다. 이 기능은 현재 사용할 수 없습니다.');
+            return false;
+        }
+        return true;
+    }
+
     // 관리자 권한 확인
     static async isAdmin(userId: string): Promise<boolean> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return false;
+        }
         try {
             const adminRef = doc(db, 'admins', userId);
             const adminDoc = await getDoc(adminRef);
@@ -32,6 +49,9 @@ export class AdminService {
 
     // 관리자 권한 확인 (moderator 포함)
     static async isModerator(userId: string): Promise<boolean> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return false;
+        }
         try {
             const adminRef = doc(db, 'admins', userId);
             const adminDoc = await getDoc(adminRef);
@@ -45,6 +65,9 @@ export class AdminService {
 
     // 관리자로 설정
     static async setAdmin(userId: string, role: 'admin' | 'moderator'): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const adminRef = doc(db, 'admins', userId);
         await updateDoc(adminRef, {
             role,
@@ -54,6 +77,9 @@ export class AdminService {
 
     // 사용자 목록 조회
     static async getUsers(limitCount: number = 50): Promise<UserProfile[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const usersRef = collection(db, 'users');
         const q = query(
             usersRef,
@@ -67,6 +93,9 @@ export class AdminService {
 
     // 사용자 검색
     static async searchUsers(searchTerm: string): Promise<UserProfile[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const usersRef = collection(db, 'users');
         const q = query(
             usersRef,
@@ -81,6 +110,9 @@ export class AdminService {
 
     // 사용자 계정 비활성화
     static async deactivateUser(userId: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const userRef = doc(db, 'users', userId);
         await updateDoc(userRef, {
             isActive: false,
@@ -91,6 +123,9 @@ export class AdminService {
 
     // 사용자 계정 활성화
     static async activateUser(userId: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const userRef = doc(db, 'users', userId);
         await updateDoc(userRef, {
             isActive: true,
@@ -101,6 +136,9 @@ export class AdminService {
 
     // 포럼 목록 조회
     static async getForums(limitCount: number = 50): Promise<Forum[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const forumsRef = collection(db, 'forums');
         const q = query(
             forumsRef,
@@ -114,6 +152,9 @@ export class AdminService {
 
     // 포럼 삭제
     static async deleteForum(isbn: string): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const forumRef = doc(db, 'forums', isbn);
         await deleteDoc(forumRef);
     }
@@ -131,6 +172,9 @@ export class AdminService {
             reportedForumId?: string;
         }
     ): Promise<string> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            throw new Error('신고 기능을 사용할 수 없습니다. (Firebase 비활성화)');
+        }
         const reportsRef = collection(db, 'reports');
 
         const report = {
@@ -149,6 +193,9 @@ export class AdminService {
 
     // 신고 목록 조회
     static async getReports(status?: Report['status']): Promise<Report[]> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return [];
+        }
         const reportsRef = collection(db, 'reports');
         let q = query(
             reportsRef,
@@ -176,6 +223,9 @@ export class AdminService {
         resolvedBy: string,
         resolution?: string
     ): Promise<void> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return;
+        }
         const reportRef = doc(db, 'reports', reportId);
         await updateDoc(reportRef, {
             status,
@@ -193,6 +243,15 @@ export class AdminService {
         totalReports: number;
         pendingReports: number;
     }> {
+        if (!this.checkFirebaseAvailable() || !db) {
+            return {
+                totalUsers: 0,
+                totalForums: 0,
+                totalPosts: 0,
+                totalReports: 0,
+                pendingReports: 0
+            };
+        }
         const [usersSnapshot, forumsSnapshot, reportsSnapshot] = await Promise.all([
             getDocs(collection(db, 'users')),
             getDocs(collection(db, 'forums')),
@@ -223,6 +282,16 @@ export class AdminService {
 
     // 실시간 통계 리스너
     static subscribeToStats(callback: (stats: any) => void): () => void {
+        if (!this.checkFirebaseAvailable() || !db) {
+            callback({
+                totalUsers: 0,
+                totalForums: 0,
+                totalPosts: 0,
+                totalReports: 0,
+                pendingReports: 0
+            });
+            return () => {}; // 빈 unsubscribe 함수 반환
+        }
         const usersRef = collection(db, 'users');
         const forumsRef = collection(db, 'forums');
         const reportsRef = collection(db, 'reports');

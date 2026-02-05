@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { PostImageService } from '../services/postImageService';
+import { PostImageService } from '../lib/services';
 
 interface ImagePreview {
   id: string;

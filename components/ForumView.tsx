@@ -8,11 +8,9 @@ import UserProfilePreview from './UserProfilePreview';
 import CreatePostModal from './CreatePostModal';
 import type { ImagePreview } from './ImageUploader';
 import { ArrowLeftIcon, PlusIcon } from './icons';
-import { db } from '../services/firebase';
-import { doc, updateDoc, collection, addDoc, orderBy, serverTimestamp, increment, onSnapshot } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UserProfileService } from '../services/userProfile';
-import { PostImageService } from '../services/postImageService';
+import { UserService, TagService, PostImageService } from '../lib/services';
 
 interface ForumViewProps {
   forum: Forum;
@@ -32,21 +30,114 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
 
   useEffect(() => {
     if (!forum.isbn) return;
-    const unsubscribe = onSnapshot(
-      collection(db, 'forums', forum.isbn, 'posts'),
-      { includeMetadataChanges: false },
-      snapshot => {
-        const postsData = snapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
-          .sort((a: any, b: any) => {
-            const aTime = a.createdAt?.toDate?.() || new Date(0);
-            const bTime = b.createdAt?.toDate?.() || new Date(0);
-            return bTime.getTime() - aTime.getTime();
-          }) as Post[];
-        setPosts(postsData);
+
+    const loadPosts = async () => {
+      // 게시물 로드
+      const { data: postsData, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          content,
+          author_id,
+          forum_isbn,
+          created_at,
+          updated_at,
+          comment_count,
+          like_count,
+          images
+        `)
+        .eq('forum_isbn', forum.isbn)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('게시물 로드 실패:', error);
+        return;
       }
-    );
-    return () => unsubscribe();
+
+      // 작성자 정보 조회
+      const authorIds = [...new Set((postsData || []).map((p: { author_id: string }) => p.author_id))];
+      const { data: authors } = await supabase
+        .from('users')
+        .select('id, auth_id, email, display_name, nickname')
+        .in('id', authorIds);
+
+      const authorMap = new Map((authors || []).map((a: { id: string; auth_id: string; email: string; display_name: string | null; nickname: string | null }) => [a.id, a]));
+
+      // 게시물 태그 조회
+      const postIds = (postsData || []).map((p: { id: string }) => p.id);
+      const { data: postTags } = await supabase
+        .from('post_tags')
+        .select('post_id, tag_name')
+        .in('post_id', postIds);
+
+      const tagsByPost = new Map<string, string[]>();
+      postTags?.forEach((pt: { post_id: string; tag_name: string }) => {
+        const tags = tagsByPost.get(pt.post_id) || [];
+        tags.push(pt.tag_name);
+        tagsByPost.set(pt.post_id, tags);
+      });
+
+      // 좋아요한 사용자 목록 조회
+      const { data: postLikes } = await supabase
+        .from('post_likes')
+        .select('post_id, user_id')
+        .in('post_id', postIds);
+
+      const likesByPost = new Map<string, string[]>();
+      postLikes?.forEach((pl: { post_id: string; user_id: string }) => {
+        const likes = likesByPost.get(pl.post_id) || [];
+        likes.push(pl.user_id);
+        likesByPost.set(pl.post_id, likes);
+      });
+
+      const posts: Post[] = (postsData || []).map((post: {
+        id: string;
+        title: string;
+        content: string;
+        author_id: string;
+        forum_isbn: string;
+        created_at: string;
+        updated_at: string | null;
+        comment_count: number;
+        like_count: number;
+        images: PostImage[] | null;
+      }) => {
+        const author = authorMap.get(post.author_id);
+        return {
+          id: post.id,
+          title: post.title,
+          content: post.content,
+          author: {
+            uid: author?.auth_id || post.author_id,
+            email: author?.email || '',
+          },
+          createdAt: post.created_at ? new Date(post.created_at) : new Date(),
+          updatedAt: post.updated_at ? new Date(post.updated_at) : undefined,
+          commentCount: post.comment_count,
+          likeCount: post.like_count,
+          likes: likesByPost.get(post.id) || [],
+          tags: tagsByPost.get(post.id) || [],
+          images: post.images || [],
+        };
+      });
+
+      setPosts(posts);
+    };
+
+    loadPosts();
+
+    // Supabase 실시간 구독
+    const subscription = supabase
+      .channel(`posts_${forum.isbn}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, () => {
+        loadPosts();
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [forum.isbn]);
 
   const handleAddPost = async (title: string, content: string, tags?: string[], imagePreviews?: ImagePreview[]) => {
@@ -58,31 +149,36 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
     setIsSubmitting(true);
 
     try {
-      const forumRef = doc(db, 'forums', forum.isbn);
-      const postsRef = collection(db, 'forums', forum.isbn, 'posts');
+      // 사용자 ID 조회 (auth_id로 users 테이블에서)
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', currentUser.uid)
+        .single();
 
-      // 먼저 게시물 문서를 생성하여 ID를 얻음
-      const newPost: Record<string, any> = {
-        title,
-        content,
-        author: {
-          uid: currentUser.uid,
-          email: currentUser.email,
-        },
-        createdAt: serverTimestamp(),
-        commentCount: 0,
-        likeCount: 0,
-        likes: [],
-        searchText: `${title} ${content} ${currentUser.email}`.toLowerCase(),
-      };
-
-      // 태그가 있으면 추가
-      if (tags && tags.length > 0) {
-        newPost.tags = tags;
+      if (userError || !userData) {
+        throw new Error('사용자 정보를 찾을 수 없습니다.');
       }
 
-      const docRef = await addDoc(postsRef, newPost);
-      const postId = docRef.id;
+      // 게시물 생성
+      const { data: newPost, error: postError } = await supabase
+        .from('posts')
+        .insert({
+          title,
+          content,
+          author_id: userData.id,
+          forum_isbn: forum.isbn,
+          comment_count: 0,
+          like_count: 0,
+        })
+        .select('id')
+        .single();
+
+      if (postError || !newPost) {
+        throw postError || new Error('게시물 생성 실패');
+      }
+
+      const postId = newPost.id;
 
       // 이미지가 있으면 업로드
       if (imagePreviews && imagePreviews.length > 0) {
@@ -92,6 +188,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           const imagePreview = imagePreviews[i];
           try {
             const uploadedImage = await PostImageService.uploadImage(
+              currentUser.uid,
               forum.isbn,
               postId,
               imagePreview.file,
@@ -105,25 +202,35 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
 
         // 업로드된 이미지가 있으면 게시물 업데이트
         if (uploadedImages.length > 0) {
-          await updateDoc(docRef, { images: uploadedImages });
+          await supabase
+            .from('posts')
+            .update({ images: uploadedImages })
+            .eq('id', postId);
         }
       }
 
-      await updateDoc(forumRef, {
-        postCount: increment(1),
-        lastActivityAt: serverTimestamp()
-      });
+      // 포럼 게시물 수 업데이트
+      const { data: forumData } = await supabase
+        .from('forums')
+        .select('post_count')
+        .eq('isbn', forum.isbn)
+        .single();
+
+      await supabase
+        .from('forums')
+        .update({
+          post_count: (forumData?.post_count || 0) + 1,
+          last_activity_at: new Date().toISOString(),
+        })
+        .eq('isbn', forum.isbn);
 
       // 태그 통계 업데이트
       if (tags && tags.length > 0) {
-        const { TagService } = await import('../services/tagService');
-        for (const tag of tags) {
-          await TagService.incrementTagCount(tag, 'post');
-        }
+        await TagService.addTagsToPost(postId, tags);
       }
 
       // 사용자 통계 업데이트
-      await UserProfileService.updateUserStats(currentUser.uid, 'post', true);
+      await UserService.updateUserStats(currentUser.uid, 'post', true);
 
       setIsModalOpen(false);
     } catch (error) {

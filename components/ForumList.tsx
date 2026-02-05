@@ -4,11 +4,9 @@ import type { Forum, Book } from '../types';
 import { searchBookByIsbn, searchBookByTitle } from '../services/kakaoApi';
 import CreateForumModal from './CreateForumModal';
 import { SearchIcon } from './icons';
-import { db } from '../services/firebase';
-import { collection, onSnapshot, doc, updateDoc, setDoc, query, orderBy, limit } from 'firebase/firestore';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UserProfileService } from '../services/userProfile';
-import { BookmarkService } from '../services/bookmarkService';
+import { UserService, BookmarkService, TagService } from '../lib/services';
 import { FilterService, type FilterOptions } from '../services/filterService';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
@@ -40,32 +38,107 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
   ];
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'forums'), snapshot => {
-      const forumsData = snapshot.docs.map(doc => ({ isbn: doc.id, ...doc.data() })) as Forum[];
+    // 초기 데이터 로드
+    const loadForums = async () => {
+      const { data: forumsData, error } = await supabase
+        .from('forums')
+        .select(`
+          isbn,
+          post_count,
+          category,
+          popularity,
+          average_rating,
+          total_ratings,
+          last_activity_at,
+          created_at,
+          books (
+            isbn,
+            title,
+            authors,
+            publisher,
+            thumbnail,
+            contents
+          )
+        `)
+        .order('created_at', { ascending: false });
 
-      // 카테고리와 태그가 없는 포럼에 자동으로 설정
-      const enrichedForums = forumsData.map(forum => {
-        if (!forum.category || !forum.tags) {
-          const category = forum.category || FilterService.categorizeBook(forum.book);
-          const tags = forum.tags || FilterService.generateTags(forum.book);
-          const popularity = FilterService.calculatePopularity(forum);
+      if (error) {
+        console.error('포럼 로드 실패:', error);
+        return;
+      }
 
-          // Firestore에 업데이트
-          updateDoc(doc(db, 'forums', forum.isbn), {
-            category,
-            tags,
-            popularity,
-            lastActivityAt: forum.lastActivityAt || new Date()
-          });
+      // 포럼 태그 조회
+      const { data: forumTags } = await supabase
+        .from('forum_tags')
+        .select('forum_isbn, tag_name');
 
-          return { ...forum, category, tags, popularity };
-        }
-        return forum;
+      const tagsByForum = new Map<string, string[]>();
+      forumTags?.forEach((ft: { forum_isbn: string; tag_name: string }) => {
+        const tags = tagsByForum.get(ft.forum_isbn) || [];
+        tags.push(ft.tag_name);
+        tagsByForum.set(ft.forum_isbn, tags);
       });
 
+      const enrichedForums: Forum[] = (forumsData || []).map((forum: {
+        isbn: string;
+        post_count: number;
+        category: string | null;
+        popularity: number;
+        average_rating: number;
+        total_ratings: number;
+        last_activity_at: string | null;
+        created_at: string;
+        books: {
+          isbn: string;
+          title: string;
+          authors: string[];
+          publisher: string;
+          thumbnail: string;
+          contents: string;
+        } | null;
+      }) => ({
+        isbn: forum.isbn,
+        book: forum.books ? {
+          isbn: forum.books.isbn,
+          title: forum.books.title,
+          authors: forum.books.authors || [],
+          publisher: forum.books.publisher || '',
+          thumbnail: forum.books.thumbnail || '',
+          contents: forum.books.contents || '',
+        } : {
+          isbn: forum.isbn,
+          title: '',
+          authors: [],
+          publisher: '',
+          thumbnail: '',
+          contents: '',
+        },
+        postCount: forum.post_count,
+        category: forum.category || undefined,
+        tags: tagsByForum.get(forum.isbn) || [],
+        popularity: forum.popularity,
+        averageRating: forum.average_rating,
+        totalRatings: forum.total_ratings,
+        lastActivityAt: forum.last_activity_at ? new Date(forum.last_activity_at) : undefined,
+        createdAt: forum.created_at ? new Date(forum.created_at) : undefined,
+      }));
+
       setForums(enrichedForums);
-    });
-    return () => unsubscribe();
+    };
+
+    loadForums();
+
+    // Supabase 실시간 구독
+    const subscription = supabase
+      .channel('forums_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'forums' }, () => {
+        loadForums();
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   // 필터링 적용
@@ -185,6 +258,50 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     const tags = customTags && customTags.length > 0
       ? customTags
       : FilterService.generateTags(book);
+
+    // 책 정보 먼저 upsert
+    const { error: bookError } = await supabase
+      .from('books')
+      .upsert({
+        isbn: book.isbn,
+        title: book.title,
+        authors: book.authors,
+        publisher: book.publisher,
+        thumbnail: book.thumbnail,
+        contents: book.contents || '',
+      }, { onConflict: 'isbn' });
+
+    if (bookError) {
+      console.error('책 정보 저장 실패:', bookError);
+      throw bookError;
+    }
+
+    // 포럼 생성
+    const { error: forumError } = await supabase
+      .from('forums')
+      .insert({
+        isbn: book.isbn,
+        post_count: 0,
+        category,
+        popularity: 0,
+        last_activity_at: new Date().toISOString(),
+      });
+
+    if (forumError) {
+      console.error('포럼 생성 실패:', forumError);
+      throw forumError;
+    }
+
+    // 태그 통계 업데이트
+    if (tags && tags.length > 0) {
+      await TagService.addTagsToForum(book.isbn, tags);
+    }
+
+    // 사용자 통계 업데이트
+    if (currentUser) {
+      await UserService.updateUserStats(currentUser.uid, 'forum', true);
+    }
+
     const newForum: Forum = {
       isbn: book.isbn,
       book,
@@ -194,20 +311,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
       lastActivityAt: new Date(),
       popularity: 0,
     };
-    await setDoc(doc(db, 'forums', book.isbn), newForum);
-
-    // 태그 통계 업데이트 (TagService import 필요)
-    if (tags && tags.length > 0) {
-      const { TagService } = await import('../services/tagService');
-      for (const tag of tags) {
-        await TagService.incrementTagCount(tag, 'forum');
-      }
-    }
-
-    // 사용자 통계 업데이트
-    if (currentUser) {
-      await UserProfileService.updateUserStats(currentUser.uid, 'forum', true);
-    }
 
     setSearchResult(null);
     onSelectForum(newForum);
