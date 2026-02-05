@@ -17,9 +17,9 @@ export type TableName = keyof Database['public']['Tables']
 // 타입 안전한 Supabase 클라이언트 타입
 export type TypedSupabaseClient = SupabaseClient<Database>
 
-// 환경 변수 검증
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+// 환경 변수 검증 (줄바꿈 문자 제거를 위한 trim 적용)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim()
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim()
 
 if (!supabaseUrl) {
   throw new Error('Missing environment variable: VITE_SUPABASE_URL')
