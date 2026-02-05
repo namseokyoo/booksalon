@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// Firebase Storage 보안 규칙
+service firebase.storage {
+  match /b/{bucket}/o {
+    // 프로필 이미지 업로드 규칙 (경로 구조 개선)
+    match /profile-images/{fileName} {
+      // 인증된 사용자만 프로필 이미지를 업로드/수정/삭제할 수 있음
+      allow read: if true; // 모든 사용자가 프로필 이미지를 읽을 수 있음
+      allow write: if request.auth != null;
+    }
+    
+    // 기타 파일들에 대한 기본 규칙
+    match /{allPaths=**} {
+      // 인증된 사용자만 파일에 접근할 수 있음
+      allow read, write: if request.auth != null;
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "북살롱 (Book Salon)",
+  "description": "A book-based community application inspired by Blind, where users can create forums for specific books using their ISBN and engage in discussions.",
+  "requestFramePermissions": []
+}
