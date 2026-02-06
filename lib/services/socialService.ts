@@ -92,7 +92,7 @@ export class SocialService {
         follower_id: currentUserId,
         following_id: targetUserId,
       }
-      const { error } = await supabase.from('follows').insert(insertData as never)
+      const { error } = await supabase.from('follows').insert(insertData )
 
       if (error) throw new Error(`팔로우 실패: ${error.message}`)
 
@@ -285,7 +285,7 @@ export class SocialService {
       if (postData) {
         await supabase
           .from('posts')
-          .update({ like_count: Math.max(0, (postData.like_count || 1) - 1) } as never)
+          .update({ like_count: Math.max(0, (postData.like_count || 1) - 1) } )
           .eq('id', postId)
       }
 
@@ -294,7 +294,7 @@ export class SocialService {
       // 좋아요 추가
       type PostLikeInsert = { post_id: string; user_id: string }
       const insertData: PostLikeInsert = { post_id: postId, user_id: currentUserId }
-      const { error } = await supabase.from('post_likes').insert(insertData as never)
+      const { error } = await supabase.from('post_likes').insert(insertData )
 
       if (error) throw new Error(`좋아요 추가 실패: ${error.message}`)
 
@@ -309,7 +309,7 @@ export class SocialService {
       if (postData) {
         await supabase
           .from('posts')
-          .update({ like_count: (postData.like_count || 0) + 1 } as never)
+          .update({ like_count: (postData.like_count || 0) + 1 } )
           .eq('id', postId)
       }
 
@@ -348,7 +348,7 @@ export class SocialService {
       if (commentData) {
         await supabase
           .from('comments')
-          .update({ like_count: Math.max(0, (commentData.like_count || 1) - 1) } as never)
+          .update({ like_count: Math.max(0, (commentData.like_count || 1) - 1) } )
           .eq('id', commentId)
       }
 
@@ -357,7 +357,7 @@ export class SocialService {
       // 좋아요 추가
       type CommentLikeInsert = { comment_id: string; user_id: string }
       const insertData: CommentLikeInsert = { comment_id: commentId, user_id: currentUserId }
-      const { error } = await supabase.from('comment_likes').insert(insertData as never)
+      const { error } = await supabase.from('comment_likes').insert(insertData )
 
       if (error) throw new Error(`좋아요 추가 실패: ${error.message}`)
 
@@ -372,7 +372,7 @@ export class SocialService {
       if (commentData) {
         await supabase
           .from('comments')
-          .update({ like_count: (commentData.like_count || 0) + 1 } as never)
+          .update({ like_count: (commentData.like_count || 0) + 1 } )
           .eq('id', commentId)
       }
 
@@ -457,7 +457,7 @@ export class SocialService {
       forum_isbn: activityData.forumIsbn,
       metadata: activityData.metadata as Database['public']['Tables']['activities']['Insert']['metadata'],
     }
-    const { error } = await supabase.from('activities').insert(insertData as never)
+    const { error } = await supabase.from('activities').insert(insertData )
 
     if (error) {
       console.error('활동 기록 생성 실패:', error)

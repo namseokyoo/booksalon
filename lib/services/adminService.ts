@@ -115,7 +115,7 @@ export class AdminService {
       .update({
         role,
         updated_at: new Date().toISOString(),
-      } as never)
+      })
       .eq('user_id', userId)
 
     if (error) throw new Error(`관리자 역할 설정 실패: ${error.message}`)
@@ -195,7 +195,7 @@ export class AdminService {
         is_active: false,
         deactivated_at: new Date().toISOString(),
         deactivated_by: 'admin',
-      } as never)
+      })
       .eq('auth_id', userId)
 
     if (error) throw new Error(`사용자 비활성화 실패: ${error.message}`)
@@ -213,7 +213,7 @@ export class AdminService {
         is_active: true,
         deactivated_at: null,
         deactivated_by: null,
-      } as never)
+      })
       .eq('auth_id', userId)
 
     if (error) throw new Error(`사용자 활성화 실패: ${error.message}`)
@@ -320,7 +320,7 @@ export class AdminService {
 
     const { data, error } = await supabase
       .from('reports')
-      .insert(insertData as never)
+      .insert(insertData)
       .select('id')
       .single()
 
@@ -390,7 +390,7 @@ export class AdminService {
         resolved_by: resolvedBy,
         resolved_at: new Date().toISOString(),
         resolution: resolution || null,
-      } as never)
+      })
       .eq('id', reportId)
 
     if (error) throw new Error(`신고 상태 업데이트 실패: ${error.message}`)

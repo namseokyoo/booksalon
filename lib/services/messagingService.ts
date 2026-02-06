@@ -144,7 +144,7 @@ export class MessagingService {
 
     const { data: newRoom, error: roomError } = await supabase
       .from('chat_rooms')
-      .insert(insertData as never)
+      .insert(insertData )
       .select('*')
       .single()
 
@@ -168,7 +168,7 @@ export class MessagingService {
 
     const { error: participantError } = await supabase
       .from('chat_room_participants')
-      .insert([participant1, participant2] as never[])
+      .insert([participant1, participant2] )
 
     if (participantError) {
       throw new Error(`참가자 등록 실패: ${participantError.message}`)
@@ -217,7 +217,7 @@ export class MessagingService {
 
     const { data: newMessage, error: msgError } = await supabase
       .from('messages')
-      .insert(insertData as never)
+      .insert(insertData )
       .select('id')
       .single()
 
@@ -235,7 +235,7 @@ export class MessagingService {
     }
     await supabase
       .from('chat_rooms')
-      .update(roomUpdate as never)
+      .update(roomUpdate )
       .eq('id', chatRoomId)
 
     // 수신자의 unread_count 증가
@@ -254,7 +254,7 @@ export class MessagingService {
       }
       await supabase
         .from('chat_room_participants')
-        .update(updateData as never)
+        .update(updateData )
         .eq('id', participant.id)
     }
 
@@ -428,7 +428,7 @@ export class MessagingService {
     }
     await supabase
       .from('chat_room_participants')
-      .update(participantUpdate as never)
+      .update(participantUpdate )
       .eq('chat_room_id', chatRoomId)
       .eq('user_id', userId)
 
@@ -436,7 +436,7 @@ export class MessagingService {
     const now = new Date().toISOString()
     await supabase
       .from('messages')
-      .update({ read_at: now } as never)
+      .update({ read_at: now } )
       .eq('chat_room_id', chatRoomId)
       .eq('receiver_id', userId)
       .is('read_at', null)

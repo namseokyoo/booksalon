@@ -272,7 +272,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     author_id: typedUserData.id,
                     post_id: post.id,
                     like_count: 0,
-                } as never);
+                });
 
             if (commentError) {
                 throw commentError;
@@ -287,7 +287,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
             await supabase
                 .from('posts')
-                .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 } as never)
+                .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 })
                 .eq('id', post.id);
 
             // 사용자 통계 업데이트
@@ -318,7 +318,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     title: editTitle,
                     content: editContent,
                     updated_at: new Date().toISOString(),
-                } as never)
+                })
                 .eq('id', post.id);
 
             if (error) {
@@ -364,7 +364,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
                 await supabase
                     .from('forums')
-                    .update({ post_count: Math.max(0, ((forumData as { post_count: number } | null)?.post_count || 1) - 1) } as never)
+                    .update({ post_count: Math.max(0, ((forumData as { post_count: number } | null)?.post_count || 1) - 1) })
                     .eq('isbn', isbn);
 
                 // 사용자 통계 업데이트

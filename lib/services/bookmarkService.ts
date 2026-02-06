@@ -102,7 +102,7 @@ export class BookmarkService {
       }
       const { error } = await supabase
         .from('bookmarks')
-        .insert(insertData as never)
+        .insert(insertData)
 
       if (error) throw new Error(`북마크 추가 실패: ${error.message}`)
       return true
@@ -232,7 +232,7 @@ export class BookmarkService {
       }
       const { error } = await supabase
         .from('user_notification_settings')
-        .update(updateData as never)
+        .update(updateData)
         .eq('user_id', userId)
 
       if (error) throw new Error(`알림 설정 업데이트 실패: ${error.message}`)
@@ -246,7 +246,7 @@ export class BookmarkService {
       }
       const { error } = await supabase
         .from('user_notification_settings')
-        .insert(insertData as never)
+        .insert(insertData)
 
       if (error) throw new Error(`알림 설정 생성 실패: ${error.message}`)
     }

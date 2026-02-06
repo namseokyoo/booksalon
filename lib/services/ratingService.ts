@@ -72,7 +72,7 @@ export class RatingService {
       }
       const { error } = await supabase
         .from('ratings')
-        .update(updateData as never)
+        .update(updateData)
         .eq('id', existingData.id)
 
       if (error) throw new Error(`평점 업데이트 실패: ${error.message}`)
@@ -85,7 +85,7 @@ export class RatingService {
       }
       const { error } = await supabase
         .from('ratings')
-        .insert(insertData as never)
+        .insert(insertData)
 
       if (error) throw new Error(`평점 저장 실패: ${error.message}`)
     }
@@ -147,7 +147,7 @@ export class RatingService {
     }
     const { error } = await supabase
       .from('forums')
-      .update(updateData as never)
+      .update(updateData)
       .eq('isbn', bookIsbn)
 
     if (error) {

@@ -275,7 +275,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         publisher: book.publisher,
         thumbnail: book.thumbnail,
         contents: book.contents || '',
-      } as never, { onConflict: 'isbn' });
+      }, { onConflict: 'isbn' });
 
     if (bookError) {
       console.error('책 정보 저장 실패:', bookError);
@@ -291,7 +291,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         category,
         popularity: 0,
         last_activity_at: new Date().toISOString(),
-      } as never);
+      });
 
     if (forumError) {
       console.error('포럼 생성 실패:', forumError);

@@ -136,7 +136,7 @@ export class UserService {
       }
       const { data, error } = await supabase
         .from('users')
-        .update(updateData as never)
+        .update(updateData )
         .eq('auth_id', authId)
         .select()
         .single()
@@ -162,7 +162,7 @@ export class UserService {
       }
       const { data: newUser, error: insertError } = await supabase
         .from('users')
-        .insert(insertData as never)
+        .insert(insertData )
         .select()
         .single()
 
@@ -173,7 +173,7 @@ export class UserService {
       // 기본 알림 설정 생성
       await supabase.from('user_notification_settings').insert({
         user_id: newUserData.id,
-      } as never)
+      } )
 
       return transformToUserProfile(newUserData)
     }
@@ -264,7 +264,7 @@ export class UserService {
 
     const { data, error } = await supabase
       .from('users')
-      .update(updateData as never)
+      .update(updateData )
       .eq('id', userId)
       .select()
       .single()
@@ -295,7 +295,7 @@ export class UserService {
     }
 
     if (linksToInsert.length > 0) {
-      const { error } = await supabase.from('user_social_links').insert(linksToInsert as never[])
+      const { error } = await supabase.from('user_social_links').insert(linksToInsert )
       if (error) throw new Error(`소셜 링크 업데이트 실패: ${error.message}`)
     }
   }
@@ -326,7 +326,7 @@ export class UserService {
     }
     const { error } = await supabase
       .from('user_notification_settings')
-      .upsert(upsertData as never)
+      .upsert(upsertData )
 
     if (error) throw new Error(`알림 설정 업데이트 실패: ${error.message}`)
   }
@@ -345,7 +345,7 @@ export class UserService {
         genre: genre,
       }))
 
-      const { error } = await supabase.from('user_favorite_genres').insert(genresToInsert as never[])
+      const { error } = await supabase.from('user_favorite_genres').insert(genresToInsert )
       if (error) throw new Error(`선호 장르 업데이트 실패: ${error.message}`)
     }
   }
@@ -402,7 +402,7 @@ export class UserService {
     }
     const { error } = await supabase
       .from('users')
-      .update(updateData as never)
+      .update(updateData )
       .eq('id', userId)
 
     if (error) throw new Error(`사용자 비활성화 실패: ${error.message}`)
@@ -470,7 +470,7 @@ export class UserService {
 
     const { error: updateError } = await supabase
       .from('users')
-      .update(updateData as never)
+      .update(updateData )
       .eq('auth_id', authId)
 
     if (updateError) {

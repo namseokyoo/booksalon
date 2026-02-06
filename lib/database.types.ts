@@ -1,15 +1,3 @@
-/**
- * Supabase Database Types
- *
- * 북살롱 v0.4.0 - PostgreSQL 스키마 TypeScript 타입 정의
- *
- * @description
- * Supabase CLI의 `supabase gen types typescript` 명령어로 생성하는 것이 이상적이지만,
- * 초기 설정 단계에서는 수동으로 기본 타입을 정의합니다.
- *
- * 실제 배포 전에 Supabase CLI로 자동 생성된 타입으로 교체하세요.
- */
-
 export type Json =
   | string
   | number
@@ -18,758 +6,1017 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
   public: {
     Tables: {
-      // =====================================================
-      // Users 관련 테이블
-      // =====================================================
-      users: {
-        Row: {
-          id: string
-          auth_id: string
-          email: string
-          display_name: string | null
-          nickname: string | null
-          bio: string | null
-          profile_image_url: string | null
-          location: string | null
-          website: string | null
-          reading_goal: number
-          post_count: number
-          comment_count: number
-          forum_count: number
-          created_at: string
-          last_login_at: string
-          is_active: boolean
-          deactivated_at: string | null
-          deactivated_by: string | null
-        }
-        Insert: {
-          id?: string
-          auth_id: string
-          email: string
-          display_name?: string | null
-          nickname?: string | null
-          bio?: string | null
-          profile_image_url?: string | null
-          location?: string | null
-          website?: string | null
-          reading_goal?: number
-          post_count?: number
-          comment_count?: number
-          forum_count?: number
-          created_at?: string
-          last_login_at?: string
-          is_active?: boolean
-          deactivated_at?: string | null
-          deactivated_by?: string | null
-        }
-        Update: {
-          id?: string
-          auth_id?: string
-          email?: string
-          display_name?: string | null
-          nickname?: string | null
-          bio?: string | null
-          profile_image_url?: string | null
-          location?: string | null
-          website?: string | null
-          reading_goal?: number
-          post_count?: number
-          comment_count?: number
-          forum_count?: number
-          created_at?: string
-          last_login_at?: string
-          is_active?: boolean
-          deactivated_at?: string | null
-          deactivated_by?: string | null
-        }
-      }
-      user_social_links: {
-        Row: {
-          id: string
-          user_id: string
-          platform: string
-          url: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          platform: string
-          url: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          platform?: string
-          url?: string
-          created_at?: string
-        }
-      }
-      user_notification_settings: {
-        Row: {
-          id: string
-          user_id: string
-          new_posts: boolean
-          new_comments: boolean
-          forum_updates: boolean
-          follows: boolean
-          likes: boolean
-          email_notifications: boolean
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          new_posts?: boolean
-          new_comments?: boolean
-          forum_updates?: boolean
-          follows?: boolean
-          likes?: boolean
-          email_notifications?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          new_posts?: boolean
-          new_comments?: boolean
-          forum_updates?: boolean
-          follows?: boolean
-          likes?: boolean
-          email_notifications?: boolean
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      user_favorite_genres: {
-        Row: {
-          id: string
-          user_id: string
-          genre: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          genre: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          genre?: string
-          created_at?: string
-        }
-      }
-
-      // =====================================================
-      // Books & Forums 테이블
-      // =====================================================
-      books: {
-        Row: {
-          isbn: string
-          title: string
-          authors: string[]
-          publisher: string | null
-          thumbnail: string | null
-          contents: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          isbn: string
-          title: string
-          authors?: string[]
-          publisher?: string | null
-          thumbnail?: string | null
-          contents?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          isbn?: string
-          title?: string
-          authors?: string[]
-          publisher?: string | null
-          thumbnail?: string | null
-          contents?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      forums: {
-        Row: {
-          isbn: string
-          category: string | null
-          popularity: number
-          post_count: number
-          average_rating: number
-          total_ratings: number
-          last_activity_at: string
-          created_at: string
-        }
-        Insert: {
-          isbn: string
-          category?: string | null
-          popularity?: number
-          post_count?: number
-          average_rating?: number
-          total_ratings?: number
-          last_activity_at?: string
-          created_at?: string
-        }
-        Update: {
-          isbn?: string
-          category?: string | null
-          popularity?: number
-          post_count?: number
-          average_rating?: number
-          total_ratings?: number
-          last_activity_at?: string
-          created_at?: string
-        }
-      }
-      forum_tags: {
-        Row: {
-          id: string
-          forum_isbn: string
-          tag_name: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          forum_isbn: string
-          tag_name: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          forum_isbn?: string
-          tag_name?: string
-          created_at?: string
-        }
-      }
-
-      // =====================================================
-      // Posts & Comments 테이블
-      // =====================================================
-      posts: {
-        Row: {
-          id: string
-          forum_isbn: string
-          author_id: string
-          title: string
-          content: string
-          comment_count: number
-          like_count: number
-          search_text: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          forum_isbn: string
-          author_id: string
-          title: string
-          content: string
-          comment_count?: number
-          like_count?: number
-          search_text?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          forum_isbn?: string
-          author_id?: string
-          title?: string
-          content?: string
-          comment_count?: number
-          like_count?: number
-          search_text?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      post_tags: {
-        Row: {
-          id: string
-          post_id: string
-          tag_name: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          post_id: string
-          tag_name: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          post_id?: string
-          tag_name?: string
-          created_at?: string
-        }
-      }
-      post_images: {
-        Row: {
-          id: string
-          post_id: string
-          url: string
-          thumbnail_url: string | null
-          width: number
-          height: number
-          display_order: number
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          post_id: string
-          url: string
-          thumbnail_url?: string | null
-          width: number
-          height: number
-          display_order?: number
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          post_id?: string
-          url?: string
-          thumbnail_url?: string | null
-          width?: number
-          height?: number
-          display_order?: number
-          created_at?: string
-        }
-      }
-      post_likes: {
-        Row: {
-          id: string
-          post_id: string
-          user_id: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          post_id: string
-          user_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          post_id?: string
-          user_id?: string
-          created_at?: string
-        }
-      }
-      comments: {
-        Row: {
-          id: string
-          post_id: string
-          author_id: string
-          content: string
-          like_count: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          post_id: string
-          author_id: string
-          content: string
-          like_count?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          post_id?: string
-          author_id?: string
-          content?: string
-          like_count?: number
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      comment_likes: {
-        Row: {
-          id: string
-          comment_id: string
-          user_id: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          comment_id: string
-          user_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          comment_id?: string
-          user_id?: string
-          created_at?: string
-        }
-      }
-
-      // =====================================================
-      // Ratings & Tags 테이블
-      // =====================================================
-      ratings: {
-        Row: {
-          id: string
-          book_isbn: string
-          user_id: string
-          rating: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          book_isbn: string
-          user_id: string
-          rating: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          book_isbn?: string
-          user_id?: string
-          rating?: number
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      tags: {
-        Row: {
-          id: string
-          name: string
-          tag_type: 'forum' | 'post'
-          count: number
-          last_used_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          tag_type: 'forum' | 'post'
-          count?: number
-          last_used_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          tag_type?: 'forum' | 'post'
-          count?: number
-          last_used_at?: string
-        }
-      }
-
-      // =====================================================
-      // Social 테이블 (Bookmarks, Follows)
-      // =====================================================
-      bookmarks: {
-        Row: {
-          id: string
-          user_id: string
-          forum_isbn: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          user_id: string
-          forum_isbn: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          user_id?: string
-          forum_isbn?: string
-          created_at?: string
-        }
-      }
-      follows: {
-        Row: {
-          id: string
-          follower_id: string
-          following_id: string
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          follower_id: string
-          following_id: string
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          follower_id?: string
-          following_id?: string
-          created_at?: string
-        }
-      }
-
-      // =====================================================
-      // Activities & Notifications 테이블
-      // =====================================================
       activities: {
         Row: {
+          activity_type: string
+          created_at: string | null
+          forum_isbn: string | null
           id: string
-          activity_type: 'post' | 'comment' | 'like' | 'follow' | 'bookmark'
-          user_id: string
+          metadata: Json | null
           target_id: string
           target_title: string | null
-          forum_isbn: string | null
-          metadata: Json | null
-          created_at: string
+          user_id: string
         }
         Insert: {
+          activity_type: string
+          created_at?: string | null
+          forum_isbn?: string | null
           id?: string
-          activity_type: 'post' | 'comment' | 'like' | 'follow' | 'bookmark'
-          user_id: string
+          metadata?: Json | null
           target_id: string
           target_title?: string | null
-          forum_isbn?: string | null
-          metadata?: Json | null
-          created_at?: string
+          user_id: string
         }
         Update: {
+          activity_type?: string
+          created_at?: string | null
+          forum_isbn?: string | null
           id?: string
-          activity_type?: 'post' | 'comment' | 'like' | 'follow' | 'bookmark'
-          user_id?: string
+          metadata?: Json | null
           target_id?: string
           target_title?: string | null
-          forum_isbn?: string | null
-          metadata?: Json | null
-          created_at?: string
+          user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "activities_forum_isbn_fkey"
+            columns: ["forum_isbn"]
+            isOneToOne: false
+            referencedRelation: "forums"
+            referencedColumns: ["isbn"]
+          },
+          {
+            foreignKeyName: "activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      notifications: {
+      admins: {
         Row: {
+          created_at: string | null
           id: string
+          permissions: string[] | null
+          role: string
+          updated_at: string | null
           user_id: string
-          notification_type: 'message' | 'like' | 'comment' | 'follow' | 'forum_invite' | 'system'
-          title: string
-          content: string
-          is_read: boolean
-          read_at: string | null
-          metadata: Json | null
-          created_at: string
         }
         Insert: {
+          created_at?: string | null
           id?: string
+          permissions?: string[] | null
+          role: string
+          updated_at?: string | null
           user_id: string
-          notification_type: 'message' | 'like' | 'comment' | 'follow' | 'forum_invite' | 'system'
-          title: string
-          content: string
-          is_read?: boolean
-          read_at?: string | null
-          metadata?: Json | null
-          created_at?: string
         }
         Update: {
+          created_at?: string | null
+          id?: string
+          permissions?: string[] | null
+          role?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookmarks: {
+        Row: {
+          created_at: string | null
+          forum_isbn: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          forum_isbn: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          forum_isbn?: string
           id?: string
           user_id?: string
-          notification_type?: 'message' | 'like' | 'comment' | 'follow' | 'forum_invite' | 'system'
-          title?: string
-          content?: string
-          is_read?: boolean
-          read_at?: string | null
-          metadata?: Json | null
-          created_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_forum_isbn_fkey"
+            columns: ["forum_isbn"]
+            isOneToOne: false
+            referencedRelation: "forums"
+            referencedColumns: ["isbn"]
+          },
+          {
+            foreignKeyName: "bookmarks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-
-      // =====================================================
-      // Chat 테이블
-      // =====================================================
-      chat_rooms: {
+      books: {
         Row: {
-          id: string
-          created_at: string
-          updated_at: string
-          last_message_at: string | null
+          authors: string[]
+          contents: string | null
+          created_at: string | null
+          isbn: string
+          publisher: string | null
+          thumbnail: string | null
+          title: string
+          updated_at: string | null
         }
         Insert: {
-          id?: string
-          created_at?: string
-          updated_at?: string
-          last_message_at?: string | null
+          authors?: string[]
+          contents?: string | null
+          created_at?: string | null
+          isbn: string
+          publisher?: string | null
+          thumbnail?: string | null
+          title: string
+          updated_at?: string | null
         }
         Update: {
-          id?: string
-          created_at?: string
-          updated_at?: string
-          last_message_at?: string | null
+          authors?: string[]
+          contents?: string | null
+          created_at?: string | null
+          isbn?: string
+          publisher?: string | null
+          thumbnail?: string | null
+          title?: string
+          updated_at?: string | null
         }
+        Relationships: []
       }
       chat_room_participants: {
         Row: {
-          id: string
           chat_room_id: string
+          id: string
+          joined_at: string | null
+          unread_count: number | null
           user_id: string
-          unread_count: number
-          joined_at: string
         }
         Insert: {
-          id?: string
           chat_room_id: string
+          id?: string
+          joined_at?: string | null
+          unread_count?: number | null
           user_id: string
-          unread_count?: number
-          joined_at?: string
         }
         Update: {
-          id?: string
           chat_room_id?: string
+          id?: string
+          joined_at?: string | null
+          unread_count?: number | null
           user_id?: string
-          unread_count?: number
-          joined_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "chat_room_participants_chat_room_id_fkey"
+            columns: ["chat_room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_room_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_message_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_message_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      comment_likes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_likes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comment_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          like_count: number | null
+          post_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          like_count?: number | null
+          post_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          like_count?: number | null
+          post_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      follows: {
+        Row: {
+          created_at: string | null
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_tags: {
+        Row: {
+          created_at: string | null
+          forum_isbn: string
+          id: string
+          tag_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          forum_isbn: string
+          id?: string
+          tag_name: string
+        }
+        Update: {
+          created_at?: string | null
+          forum_isbn?: string
+          id?: string
+          tag_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_tags_forum_isbn_fkey"
+            columns: ["forum_isbn"]
+            isOneToOne: false
+            referencedRelation: "forums"
+            referencedColumns: ["isbn"]
+          },
+        ]
+      }
+      forums: {
+        Row: {
+          average_rating: number | null
+          category: string | null
+          created_at: string | null
+          isbn: string
+          last_activity_at: string | null
+          popularity: number | null
+          post_count: number | null
+          total_ratings: number | null
+        }
+        Insert: {
+          average_rating?: number | null
+          category?: string | null
+          created_at?: string | null
+          isbn: string
+          last_activity_at?: string | null
+          popularity?: number | null
+          post_count?: number | null
+          total_ratings?: number | null
+        }
+        Update: {
+          average_rating?: number | null
+          category?: string | null
+          created_at?: string | null
+          isbn?: string
+          last_activity_at?: string | null
+          popularity?: number | null
+          post_count?: number | null
+          total_ratings?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forums_isbn_fkey"
+            columns: ["isbn"]
+            isOneToOne: true
+            referencedRelation: "books"
+            referencedColumns: ["isbn"]
+          },
+        ]
       }
       messages: {
         Row: {
-          id: string
           chat_room_id: string
-          sender_id: string
-          receiver_id: string
           content: string
-          message_type: 'text' | 'image' | 'file'
+          created_at: string | null
+          id: string
+          message_type: string | null
           metadata: Json | null
           read_at: string | null
-          created_at: string
-        }
-        Insert: {
-          id?: string
-          chat_room_id: string
-          sender_id: string
           receiver_id: string
-          content: string
-          message_type?: 'text' | 'image' | 'file'
-          metadata?: Json | null
-          read_at?: string | null
-          created_at?: string
-        }
-        Update: {
-          id?: string
-          chat_room_id?: string
-          sender_id?: string
-          receiver_id?: string
-          content?: string
-          message_type?: 'text' | 'image' | 'file'
-          metadata?: Json | null
-          read_at?: string | null
-          created_at?: string
-        }
-      }
-
-      // =====================================================
-      // Admin 테이블
-      // =====================================================
-      admins: {
-        Row: {
-          id: string
-          user_id: string
-          role: 'admin' | 'moderator'
-          permissions: string[]
-          created_at: string
-          updated_at: string
+          sender_id: string
         }
         Insert: {
+          chat_room_id: string
+          content: string
+          created_at?: string | null
           id?: string
-          user_id: string
-          role: 'admin' | 'moderator'
-          permissions?: string[]
-          created_at?: string
-          updated_at?: string
+          message_type?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
         }
         Update: {
+          chat_room_id?: string
+          content?: string
+          created_at?: string | null
           id?: string
-          user_id?: string
-          role?: 'admin' | 'moderator'
-          permissions?: string[]
-          created_at?: string
-          updated_at?: string
+          message_type?: string | null
+          metadata?: Json | null
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "messages_chat_room_id_fkey"
+            columns: ["chat_room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          metadata: Json | null
+          notification_type: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          metadata?: Json | null
+          notification_type: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          metadata?: Json | null
+          notification_type?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_images: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          height: number
+          id: string
+          post_id: string
+          thumbnail_url: string | null
+          url: string
+          width: number
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          height: number
+          id?: string
+          post_id: string
+          thumbnail_url?: string | null
+          url: string
+          width: number
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          height?: number
+          id?: string
+          post_id?: string
+          thumbnail_url?: string | null
+          url?: string
+          width?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_images_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          post_id: string
+          tag_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          post_id: string
+          tag_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          post_id?: string
+          tag_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_tags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          comment_count: number | null
+          content: string
+          created_at: string | null
+          forum_isbn: string
+          id: string
+          like_count: number | null
+          search_text: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          comment_count?: number | null
+          content: string
+          created_at?: string | null
+          forum_isbn: string
+          id?: string
+          like_count?: number | null
+          search_text?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          comment_count?: number | null
+          content?: string
+          created_at?: string | null
+          forum_isbn?: string
+          id?: string
+          like_count?: number | null
+          search_text?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_forum_isbn_fkey"
+            columns: ["forum_isbn"]
+            isOneToOne: false
+            referencedRelation: "forums"
+            referencedColumns: ["isbn"]
+          },
+        ]
+      }
+      ratings: {
+        Row: {
+          book_isbn: string
+          created_at: string | null
+          id: string
+          rating: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          book_isbn: string
+          created_at?: string | null
+          id?: string
+          rating: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          book_isbn?: string
+          created_at?: string | null
+          id?: string
+          rating?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_book_isbn_fkey"
+            columns: ["book_isbn"]
+            isOneToOne: false
+            referencedRelation: "books"
+            referencedColumns: ["isbn"]
+          },
+          {
+            foreignKeyName: "ratings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reports: {
         Row: {
+          created_at: string | null
+          description: string | null
           id: string
-          reporter_id: string
-          reported_user_id: string | null
-          reported_post_id: string | null
+          reason: string
+          report_type: string
           reported_comment_id: string | null
           reported_forum_isbn: string | null
-          report_type: 'spam' | 'harassment' | 'inappropriate_content' | 'fake_news' | 'other'
-          reason: string
-          description: string | null
-          status: 'pending' | 'reviewing' | 'resolved' | 'dismissed'
+          reported_post_id: string | null
+          reported_user_id: string | null
+          reporter_id: string
+          resolution: string | null
           resolved_at: string | null
           resolved_by: string | null
-          resolution: string | null
-          created_at: string
+          status: string | null
         }
         Insert: {
+          created_at?: string | null
+          description?: string | null
           id?: string
-          reporter_id: string
-          reported_user_id?: string | null
-          reported_post_id?: string | null
+          reason: string
+          report_type: string
           reported_comment_id?: string | null
           reported_forum_isbn?: string | null
-          report_type: 'spam' | 'harassment' | 'inappropriate_content' | 'fake_news' | 'other'
-          reason: string
-          description?: string | null
-          status?: 'pending' | 'reviewing' | 'resolved' | 'dismissed'
+          reported_post_id?: string | null
+          reported_user_id?: string | null
+          reporter_id: string
+          resolution?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
-          resolution?: string | null
-          created_at?: string
+          status?: string | null
         }
         Update: {
+          created_at?: string | null
+          description?: string | null
           id?: string
-          reporter_id?: string
-          reported_user_id?: string | null
-          reported_post_id?: string | null
+          reason?: string
+          report_type?: string
           reported_comment_id?: string | null
           reported_forum_isbn?: string | null
-          report_type?: 'spam' | 'harassment' | 'inappropriate_content' | 'fake_news' | 'other'
-          reason?: string
-          description?: string | null
-          status?: 'pending' | 'reviewing' | 'resolved' | 'dismissed'
+          reported_post_id?: string | null
+          reported_user_id?: string | null
+          reporter_id?: string
+          resolution?: string | null
           resolved_at?: string | null
           resolved_by?: string | null
-          resolution?: string | null
-          created_at?: string
+          status?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reported_comment_id_fkey"
+            columns: ["reported_comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_forum_isbn_fkey"
+            columns: ["reported_forum_isbn"]
+            isOneToOne: false
+            referencedRelation: "forums"
+            referencedColumns: ["isbn"]
+          },
+          {
+            foreignKeyName: "reports_reported_post_id_fkey"
+            columns: ["reported_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tags: {
+        Row: {
+          count: number | null
+          id: string
+          last_used_at: string | null
+          name: string
+          tag_type: string
+        }
+        Insert: {
+          count?: number | null
+          id?: string
+          last_used_at?: string | null
+          name: string
+          tag_type: string
+        }
+        Update: {
+          count?: number | null
+          id?: string
+          last_used_at?: string | null
+          name?: string
+          tag_type?: string
+        }
+        Relationships: []
+      }
+      user_favorite_genres: {
+        Row: {
+          created_at: string | null
+          genre: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          genre: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          genre?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorite_genres_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_notification_settings: {
+        Row: {
+          created_at: string | null
+          email_notifications: boolean | null
+          follows: boolean | null
+          forum_updates: boolean | null
+          id: string
+          likes: boolean | null
+          new_comments: boolean | null
+          new_posts: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_notifications?: boolean | null
+          follows?: boolean | null
+          forum_updates?: boolean | null
+          id?: string
+          likes?: boolean | null
+          new_comments?: boolean | null
+          new_posts?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          email_notifications?: boolean | null
+          follows?: boolean | null
+          forum_updates?: boolean | null
+          id?: string
+          likes?: boolean | null
+          new_comments?: boolean | null
+          new_posts?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_social_links: {
+        Row: {
+          created_at: string | null
+          id: string
+          platform: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          platform: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          platform?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_social_links_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          auth_id: string
+          bio: string | null
+          comment_count: number | null
+          created_at: string | null
+          deactivated_at: string | null
+          deactivated_by: string | null
+          display_name: string | null
+          email: string
+          forum_count: number | null
+          id: string
+          is_active: boolean | null
+          last_login_at: string | null
+          location: string | null
+          nickname: string | null
+          post_count: number | null
+          profile_image_url: string | null
+          reading_goal: number | null
+          website: string | null
+        }
+        Insert: {
+          auth_id: string
+          bio?: string | null
+          comment_count?: number | null
+          created_at?: string | null
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          display_name?: string | null
+          email: string
+          forum_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_login_at?: string | null
+          location?: string | null
+          nickname?: string | null
+          post_count?: number | null
+          profile_image_url?: string | null
+          reading_goal?: number | null
+          website?: string | null
+        }
+        Update: {
+          auth_id?: string
+          bio?: string | null
+          comment_count?: number | null
+          created_at?: string | null
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          display_name?: string | null
+          email?: string
+          forum_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_login_at?: string | null
+          location?: string | null
+          nickname?: string | null
+          post_count?: number | null
+          profile_image_url?: string | null
+          reading_goal?: number | null
+          website?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_super_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      get_current_user_id: { Args: never; Returns: string }
+      is_admin: { Args: never; Returns: boolean }
+      is_super_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      activity_type: 'post' | 'comment' | 'like' | 'follow' | 'bookmark'
-      notification_type: 'message' | 'like' | 'comment' | 'follow' | 'forum_invite' | 'system'
-      message_type: 'text' | 'image' | 'file'
-      admin_role: 'admin' | 'moderator'
-      report_type: 'spam' | 'harassment' | 'inappropriate_content' | 'fake_news' | 'other'
-      report_status: 'pending' | 'reviewing' | 'resolved' | 'dismissed'
-      tag_type: 'forum' | 'post'
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -777,33 +1024,125 @@ export interface Database {
   }
 }
 
-// =====================================================
-// 편의 타입 별칭
-// =====================================================
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
-export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert']
-export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update']
-export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-// 자주 사용하는 타입
-export type User = Tables<'users'>
-export type UserInsert = InsertTables<'users'>
-export type UserUpdate = UpdateTables<'users'>
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-export type Post = Tables<'posts'>
-export type PostInsert = InsertTables<'posts'>
-export type PostUpdate = UpdateTables<'posts'>
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-export type Comment = Tables<'comments'>
-export type CommentInsert = InsertTables<'comments'>
-export type CommentUpdate = UpdateTables<'comments'>
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-export type Forum = Tables<'forums'>
-export type Book = Tables<'books'>
-export type Rating = Tables<'ratings'>
-export type Notification = Tables<'notifications'>
-export type Activity = Tables<'activities'>
-export type Message = Tables<'messages'>
-export type Admin = Tables<'admins'>
-export type Report = Tables<'reports'>
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

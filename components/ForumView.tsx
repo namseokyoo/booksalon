@@ -172,7 +172,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           forum_isbn: forum.isbn,
           comment_count: 0,
           like_count: 0,
-        } as never)
+        })
         .select('id')
         .single();
 
@@ -206,7 +206,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
         if (uploadedImages.length > 0) {
           await supabase
             .from('posts')
-            .update({ images: uploadedImages } as never)
+            .update({ images: uploadedImages })
             .eq('id', postId);
         }
       }
@@ -223,7 +223,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
         .update({
           post_count: ((forumData as { post_count: number } | null)?.post_count || 0) + 1,
           last_activity_at: new Date().toISOString(),
-        } as never)
+        })
         .eq('isbn', forum.isbn);
 
       // 태그 통계 업데이트

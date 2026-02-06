@@ -63,7 +63,7 @@ export class NotificationService {
 
     const { data, error } = await supabase
       .from('notifications')
-      .insert(insertData as never)
+      .insert(insertData )
       .select('id')
       .single()
 
@@ -152,7 +152,7 @@ export class NotificationService {
 
     const { error } = await supabase
       .from('notifications')
-      .update(updateData as never)
+      .update(updateData )
       .eq('id', notificationId)
 
     if (error) throw new Error(`알림 읽음 처리 실패: ${error.message}`)
@@ -171,7 +171,7 @@ export class NotificationService {
 
     const { error } = await supabase
       .from('notifications')
-      .update(updateData as never)
+      .update(updateData )
       .eq('user_id', userId)
       .eq('is_read', false)
 

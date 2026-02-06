@@ -168,7 +168,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
             author_id: typedUserData.id,
             post_id: post.id,
             like_count: 0,
-          } as never);
+          });
 
         if (commentError) {
           throw commentError;
@@ -183,7 +183,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
 
         await supabase
           .from('posts')
-          .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 } as never)
+          .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 })
           .eq('id', post.id);
 
         // 사용자 통계 업데이트

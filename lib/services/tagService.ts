@@ -113,7 +113,7 @@ export class TagService {
       }
       const { error } = await supabase
         .from('tags')
-        .update(updateData as never)
+        .update(updateData )
         .eq('id', existingData.id)
 
       if (error) throw new Error(`태그 업데이트 실패: ${error.message}`)
@@ -125,7 +125,7 @@ export class TagService {
         count: 1,
         last_used_at: new Date().toISOString(),
       }
-      const { error } = await supabase.from('tags').insert(insertData as never)
+      const { error } = await supabase.from('tags').insert(insertData )
 
       if (error) throw new Error(`태그 생성 실패: ${error.message}`)
     }
@@ -152,7 +152,7 @@ export class TagService {
         const updateData: TagUpdate = { count: existingData.count - 1 }
         const { error } = await supabase
           .from('tags')
-          .update(updateData as never)
+          .update(updateData )
           .eq('id', existingData.id)
 
         if (error) console.error('태그 카운트 감소 실패:', error)
@@ -376,7 +376,7 @@ export class TagService {
         tag_name: tag.trim(),
       }))
 
-      const { error } = await supabase.from('forum_tags').insert(tagsToInsert as never[])
+      const { error } = await supabase.from('forum_tags').insert(tagsToInsert )
       if (error) throw new Error(`포럼 태그 추가 실패: ${error.message}`)
 
       // 태그 통계 업데이트
@@ -412,7 +412,7 @@ export class TagService {
         tag_name: tag.trim(),
       }))
 
-      const { error } = await supabase.from('post_tags').insert(tagsToInsert as never[])
+      const { error } = await supabase.from('post_tags').insert(tagsToInsert )
       if (error) throw new Error(`게시물 태그 추가 실패: ${error.message}`)
 
       // 태그 통계 업데이트
@@ -442,7 +442,7 @@ export class TagService {
         tag_name: tag.trim(),
       }))
 
-      await supabase.from('forum_tags').insert(tagsToInsert as never[])
+      await supabase.from('forum_tags').insert(tagsToInsert )
     }
 
     // 추가된 태그 카운트 증가
@@ -476,7 +476,7 @@ export class TagService {
         tag_name: tag.trim(),
       }))
 
-      await supabase.from('post_tags').insert(tagsToInsert as never[])
+      await supabase.from('post_tags').insert(tagsToInsert )
     }
 
     // 추가된 태그 카운트 증가

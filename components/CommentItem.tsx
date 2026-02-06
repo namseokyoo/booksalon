@@ -119,7 +119,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
         .update({
           content: editContent,
           updated_at: new Date().toISOString(),
-        } as never)
+        })
         .eq('id', comment.id);
 
       if (error) {
