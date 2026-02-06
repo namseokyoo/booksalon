@@ -5,7 +5,7 @@
 - **버전**: v0.4.0 (Supabase Migration)
 - **검증 기간**: 2026-02-06
 - **QA 담당**: QA Engineer
-- **배포 환경**: Production (https://booksalon.vercel.app)
+- **배포 환경**: Production (https://booksalon-nine.vercel.app)
 
 ## 2. 검증 범위
 
@@ -91,7 +91,7 @@
 ## 5. 환경
 
 ### 5.1 테스트 URL
-- **Production**: https://booksalon.vercel.app
+- **Production**: https://booksalon-nine.vercel.app
 
 ### 5.2 브라우저
 - **Desktop**: Chrome (최신), Firefox (최신)

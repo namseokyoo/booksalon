@@ -45,7 +45,7 @@
 | **심각도** | 🔴 Blocker |
 | **영향 범위** | 전체 서비스 사용 불가 |
 | **발견 시나리오** | SC-001 (회원가입) |
-| **재현 방법** | 1. https://booksalon.vercel.app 접속<br>2. 회원가입 시도<br>3. 폼 제출 시 무반응 |
+| **재현 방법** | 1. https://booksalon-nine.vercel.app 접속<br>2. 회원가입 시도<br>3. 폼 제출 시 무반응 |
 | **원인** | Vercel 프로덕션 환경에 Supabase 환경 변수 미설정 |
 | **상세 설명** | `vercel env ls` 실행 결과 "No Environment Variables found" 출력.<br>필수 환경 변수 누락:<br>- `VITE_SUPABASE_URL`<br>- `VITE_SUPABASE_ANON_KEY`<br>- `VITE_KAKAO_API_KEY` (도서 검색용) |
 | **예상 영향** | - 인증 불가 (회원가입/로그인)<br>- DB 연결 불가 (프로필, 게시물, 북마크 등 전체 기능)<br>- 도서 검색 불가 |
@@ -147,7 +147,7 @@
 모든 스크린샷은 `~/Downloads/` 폴더에 저장됨.
 
 ### 환경 정보
-- **테스트 URL**: https://booksalon.vercel.app
+- **테스트 URL**: https://booksalon-nine.vercel.app
 - **테스트 브라우저**: Chrome (Playwright Headful Mode)
 - **테스트 해상도**: 1280x720
 - **테스트 계정 (생성 시도)**: qa_test_v040@test.com
