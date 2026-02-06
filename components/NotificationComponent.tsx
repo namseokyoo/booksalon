@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NotificationService } from '../services/notificationService'; // TODO: Supabase 마이그레이션 필요
+import { NotificationService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Notification } from '../types';
 import { formatDistanceToNow } from 'date-fns';
@@ -94,9 +94,9 @@ const NotificationComponent: React.FC = () => {
         }
     };
 
-    const formatNotificationTime = (timestamp: any) => {
+    const formatNotificationTime = (timestamp: string | undefined) => {
         if (!timestamp) return '';
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        const date = new Date(timestamp);
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 

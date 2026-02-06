@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessagingService } from '../services/messagingService'; // TODO: Supabase 마이그레이션 필요
+import { MessagingService } from '../lib/services';
 import { UserService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { ChatRoom, UserProfile } from '../types';
@@ -43,7 +43,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
 
     const formatLastMessageTime = (timestamp: any) => {
         if (!timestamp) return '';
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        const date = new Date(timestamp);
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 
@@ -135,7 +135,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
 
     const formatLastMessageTime = (timestamp: any) => {
         if (!timestamp) return '';
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        const date = new Date(timestamp);
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 

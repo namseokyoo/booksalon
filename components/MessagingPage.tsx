@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ChatList from '../components/ChatList';
 import ChatComponent from '../components/ChatComponent';
 import UserSearch from '../components/UserSearch';
-import { MessagingService } from '../services/messagingService'; // TODO: Supabase 마이그레이션 필요
+import { MessagingService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService } from '../lib/services';
 import type { UserProfile } from '../types';

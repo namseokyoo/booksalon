@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { AdminService } from '../services/adminService'; // TODO: Supabase 마이그레이션 필요
+import { AdminService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
-import type { AdminUser, Report, UserProfile, Forum } from '../types';
+import type { Report } from '../types';
 
 const AdminDashboard: React.FC = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'forums' | 'reports'>('dashboard');
     const [stats, setStats] = useState<any>(null);
-    const [users, setUsers] = useState<UserProfile[]>([]);
-    const [forums, setForums] = useState<Forum[]>([]);
+    const [users, setUsers] = useState<Awaited<ReturnType<typeof AdminService.getUsers>>>([]);
+    const [forums, setForums] = useState<Awaited<ReturnType<typeof AdminService.getForums>>>([]);
     const [reports, setReports] = useState<Report[]>([]);
     const { currentUser } = useAuth();
 
@@ -317,7 +317,7 @@ const AdminDashboard: React.FC = () => {
                                             </span>
                                         </div>
                                         <span className="text-gray-500 text-sm">
-                                            {report.createdAt?.toDate ? report.createdAt.toDate().toLocaleDateString() : ''}
+                                            {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : ''}
                                         </span>
                                     </div>
                                     <p className="text-gray-900 font-semibold mb-1">{report.reason}</p>

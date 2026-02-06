@@ -49,3 +49,12 @@ export { ProfileImageService } from './profileImageService'
 
 // Post Image Service (Week 3 추가)
 export { PostImageService, type PostImage } from './postImageService'
+
+// Notification Service (Firebase → Supabase 마이그레이션)
+export { NotificationService } from './notificationService'
+
+// Admin Service (Firebase → Supabase 마이그레이션)
+export { AdminService } from './adminService'
+
+// Messaging Service (Firebase → Supabase 마이그레이션)
+export { MessagingService } from './messagingService'
