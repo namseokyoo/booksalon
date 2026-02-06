@@ -1,4 +1,4 @@
-import type { Forum, Book } from '../types';
+import type { Forum, Book } from '../../types';
 
 export interface FilterOptions {
     category?: string;
@@ -69,8 +69,12 @@ export class FilterService {
         switch (options.sortBy) {
             case 'recent':
                 return filteredForums.sort((a, b) => {
-                    const aTime = a.lastActivityAt?.toDate?.() || new Date(0);
-                    const bTime = b.lastActivityAt?.toDate?.() || new Date(0);
+                    const aTime = a.lastActivityAt instanceof Date
+                        ? a.lastActivityAt
+                        : new Date(a.lastActivityAt || 0);
+                    const bTime = b.lastActivityAt instanceof Date
+                        ? b.lastActivityAt
+                        : new Date(b.lastActivityAt || 0);
                     return bTime.getTime() - aTime.getTime();
                 });
 
@@ -217,8 +221,11 @@ export class FilterService {
     // 인기도 점수 계산
     static calculatePopularity(forum: Forum): number {
         const postCount = forum.postCount || 0;
+        const lastActivity = forum.lastActivityAt instanceof Date
+            ? forum.lastActivityAt
+            : new Date(forum.lastActivityAt || 0);
         const daysSinceCreation = forum.lastActivityAt ?
-            Math.max(1, Math.floor((Date.now() - forum.lastActivityAt.toDate().getTime()) / (1000 * 60 * 60 * 24))) : 1;
+            Math.max(1, Math.floor((Date.now() - lastActivity.getTime()) / (1000 * 60 * 60 * 24))) : 1;
 
         // 게시물 수와 최근 활동을 고려한 인기도 점수
         return postCount * 10 - daysSinceCreation;

@@ -39,13 +39,13 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
 
       // 회원가입 후 닉네임 저장
       if (result?.user) {
-        const { UserProfileService } = await import('../services/userProfile');
-        await UserProfileService.createOrUpdateProfile(
+        const { UserService } = await import('../lib/services');
+        await UserService.createOrUpdateProfile(
           result.user.uid,
           email,
           email.split('@')[0], // displayName
-          undefined, // bio
-          nickname
+          nickname, // nickname
+          undefined // bio
         );
       }
 

@@ -25,7 +25,7 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ targetUserId }) => {
             if (!targetUserId || !currentUser) return;
 
             try {
-                const userProfile = await UserService.getUserProfile(targetUserId);
+                const userProfile = await UserService.getUserProfileByAuthId(targetUserId);
                 if (!userProfile) return;
 
                 const chatRoom = await MessagingService.getOrCreateChatRoom(

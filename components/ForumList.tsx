@@ -1,13 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
 import type { Forum, Book } from '../types';
-import { searchBookByIsbn, searchBookByTitle } from '../services/kakaoApi';
+import {
+  searchBookByIsbn,
+  searchBookByTitle,
+  UserService,
+  BookmarkService,
+  TagService,
+  FilterService,
+  type FilterOptions,
+} from '../lib/services';
 import CreateForumModal from './CreateForumModal';
 import { SearchIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UserService, BookmarkService, TagService } from '../lib/services';
-import { FilterService, type FilterOptions } from '../services/filterService';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
 
@@ -269,7 +275,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         publisher: book.publisher,
         thumbnail: book.thumbnail,
         contents: book.contents || '',
-      }, { onConflict: 'isbn' });
+      } as never, { onConflict: 'isbn' });
 
     if (bookError) {
       console.error('책 정보 저장 실패:', bookError);
@@ -285,7 +291,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         category,
         popularity: 0,
         last_activity_at: new Date().toISOString(),
-      });
+      } as never);
 
     if (forumError) {
       console.error('포럼 생성 실패:', forumError);
@@ -299,7 +305,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
     // 사용자 통계 업데이트
     if (currentUser) {
-      await UserService.updateUserStats(currentUser.uid, 'forum', true);
+      await UserService.incrementStat(currentUser.uid, 'forum_count');
     }
 
     const newForum: Forum = {
@@ -542,8 +548,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
             {existingForums
               .sort((a, b) => {
                 // createdAt 기준으로 정렬 (최신순)
-                const aTime = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
-                const bTime = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+                const aTime = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt || 0);
+                const bTime = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt || 0);
                 return bTime.getTime() - aTime.getTime();
               })
               .slice(0, 5) // 최대 5개만 표시
@@ -667,8 +673,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
             filteredForums
               .sort((a, b) => {
                 // createdAt 기준으로 정렬 (최신순)
-                const aTime = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
-                const bTime = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+                const aTime = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt || 0);
+                const bTime = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt || 0);
                 return bTime.getTime() - aTime.getTime();
               })
               .slice(0, 5) // 최대 5개만 표시

@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import type { Forum, Book } from '../types';
-import { searchBookByIsbn, searchBookByTitle } from '../services/kakaoApi';
-import { SearchService } from '../lib/services';
-import type { CommunitySearchResult } from '../lib/services/searchService';
-import { SearchHistoryService } from '../services/searchHistoryService';
+import {
+    searchBookByIsbn,
+    searchBookByTitle,
+    SearchService,
+    SearchHistoryService,
+    type CommunitySearchResult,
+} from '../lib/services';
 import { SearchIcon } from './icons';
 import SearchSuggestions from './SearchSuggestions';
 import HighlightText from './HighlightText';

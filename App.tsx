@@ -52,8 +52,7 @@ const App = () => {
 
   const handleCreateForumFromSearch = async (book: Book) => {
     const { supabase } = await import('./lib/supabase');
-    const { FilterService } = await import('./services/filterService');
-    const { UserService } = await import('./lib/services');
+    const { FilterService, UserService } = await import('./lib/services');
 
     const category = FilterService.categorizeBook(book);
     const tags = FilterService.generateTags(book);
@@ -68,7 +67,7 @@ const App = () => {
         publisher: book.publisher || null,
         thumbnail: book.thumbnail || null,
         contents: book.contents || null,
-      }, { onConflict: 'isbn' });
+      } as never, { onConflict: 'isbn' });
 
     if (bookError) {
       console.error('책 정보 저장 실패:', bookError);
@@ -86,7 +85,7 @@ const App = () => {
         average_rating: 0,
         total_ratings: 0,
         last_activity_at: new Date().toISOString(),
-      }, { onConflict: 'isbn' });
+      } as never, { onConflict: 'isbn' });
 
     if (forumError) {
       console.error('포럼 생성 실패:', forumError);
@@ -99,7 +98,7 @@ const App = () => {
         forum_isbn: book.isbn,
         tag_name: tag,
       }));
-      await supabase.from('forum_tags').upsert(tagInserts, { onConflict: 'forum_isbn,tag_name' });
+      await supabase.from('forum_tags').upsert(tagInserts as never[], { onConflict: 'forum_isbn,tag_name' });
     }
 
     // 4. 사용자 통계 업데이트

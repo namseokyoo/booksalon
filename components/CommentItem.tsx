@@ -26,7 +26,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
   useEffect(() => {
     const loadAuthorProfile = async () => {
       try {
-        const profile = await UserService.getUserProfile(comment.author.uid);
+        const profile = await UserService.getUserProfileByAuthId(comment.author.uid);
         setAuthorProfile(profile);
       } catch (error) {
         console.error('작성자 프로필 로딩 실패:', error);
@@ -49,7 +49,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
             .single();
 
           if (userData) {
-            const liked = await SocialService.isLiked(userData.id, 'comment', comment.id);
+            const liked = await SocialService.isLiked((userData as { id: string }).id, 'comment', comment.id);
             setIsLiked(liked);
           }
         } catch (error) {
@@ -90,7 +90,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
       }
 
       const newIsLiked = await SocialService.toggleLike(
-        userData.id,
+        (userData as { id: string }).id,
         'comment',
         comment.id
       );
@@ -119,7 +119,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
         .update({
           content: editContent,
           updated_at: new Date().toISOString(),
-        })
+        } as never)
         .eq('id', comment.id);
 
       if (error) {

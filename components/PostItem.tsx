@@ -35,7 +35,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
             .single();
 
           if (userData) {
-            const liked = await SocialService.isLiked(userData.id, 'post', post.id);
+            const liked = await SocialService.isLiked((userData as { id: string }).id, 'post', post.id);
             setIsLiked(liked);
           }
         } catch (error) {
@@ -64,7 +64,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
       }
 
       const newIsLiked = await SocialService.toggleLike(
-        userData.id,
+        (userData as { id: string }).id,
         'post',
         post.id
       );
@@ -158,15 +158,17 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
           throw new Error('사용자 정보를 찾을 수 없습니다.');
         }
 
+        const typedUserData = userData as { id: string };
+
         // 댓글 생성
         const { error: commentError } = await supabase
           .from('comments')
           .insert({
             content: newComment.trim(),
-            author_id: userData.id,
+            author_id: typedUserData.id,
             post_id: post.id,
             like_count: 0,
-          });
+          } as never);
 
         if (commentError) {
           throw commentError;
@@ -181,11 +183,11 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
 
         await supabase
           .from('posts')
-          .update({ comment_count: (postData?.comment_count || 0) + 1 })
+          .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 } as never)
           .eq('id', post.id);
 
         // 사용자 통계 업데이트
-        await UserService.updateUserStats(currentUser.uid, 'comment', true);
+        await UserService.incrementStat(currentUser.uid, 'comment_count');
 
         setNewComment('');
       } catch (error) {

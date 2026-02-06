@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { TagService } from '../lib/services';
-import { FilterService } from '../services/filterService';
+import { FilterService } from '../lib/services';
 import TagBadge from './TagBadge';
 
 interface TagInputProps {

@@ -29,7 +29,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
     useEffect(() => {
         const loadOtherUser = async () => {
             try {
-                const user = await UserService.getUserProfile(otherUserId);
+                const user = await UserService.getUserProfileByAuthId(otherUserId);
                 setOtherUser(user);
             } catch (error) {
                 console.error('사용자 정보 로딩 실패:', error);
@@ -126,7 +126,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
         if (!otherUserId) return null;
 
         try {
-            return await UserService.getUserProfile(otherUserId);
+            return await UserService.getUserProfileByAuthId(otherUserId);
         } catch (error) {
             console.error('사용자 정보 로딩 실패:', error);
             return null;

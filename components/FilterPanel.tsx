@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import type { FilterOptions } from '../services/filterService';
-import { FilterService } from '../services/filterService';
+import { FilterService, type FilterOptions } from '../lib/services';
 
 interface FilterPanelProps {
     onFilterChange: (options: FilterOptions) => void;

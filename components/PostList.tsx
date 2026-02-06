@@ -24,7 +24,7 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
     useEffect(() => {
         const loadAuthorProfile = async () => {
             try {
-                const profile = await UserService.getUserProfile(post.author.uid);
+                const profile = await UserService.getUserProfileByAuthId(post.author.uid);
                 setAuthorProfile(profile);
             } catch (error) {
                 console.error('작성자 프로필 로딩 실패:', error);

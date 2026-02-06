@@ -41,7 +41,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
         try {
             setLoading(true);
             const [profileData, postsData, commentsData, bookmarksData] = await Promise.all([
-                UserService.getUserProfile(currentUser.uid),
+                UserService.getUserProfileByAuthId(currentUser.uid),
                 UserService.getUserPosts(currentUser.uid),
                 UserService.getUserComments(currentUser.uid),
                 BookmarkService.getBookmarkedForums(currentUser.uid)
@@ -75,16 +75,28 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
         if (!currentUser || !profile) return;
 
         try {
-            await UserService.updateProfile(currentUser.uid, {
+            // 프로필 이미지 업로드 (있는 경우)
+            let profileImageUrl: string | undefined;
+            if (editForm.profileImageFile) {
+                profileImageUrl = await ProfileImageService.uploadProfileImage(
+                    currentUser.uid,
+                    editForm.profileImageFile
+                );
+            }
+
+            // 기본 프로필 업데이트
+            await UserService.updateProfile(profile.id, {
                 displayName: editForm.displayName,
                 nickname: editForm.nickname,
                 bio: editForm.bio,
                 location: editForm.location,
                 website: editForm.website,
                 readingGoal: editForm.readingGoal,
-                favoriteGenres: editForm.favoriteGenres,
-                profileImageFile: editForm.profileImageFile
+                ...(profileImageUrl ? { profileImageUrl } : {}),
             });
+
+            // 선호 장르 업데이트 (별도 테이블)
+            await UserService.updateFavoriteGenres(profile.id, editForm.favoriteGenres);
 
             // 프로필 다시 로드
             await loadUserData();

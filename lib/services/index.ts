@@ -58,3 +58,12 @@ export { AdminService } from './adminService'
 
 // Messaging Service (Firebase → Supabase 마이그레이션)
 export { MessagingService } from './messagingService'
+
+// Filter Service (Firebase 의존성 없음, services/ → lib/services/ 이동)
+export { FilterService, type FilterOptions } from './filterService'
+
+// Kakao API Service (Firebase 의존성 없음, services/ → lib/services/ 이동)
+export { searchBookByIsbn, searchBookByTitle } from './kakaoApi'
+
+// Search History Service (localStorage 기반, Firebase 의존성 없음)
+export { SearchHistoryService, type SearchHistory } from './searchHistoryService'

@@ -37,7 +37,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     useEffect(() => {
         const loadAuthorProfile = async () => {
             try {
-                const profile = await UserService.getUserProfile(post.author.uid);
+                const profile = await UserService.getUserProfileByAuthId(post.author.uid);
                 setAuthorProfile(profile);
             } catch (error) {
                 console.error('작성자 프로필 로딩 실패:', error);
@@ -61,7 +61,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                         .single();
 
                     if (userData) {
-                        const liked = await SocialService.isLiked(userData.id, 'post', post.id);
+                        const liked = await SocialService.isLiked((userData as { id: string }).id, 'post', post.id);
                         setIsLiked(liked);
                     }
                 } catch (error) {
@@ -183,7 +183,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             }
 
             const newIsLiked = await SocialService.toggleLike(
-                userData.id,
+                (userData as { id: string }).id,
                 'post',
                 post.id
             );
@@ -262,15 +262,17 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                 throw new Error('사용자 정보를 찾을 수 없습니다.');
             }
 
+            const typedUserData = userData as { id: string };
+
             // 댓글 생성
             const { error: commentError } = await supabase
                 .from('comments')
                 .insert({
                     content: newComment,
-                    author_id: userData.id,
+                    author_id: typedUserData.id,
                     post_id: post.id,
                     like_count: 0,
-                });
+                } as never);
 
             if (commentError) {
                 throw commentError;
@@ -285,11 +287,11 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
             await supabase
                 .from('posts')
-                .update({ comment_count: (postData?.comment_count || 0) + 1 })
+                .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 } as never)
                 .eq('id', post.id);
 
             // 사용자 통계 업데이트
-            await UserService.updateUserStats(currentUser.uid, 'comment', true);
+            await UserService.incrementStat(currentUser.uid, 'comment_count');
 
             setNewComment('');
             setShowMentionList(false);
@@ -316,7 +318,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     title: editTitle,
                     content: editContent,
                     updated_at: new Date().toISOString(),
-                })
+                } as never)
                 .eq('id', post.id);
 
             if (error) {
@@ -362,11 +364,11 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
                 await supabase
                     .from('forums')
-                    .update({ post_count: Math.max(0, (forumData?.post_count || 1) - 1) })
+                    .update({ post_count: Math.max(0, ((forumData as { post_count: number } | null)?.post_count || 1) - 1) } as never)
                     .eq('isbn', isbn);
 
                 // 사용자 통계 업데이트
-                await UserService.updateUserStats(currentUser.uid, 'post', false);
+                await UserService.decrementStat(currentUser.uid, 'post_count');
 
                 onBack();
             } catch (error) {

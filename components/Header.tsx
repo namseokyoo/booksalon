@@ -46,8 +46,8 @@ const Header: React.FC<HeaderProps> = ({
         if (!currentUser) return;
 
         try {
-            const { UserProfileService } = await import('../services/userProfile');
-            const profile = await UserProfileService.getUserProfile(currentUser.uid);
+            const { UserService } = await import('../lib/services');
+            const profile = await UserService.getUserProfileByAuthId(currentUser.uid);
             setUserProfile(profile);
         } catch (error) {
             console.error('사용자 프로필 로드 실패:', error);

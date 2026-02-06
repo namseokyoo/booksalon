@@ -1,5 +1,5 @@
 
-import { Book } from '../types';
+import { Book } from '../../types';
 
 // 카카오 API 키 설정 (환경 변수에서 가져오기)
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY || process.env.KAKAO_API_KEY;
