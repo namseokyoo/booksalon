@@ -1,10 +1,9 @@
 /**
- * 북살롱 v0.4.0 - Supabase 마이그레이션
- *
- * Firebase에서 Supabase로 전환된 버전
+ * 북살롱 v0.5.1
  */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './index.css';
 import App from './App';
 import { SupabaseAuthProvider } from './contexts/SupabaseAuthContext';
 
