@@ -18,9 +18,18 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
         return user.nickname || user.displayName || user.email?.split('@')[0] || '익명';
     };
 
-    const formatDate = (timestamp: any) => {
+    const formatDate = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
         if (!timestamp) return 'N/A';
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        let date: Date;
+        if (typeof timestamp === 'string') {
+            date = new Date(timestamp);
+        } else if (timestamp instanceof Date) {
+            date = timestamp;
+        } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
+            date = timestamp.toDate();
+        } else {
+            date = new Date();
+        }
         return format(date, 'yyyy년 MM월 dd일', { locale: ko });
     };
 

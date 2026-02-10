@@ -41,7 +41,7 @@ function toMessage(row: MessageRow): Message {
     content: row.content,
     createdAt: row.created_at,
     readAt: row.read_at || undefined,
-    messageType: row.message_type,
+    messageType: (row.message_type || 'text') as Message['messageType'],
     metadata: row.metadata as Message['metadata'] | undefined,
   }
 }

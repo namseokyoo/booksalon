@@ -52,8 +52,9 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
       }
 
       onClose();
-    } catch (err: any) {
-      if (err.code === 'auth/email-already-in-use') {
+    } catch (err: unknown) {
+      const firebaseError = err as { code?: string };
+      if (firebaseError.code === 'auth/email-already-in-use') {
         setError('이미 사용 중인 이메일입니다.');
       } else {
         setError('회원가입에 실패했습니다. 다시 시도해주세요.');
@@ -69,8 +70,9 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
       setSocialLoading(true);
       await loginWithGoogle();
       onClose();
-    } catch (err: any) {
-      setError(err.message || '소셜 로그인에 실패했습니다.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '소셜 로그인에 실패했습니다.';
+      setError(errorMessage);
       console.error(err);
     }
     setSocialLoading(false);

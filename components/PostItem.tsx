@@ -198,11 +198,19 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
     }
   };
 
-  const formatDate = (timestamp: any) => {
-    if (timestamp && typeof timestamp.toDate === 'function') {
-      return formatDistanceToNow(timestamp.toDate(), { addSuffix: true, locale: ko });
+  const formatDate = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
+    if (!timestamp) return '방금 전';
+    let date: Date;
+    if (typeof timestamp === 'string') {
+      date = new Date(timestamp);
+    } else if (timestamp instanceof Date) {
+      date = timestamp;
+    } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
+      date = timestamp.toDate();
+    } else {
+      date = new Date();
     }
-    return '방금 전';
+    return formatDistanceToNow(date, { addSuffix: true, locale: ko });
   };
 
   return (

@@ -36,8 +36,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
       setSocialLoading(true);
       await loginWithGoogle();
       onClose();
-    } catch (err: any) {
-      setError(err.message || '소셜 로그인에 실패했습니다.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '소셜 로그인에 실패했습니다.';
+      setError(errorMessage);
       console.error(err);
     }
     setSocialLoading(false);

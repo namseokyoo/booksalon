@@ -388,17 +388,23 @@ export class SocialService {
     targetType: 'post' | 'comment',
     targetId: string
   ): Promise<boolean> {
-    const tableName = targetType === 'post' ? 'post_likes' : 'comment_likes'
-    const foreignKey = targetType === 'post' ? 'post_id' : 'comment_id'
-
-    const { data, error } = await supabase
-      .from(tableName)
-      .select('id')
-      .eq(foreignKey, targetId)
-      .eq('user_id', currentUserId)
-      .single()
-
-    return !error && !!data
+    if (targetType === 'post') {
+      const { data, error } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', targetId)
+        .eq('user_id', currentUserId)
+        .single()
+      return !error && !!data
+    } else {
+      const { data, error } = await supabase
+        .from('comment_likes')
+        .select('id')
+        .eq('comment_id', targetId)
+        .eq('user_id', currentUserId)
+        .single()
+      return !error && !!data
+    }
   }
 
   /**

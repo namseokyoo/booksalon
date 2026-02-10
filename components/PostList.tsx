@@ -36,9 +36,18 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
         loadAuthorProfile();
     }, [post.author.uid]);
 
-    const formatTime = (timestamp: any) => {
+    const formatTime = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
         if (!timestamp) return '';
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        let date: Date;
+        if (typeof timestamp === 'string') {
+            date = new Date(timestamp);
+        } else if (timestamp instanceof Date) {
+            date = timestamp;
+        } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
+            date = timestamp.toDate();
+        } else {
+            date = new Date();
+        }
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 

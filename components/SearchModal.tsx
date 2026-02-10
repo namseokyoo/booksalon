@@ -180,9 +180,10 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                     setError('검색 결과가 없습니다.');
                 }
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('검색 실패:', error);
-            setError(error.message || '검색 중 오류가 발생했습니다. 다시 시도해주세요.');
+            const errorMessage = error instanceof Error ? error.message : '검색 중 오류가 발생했습니다. 다시 시도해주세요.';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }

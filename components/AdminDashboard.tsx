@@ -7,7 +7,7 @@ const AdminDashboard: React.FC = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'forums' | 'reports'>('dashboard');
-    const [stats, setStats] = useState<any>(null);
+    const [stats, setStats] = useState<Awaited<ReturnType<typeof AdminService.getStats>> | null>(null);
     const [users, setUsers] = useState<Awaited<ReturnType<typeof AdminService.getUsers>>>([]);
     const [forums, setForums] = useState<Awaited<ReturnType<typeof AdminService.getForums>>>([]);
     const [reports, setReports] = useState<Report[]>([]);
@@ -150,7 +150,7 @@ const AdminDashboard: React.FC = () => {
                     ].map((tab) => (
                         <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
+                            onClick={() => setActiveTab(tab.id as 'dashboard' | 'users' | 'forums' | 'reports')}
                             className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${activeTab === tab.id
                                     ? 'bg-white border-t border-x border-gray-200 text-cyan-600 border-b-2 border-b-cyan-600 -mb-px'
                                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'

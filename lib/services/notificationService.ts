@@ -24,10 +24,10 @@ function toNotification(row: NotificationRow): Notification {
   return {
     id: row.id,
     userId: row.user_id,
-    type: row.notification_type,
+    type: row.notification_type as Notification['type'],
     title: row.title,
     content: row.content,
-    isRead: row.is_read,
+    isRead: row.is_read ?? false,
     createdAt: row.created_at,
     readAt: row.read_at || undefined,
     metadata: row.metadata as Notification['metadata'] | undefined,

@@ -44,8 +44,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           created_at,
           updated_at,
           comment_count,
-          like_count,
-          images
+          like_count
         `)
         .eq('forum_isbn', forum.isbn)
         .order('created_at', { ascending: false });
@@ -54,6 +53,27 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
         console.error('게시물 로드 실패:', error);
         return;
       }
+
+      // 게시물 이미지 조회
+      const postIds = (postsData || []).map((p: { id: string }) => p.id);
+      const { data: postImagesData } = await supabase
+        .from('post_images')
+        .select('id, post_id, url, thumbnail_url, width, height, display_order')
+        .in('post_id', postIds);
+
+      const imagesByPost = new Map<string, PostImage[]>();
+      (postImagesData || []).forEach((img: { id: string; post_id: string; url: string; thumbnail_url: string | null; width: number; height: number; display_order: number | null }) => {
+        const images = imagesByPost.get(img.post_id) || [];
+        images.push({
+          id: img.id,
+          url: img.url,
+          thumbnailUrl: img.thumbnail_url || undefined,
+          width: img.width,
+          height: img.height,
+          order: img.display_order || 0,
+        });
+        imagesByPost.set(img.post_id, images);
+      });
 
       // 작성자 정보 조회
       const authorIds = [...new Set((postsData || []).map((p: { author_id: string }) => p.author_id))];
@@ -65,7 +85,6 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
       const authorMap = new Map((authors || []).map((a: { id: string; auth_id: string; email: string; display_name: string | null; nickname: string | null }) => [a.id, a]));
 
       // 게시물 태그 조회
-      const postIds = (postsData || []).map((p: { id: string }) => p.id);
       const { data: postTags } = await supabase
         .from('post_tags')
         .select('post_id, tag_name')
@@ -101,7 +120,6 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
         updated_at: string | null;
         comment_count: number;
         like_count: number;
-        images: PostImage[] | null;
       }) => {
         const author = authorMap.get(post.author_id);
         return {
@@ -118,7 +136,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           likeCount: post.like_count,
           likes: likesByPost.get(post.id) || [],
           tags: tagsByPost.get(post.id) || [],
-          images: post.images || [],
+          images: imagesByPost.get(post.id) || [],
         };
       });
 
@@ -202,12 +220,17 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           }
         }
 
-        // 업로드된 이미지가 있으면 게시물 업데이트
+        // 업로드된 이미지가 있으면 post_images 테이블에 저장
         if (uploadedImages.length > 0) {
-          await supabase
-            .from('posts')
-            .update({ images: uploadedImages })
-            .eq('id', postId);
+          const imageInserts = uploadedImages.map((img, index) => ({
+            post_id: postId,
+            url: img.url,
+            thumbnail_url: img.thumbnailUrl || null,
+            width: img.width,
+            height: img.height,
+            display_order: index,
+          }));
+          await supabase.from('post_images').insert(imageInserts);
         }
       }
 

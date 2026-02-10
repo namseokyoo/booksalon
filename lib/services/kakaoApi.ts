@@ -92,8 +92,18 @@ export async function searchBookByTitle(title: string): Promise<Book[]> {
     const data = await response.json();
     console.log('📚 API 응답 데이터:', data);
 
+    // Kakao Book API 응답 타입
+    interface KakaoBookDocument {
+      isbn: string;
+      title: string;
+      authors: string[];
+      publisher: string;
+      thumbnail: string;
+      contents: string;
+    }
+
     if (data.documents && data.documents.length > 0) {
-      const books = data.documents.map((bookData: any) => {
+      const books = data.documents.map((bookData: KakaoBookDocument) => {
         console.log('📖 책 데이터:', bookData);
 
         // Kakao API returns ISBN with a space sometimes (e.g., "8937462428 9788937462424")

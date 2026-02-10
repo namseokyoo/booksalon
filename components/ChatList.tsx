@@ -41,9 +41,9 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
         loadOtherUser();
     }, [otherUserId]);
 
-    const formatLastMessageTime = (timestamp: any) => {
+    const formatLastMessageTime = (timestamp: string | Date | null | undefined) => {
         if (!timestamp) return '';
-        const date = new Date(timestamp);
+        const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 
@@ -133,9 +133,9 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
         }
     };
 
-    const formatLastMessageTime = (timestamp: any) => {
+    const formatLastMessageTime = (timestamp: string | Date | null | undefined) => {
         if (!timestamp) return '';
-        const date = new Date(timestamp);
+        const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 

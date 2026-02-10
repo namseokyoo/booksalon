@@ -123,10 +123,19 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
         }));
     };
 
-    const formatDate = (timestamp: any) => {
+    const formatDate = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
         if (!timestamp) return '알 수 없음';
         try {
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            let date: Date;
+            if (typeof timestamp === 'string') {
+                date = new Date(timestamp);
+            } else if (timestamp instanceof Date) {
+                date = timestamp;
+            } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
+                date = timestamp.toDate();
+            } else {
+                date = new Date();
+            }
             return format(date, 'yyyy년 MM월 dd일 HH:mm', { locale: ko });
         } catch {
             return '알 수 없음';
