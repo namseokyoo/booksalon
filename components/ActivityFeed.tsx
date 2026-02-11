@@ -100,7 +100,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
             <div className="min-h-screen bg-gray-900 text-white">
                 <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
                     <div className="text-center py-8">
-                        <p className="text-gray-400">로그인이 필요합니다.</p>
+                        <p className="text-gray-500">로그인이 필요합니다.</p>
                     </div>
                 </div>
             </div>
@@ -151,11 +151,11 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                     {loading ? (
                         <div className="text-center py-8">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto"></div>
-                            <p className="text-gray-400 mt-2">활동을 불러오는 중...</p>
+                            <p className="text-gray-500 mt-2">활동을 불러오는 중...</p>
                         </div>
                     ) : activities.length === 0 ? (
                         <div className="text-center py-8">
-                            <p className="text-gray-400">
+                            <p className="text-gray-500">
                                 {activeTab === 'following'
                                     ? '팔로잉 중인 사용자의 활동이 없습니다.'
                                     : '아직 활동 기록이 없습니다.'
@@ -171,7 +171,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                                         <div className="flex-grow">
                                             <div className="flex items-center space-x-2 mb-1">
                                                 <span className="font-semibold text-white">{activity.userName}</span>
-                                                <span className="text-xs text-gray-400">{formatDate(activity.createdAt)}</span>
+                                                <span className="text-xs text-gray-500">{formatDate(activity.createdAt)}</span>
                                             </div>
                                             <p className="text-gray-300 text-sm">{getActivityText(activity)}</p>
                                             {activity.forumTitle && (

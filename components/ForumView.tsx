@@ -293,8 +293,6 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
   const handleSendMessage = (userId: string) => {
     if (onNavigateToMessaging) {
       onNavigateToMessaging(userId);
-    } else {
-      console.log('Send message to user:', userId);
     }
   };
 

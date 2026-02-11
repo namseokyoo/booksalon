@@ -114,7 +114,6 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
           displayName,
           nickname
         )
-        console.log('새 사용자 프로필 생성됨')
       } else {
         // 마지막 로그인 시간 업데이트
         await UserService.createOrUpdateProfile(
@@ -259,8 +258,6 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
 
     // 인증 상태 변경 리스너
     const { data: { subscription } } = onAuthStateChange(async (event, session) => {
-      console.log('Auth 상태 변경:', event)
-
       if (event === 'SIGNED_IN' && session?.user) {
         setCurrentUser(toCompatibleUser(session.user))
         await loadOrCreateProfile(session.user)

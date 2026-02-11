@@ -615,7 +615,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                       />
                     </button>
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-400">게시물</p>
+                      <p className="text-xs sm:text-sm text-gray-500">게시물</p>
                       <p className="text-base sm:text-lg font-bold text-cyan-400">{forum.postCount || 0}</p>
                     </div>
                   </div>
@@ -781,7 +781,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                       />
                     </button>
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-400">게시물</p>
+                      <p className="text-xs sm:text-sm text-gray-500">게시물</p>
                       <p className="text-base sm:text-lg font-bold text-cyan-400">{forum.postCount || 0}</p>
                     </div>
                   </div>

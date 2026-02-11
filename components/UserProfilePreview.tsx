@@ -61,7 +61,7 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-white">{getDisplayName()}</h3>
-                            <p className="text-gray-400 text-sm">{user.email}</p>
+                            <p className="text-gray-500 text-sm">{user.email}</p>
                         </div>
                     </div>
 

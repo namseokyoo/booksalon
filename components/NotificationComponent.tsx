@@ -123,13 +123,13 @@ const NotificationComponent: React.FC = () => {
                             </button>
                         )}
                     </div>
-                    <p className="text-gray-400">
+                    <p className="text-gray-500">
                         {unreadCount > 0 ? `${unreadCount}개의 읽지 않은 알림이 있습니다.` : '모든 알림을 확인했습니다.'}
                     </p>
                 </div>
 
                 {notifications.length === 0 ? (
-                    <div className="text-center text-gray-400 py-8">
+                    <div className="text-center text-gray-500 py-8">
                         <svg className="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 17h5l-5 5v-5zM9 7H4l5-5v5z" />
                         </svg>
@@ -155,7 +155,7 @@ const NotificationComponent: React.FC = () => {
                                                 {notification.title}
                                             </h3>
                                             <div className="flex items-center space-x-2">
-                                                <span className="text-gray-400 text-sm">
+                                                <span className="text-gray-500 text-sm">
                                                     {formatNotificationTime(notification.createdAt)}
                                                 </span>
                                                 {!notification.isRead && (
@@ -174,7 +174,7 @@ const NotificationComponent: React.FC = () => {
                                                 </button>
                                             </div>
                                         </div>
-                                        <p className={`mt-1 ${!notification.isRead ? 'text-gray-200' : 'text-gray-400'
+                                        <p className={`mt-1 ${!notification.isRead ? 'text-gray-200' : 'text-gray-500'
                                             }`}>
                                             {notification.content}
                                         </p>

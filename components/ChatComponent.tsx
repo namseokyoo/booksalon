@@ -121,7 +121,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                                     }`}
                             >
                                 <p className="text-sm">{message.content}</p>
-                                <p className={`text-xs mt-1 ${message.senderId === currentUser?.uid ? 'text-gray-500' : 'text-gray-400'
+                                <p className={`text-xs mt-1 ${message.senderId === currentUser?.uid ? 'text-gray-500' : 'text-gray-500'
                                     }`}>
                                     {formatMessageTime(message.createdAt)}
                                 </p>

@@ -81,7 +81,7 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
                                     <h4 className="text-white font-medium">
                                         {user.nickname || user.displayName}
                                     </h4>
-                                    <p className="text-gray-400 text-sm">{user.email}</p>
+                                    <p className="text-gray-500 text-sm">{user.email}</p>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +90,7 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
             )}
 
             {searchQuery && !isSearching && searchResults.length === 0 && (
-                <div className="text-center text-gray-400 py-4">
+                <div className="text-center text-gray-500 py-4">
                     검색 결과가 없습니다.
                 </div>
             )}

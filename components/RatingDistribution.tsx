@@ -96,7 +96,7 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({
                   <span className="text-xs text-gray-600">
                     {count}명
                   </span>
-                  <span className="text-xs text-gray-400 ml-1">
+                  <span className="text-xs text-gray-500 ml-1">
                     ({percentage.toFixed(0)}%)
                   </span>
                 </div>

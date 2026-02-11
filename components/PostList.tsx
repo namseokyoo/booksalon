@@ -115,7 +115,7 @@ const PostList: React.FC<PostListProps> = ({ posts, onPostClick, onUserClick }) 
     if (posts.length === 0) {
         return (
             <div className="text-center py-8 px-4 border-2 border-dashed border-gray-700 rounded-lg">
-                <p className="text-sm text-gray-400">아직 게시물이 없습니다.</p>
+                <p className="text-sm text-gray-500">아직 게시물이 없습니다.</p>
                 <p className="text-xs text-gray-500 mt-1">첫 번째 글을 작성해보세요.</p>
             </div>
         );

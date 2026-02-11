@@ -29,7 +29,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose }) => {
       <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-sm">
         <div className="p-6">
           <h3 className="text-lg font-medium leading-6 text-white mb-2 text-center">정말 탈퇴하시겠습니까?</h3>
-          <p className="text-center text-sm text-gray-400 mb-4">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.</p>
+          <p className="text-center text-sm text-gray-500 mb-4">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.</p>
           {error && <p className="bg-red-900/50 text-red-300 text-sm p-3 rounded-md my-4">{error}</p>}
         </div>
         <div className="bg-gray-900 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">

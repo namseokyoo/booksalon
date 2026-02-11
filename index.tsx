@@ -30,7 +30,7 @@ const SupabaseNotConfigured = () => (
       <p className="text-gray-300 mb-4">
         앱을 실행하려면 Supabase 프로젝트 설정이 필요합니다. 아래 단계에 따라 <code className="bg-gray-700 text-cyan-400 p-1 rounded text-sm">.env</code> 파일을 생성해주세요.
       </p>
-      <ol className="list-decimal list-inside text-gray-400 space-y-2 mb-6">
+      <ol className="list-decimal list-inside text-gray-500 space-y-2 mb-6">
         <li><a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Supabase Dashboard</a>로 이동하여 프로젝트를 만들거나 선택하세요.</li>
         <li>프로젝트 설정 <span className="text-white">(⚙️)</span> &gt; <span className="text-white">API</span> 탭으로 이동하세요.</li>
         <li>Project URL과 anon/public 키를 복사하세요.</li>

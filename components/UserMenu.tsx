@@ -57,7 +57,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onClose, onShowProfile }) => 
                     </div>
                     <div>
                         <h3 className="text-white font-semibold">{getDisplayName()}</h3>
-                        <p className="text-gray-400 text-sm">{user.email}</p>
+                        <p className="text-gray-500 text-sm">{user.email}</p>
                     </div>
                 </div>
             </div>

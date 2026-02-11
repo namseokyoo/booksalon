@@ -184,7 +184,6 @@ export class TagService {
       }
 
       const deleted = data?.length || 0
-      console.log(`미사용 태그 ${deleted}개 삭제 완료`)
       return { deleted, errors }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '알 수 없는 오류'

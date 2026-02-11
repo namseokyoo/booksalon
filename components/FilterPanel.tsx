@@ -75,7 +75,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
 
             {/* 검색 */}
             <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-400 mb-2">검색</label>
+                <label className="block text-sm font-medium text-gray-500 mb-2">검색</label>
                 <input
                     type="text"
                     placeholder="제목, 저자, 출판사, 태그로 검색..."
@@ -87,7 +87,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
 
             {/* 정렬 */}
             <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-400 mb-2">정렬</label>
+                <label className="block text-sm font-medium text-gray-500 mb-2">정렬</label>
                 <div className="flex flex-wrap gap-2">
                     {[
                         { value: 'recent', label: '최근 활동' },
@@ -113,7 +113,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                 <>
                     {/* 카테고리 */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-400 mb-2">카테고리</label>
+                        <label className="block text-sm font-medium text-gray-500 mb-2">카테고리</label>
                         <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => handleCategoryChange('전체')}
@@ -141,7 +141,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
 
                     {/* 태그 */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-400 mb-2">태그</label>
+                        <label className="block text-sm font-medium text-gray-500 mb-2">태그</label>
                         <div className="flex flex-wrap gap-2">
                             {FilterService.POPULAR_TAGS.map((tag) => (
                                 <button

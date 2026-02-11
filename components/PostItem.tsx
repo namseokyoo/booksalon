@@ -271,7 +271,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
                 </div>
               ))}
             </div>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-500">
               {post.images.length === 1 ? '이미지 1장' : `이미지 ${post.images.length}장`}
             </span>
           </div>

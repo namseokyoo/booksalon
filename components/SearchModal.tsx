@@ -419,7 +419,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                             ) : searchedTerm ? (
                                 <p className="text-center text-gray-500 py-8">검색 결과가 없습니다.</p>
                             ) : (
-                                <p className="text-center text-gray-400 py-8">검색어를 입력하세요.</p>
+                                <p className="text-center text-gray-500 py-8">검색어를 입력하세요.</p>
                             )}
                         </div>
                     ) : (
@@ -529,7 +529,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                     <p className="text-center text-gray-500 py-8">검색 결과가 없습니다.</p>
                                 )}
                             {!searchedTerm && (
-                                <p className="text-center text-gray-400 py-8">검색어를 입력하세요.</p>
+                                <p className="text-center text-gray-500 py-8">검색어를 입력하세요.</p>
                             )}
                         </div>
                     )}

@@ -135,7 +135,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                         <p className="text-gray-300 text-sm">
                             <span className="font-semibold">{getTypeLabel()}</span>을(를) 신고합니다.
                             {targetTitle && (
-                                <span className="block mt-1 text-gray-400">
+                                <span className="block mt-1 text-gray-500">
                                     "{targetTitle}"
                                 </span>
                             )}

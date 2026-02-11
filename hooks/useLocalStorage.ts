@@ -2,6 +2,7 @@
 
 // FIX: Import Dispatch and SetStateAction to resolve React namespace errors.
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import * as Sentry from '@sentry/react';
 
 // FIX: Update function return type to use directly imported types.
 export function useLocalStorage<T,>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>] {
@@ -10,7 +11,7 @@ export function useLocalStorage<T,>(key: string, initialValue: T): [T, Dispatch<
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
-      console.log(error);
+      Sentry.captureException(error, { tags: { context: 'useLocalStorage-init', key } });
       return initialValue;
     }
   });
@@ -22,7 +23,7 @@ export function useLocalStorage<T,>(key: string, initialValue: T): [T, Dispatch<
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
-      console.log(error);
+      Sentry.captureException(error, { tags: { context: 'useLocalStorage-setValue', key } });
     }
   };
 
@@ -32,7 +33,7 @@ export function useLocalStorage<T,>(key: string, initialValue: T): [T, Dispatch<
         try {
           setStoredValue(e.newValue ? JSON.parse(e.newValue) : initialValue);
         } catch (error) {
-          console.log(error);
+          Sentry.captureException(error, { tags: { context: 'useLocalStorage-storageChange', key } });
           setStoredValue(initialValue);
         }
       }

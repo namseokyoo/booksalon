@@ -77,7 +77,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
                         <h3 className="text-gray-900 font-semibold truncate">
                             {otherUser.nickname || otherUser.displayName}
                         </h3>
-                        <span className="text-gray-400 text-xs">
+                        <span className="text-gray-500 text-xs">
                             {formatLastMessageTime(chatRoom.lastMessageAt)}
                         </span>
                     </div>

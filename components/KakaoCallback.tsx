@@ -27,21 +27,16 @@ const KakaoCallback: React.FC = () => {
                     return;
                 }
 
-                console.log('카카오 인증 코드:', code);
-
                 // 카카오 인증 코드에서 순수 숫자만 추출해서 고유 ID 생성
                 const codeId = code.replace(/[^0-9]/g, '') || 'temp';
                 const kakaoId = 'kakao_' + codeId;
                 const emailForSupabase = `${kakaoId}@kakao.temp`;
                 const tempPassword = `${kakaoId}_password_secure_123!`;
 
-                console.log('Supabase 계정 생성:', emailForSupabase);
-
                 try {
                     // 기존 로그인 상태가 있으면 먼저 로그아웃
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session) {
-                        console.log('기존 로그인 상태 로그아웃');
                         await supabase.auth.signOut();
                         // 로그아웃 후 잠시 대기
                         await new Promise(resolve => setTimeout(resolve, 500));
@@ -56,7 +51,6 @@ const KakaoCallback: React.FC = () => {
                     if (signInResult.error) {
                         // 로그인 실패 시 회원가입 시도
                         if (signInResult.error.message.includes('Invalid login credentials')) {
-                            console.log('새 계정 생성 시도');
                             const signUpResult = await supabase.auth.signUp({
                                 email: emailForSupabase,
                                 password: tempPassword,
@@ -73,7 +67,6 @@ const KakaoCallback: React.FC = () => {
                             }
 
                             if (signUpResult.data.user) {
-                                console.log('새 계정 생성 성공');
                                 // 프로필 생성
                                 await UserService.createOrUpdateProfile(
                                     signUpResult.data.user.id,
@@ -82,7 +75,6 @@ const KakaoCallback: React.FC = () => {
                                     undefined,
                                     '카카오 사용자'
                                 );
-                                console.log('프로필 저장 완료');
 
                                 // 회원가입 후 바로 로그인
                                 signInResult = await supabase.auth.signInWithPassword({
@@ -93,8 +85,6 @@ const KakaoCallback: React.FC = () => {
                         } else {
                             throw signInResult.error;
                         }
-                    } else {
-                        console.log('기존 계정 로그인 성공');
                     }
 
                     if (!signInResult.data.session) {
@@ -102,7 +92,6 @@ const KakaoCallback: React.FC = () => {
                     }
 
                     // 로그인 성공 후 홈으로 이동
-                    console.log('로그인 완료, 홈으로 이동');
                     window.location.href = '/';
                 } catch (error) {
                     console.error('Supabase 로그인 실패:', error);
