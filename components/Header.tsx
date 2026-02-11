@@ -106,6 +106,7 @@ const Header: React.FC<HeaderProps> = ({
                     <button
                         onClick={onHomeClick}
                         className="flex items-center space-x-2 text-gray-900 hover:text-cyan-600 transition-colors duration-200"
+                        aria-label="북살롱 홈으로 이동"
                     >
                         <BookOpenIcon className="h-6 w-6 sm:h-8 sm:w-8" />
                         <h1 className="text-lg sm:text-2xl font-bold tracking-wider">북살롱</h1>
@@ -118,6 +119,7 @@ const Header: React.FC<HeaderProps> = ({
                             onClick={onSearchClick}
                             className="p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
                             title="통합 검색"
+                            aria-label="통합 검색 열기"
                         >
                             <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -129,6 +131,9 @@ const Header: React.FC<HeaderProps> = ({
                                 <button
                                     onClick={handleUserMenuClick}
                                     className="flex items-center space-x-2 px-2 sm:px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                                    aria-label="사용자 메뉴 열기"
+                                    aria-expanded={isDropdownOpen}
+                                    aria-haspopup="true"
                                 >
                                     {/* 프로필 이미지 */}
                                     <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-200 border border-gray-300 flex items-center justify-center shadow-sm">
@@ -163,7 +168,7 @@ const Header: React.FC<HeaderProps> = ({
 
                                 {/* 드롭다운 메뉴 */}
                                 {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50" role="menu" aria-label="사용자 메뉴">
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
@@ -274,12 +279,14 @@ const Header: React.FC<HeaderProps> = ({
                                 <button
                                     onClick={onSignUpClick}
                                     className="px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                                    aria-label="회원가입"
                                 >
                                     회원가입
                                 </button>
                                 <button
                                     onClick={onLoginClick}
                                     className="px-3 py-1 text-xs sm:text-sm bg-cyan-600 text-white hover:bg-cyan-700 rounded-md transition-colors duration-200 font-medium"
+                                    aria-label="로그인"
                                 >
                                     로그인
                                 </button>

@@ -63,7 +63,7 @@ export { MessagingService } from './messagingService'
 export { FilterService, type FilterOptions } from './filterService'
 
 // Kakao API Service (Firebase 의존성 없음, services/ → lib/services/ 이동)
-export { searchBookByIsbn, searchBookByTitle } from './kakaoApi'
+export { searchBookByIsbn, searchBookByTitle, type BookSearchResult } from './kakaoApi'
 
 // Search History Service (localStorage 기반, Firebase 의존성 없음)
 export { SearchHistoryService, type SearchHistory } from './searchHistoryService'

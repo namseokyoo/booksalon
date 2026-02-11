@@ -170,7 +170,7 @@ const App = () => {
         onAdminClick={handleShowAdmin}
         onHomeClick={handleHomeClick}
       />
-      <main>
+      <main aria-label="메인 콘텐츠">
         {currentView === 'list' ? (
           <ForumList onSelectForum={handleSelectForum} />
         ) : currentView === 'profile' ? (

@@ -90,7 +90,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
       <div className="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4">
         <img
           src={book.thumbnail || 'https://picsum.photos/120/174'}
-          alt={book.title}
+          alt={`${book.title} 표지`}
           className="w-20 h-auto sm:w-24 sm:h-auto lg:w-32 lg:h-auto rounded-lg shadow-md flex-shrink-0 mx-auto sm:mx-0"
         />
         <div className="flex-grow text-center sm:text-left w-full">

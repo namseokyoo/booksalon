@@ -231,6 +231,7 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
                 handleToggleLike();
               }}
               className="flex items-center space-x-1 hover:text-red-400 transition-colors duration-200"
+              aria-label={isLiked ? '좋아요 취소' : '좋아요'}
             >
               <LikeIcon
                 className="h-3 w-3 sm:h-4 sm:w-4"
@@ -306,11 +307,13 @@ const PostItem: React.FC<PostItemProps> = ({ post, isbn }) => {
                 placeholder={currentUser ? "댓글을 입력하세요..." : "로그인 후 댓글을 작성할 수 있습니다."}
                 className="flex-grow bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-xs sm:text-sm text-gray-200 focus:ring-cyan-500 focus:border-cyan-500"
                 disabled={!currentUser}
+                aria-label="댓글 입력"
               />
               <button
                 type="submit"
                 className="bg-cyan-600 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-cyan-500 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors duration-200"
                 disabled={!currentUser}
+                aria-label="댓글 등록"
               >
                 등록
               </button>

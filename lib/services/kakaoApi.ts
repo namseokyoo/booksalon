@@ -1,23 +1,33 @@
 
 import { Book } from '../../types';
 
-// 카카오 API 키 설정 (환경 변수에서 가져오기)
 const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY || process.env.KAKAO_API_KEY;
 
 const API_URL = 'https://dapi.kakao.com/v3/search/book';
 
-export async function searchBookByIsbn(isbn: string): Promise<Book | null> {
-  console.log('🔍 ISBN 검색 시작:', isbn);
-  console.log('🔑 API 키:', KAKAO_API_KEY ? '설정됨' : '설정되지 않음');
+export interface BookSearchResult {
+  books: Book[];
+  isEnd: boolean;
+  page: number;
+}
 
+interface KakaoBookDocument {
+  isbn: string;
+  title: string;
+  authors: string[];
+  publisher: string;
+  thumbnail: string;
+  contents: string;
+}
+
+export async function searchBookByIsbn(isbn: string): Promise<Book | null> {
   if (!KAKAO_API_KEY) {
-    console.error("❌ Kakao API key is not set. Please set process.env.KAKAO_API_KEY.");
+    console.error("Kakao API key is not set.");
     return null;
   }
 
   try {
     const url = `${API_URL}?target=isbn&query=${isbn}`;
-    console.log('🌐 API URL:', url);
 
     const response = await fetch(url, {
       headers: {
@@ -25,24 +35,18 @@ export async function searchBookByIsbn(isbn: string): Promise<Book | null> {
       },
     });
 
-    console.log('📡 응답 상태:', response.status, response.statusText);
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ API 응답 오류:', errorText);
+      console.error('API 응답 오류:', errorText);
       throw new Error(`Failed to fetch book from Kakao API: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('📚 API 응답 데이터:', data);
 
     if (data.documents && data.documents.length > 0) {
       const bookData = data.documents[0];
-      console.log('📖 첫 번째 책 데이터:', bookData);
-
-      // Kakao API returns ISBN with a space sometimes (e.g., "8937462428 9788937462424")
       const cleanIsbn = bookData.isbn.split(' ')[0];
-      const result = {
+      return {
         isbn: cleanIsbn,
         title: bookData.title,
         authors: bookData.authors,
@@ -50,30 +54,23 @@ export async function searchBookByIsbn(isbn: string): Promise<Book | null> {
         thumbnail: bookData.thumbnail,
         contents: bookData.contents,
       };
-      console.log('✅ 변환된 책 데이터:', result);
-      return result;
     }
 
-    console.log('⚠️ 검색 결과 없음');
     return null;
   } catch (error) {
-    console.error('❌ ISBN 검색 오류:', error);
+    console.error('ISBN 검색 오류:', error);
     return null;
   }
 }
 
-export async function searchBookByTitle(title: string): Promise<Book[]> {
-  console.log('🔍 제목 검색 시작:', title);
-  console.log('🔑 API 키:', KAKAO_API_KEY ? '설정됨' : '설정되지 않음');
-
+export async function searchBookByTitle(title: string, page: number = 1, size: number = 10): Promise<BookSearchResult> {
   if (!KAKAO_API_KEY) {
-    console.error("❌ Kakao API key is not set. Please set process.env.KAKAO_API_KEY.");
-    return [];
+    console.error("Kakao API key is not set.");
+    return { books: [], isEnd: true, page };
   }
 
   try {
-    const url = `${API_URL}?query=${encodeURIComponent(title)}`;
-    console.log('🌐 API URL:', url);
+    const url = `${API_URL}?query=${encodeURIComponent(title)}&page=${page}&size=${size}`;
 
     const response = await fetch(url, {
       headers: {
@@ -81,32 +78,16 @@ export async function searchBookByTitle(title: string): Promise<Book[]> {
       },
     });
 
-    console.log('📡 응답 상태:', response.status, response.statusText);
-
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ API 응답 오류:', errorText);
+      console.error('API 응답 오류:', errorText);
       throw new Error(`Failed to fetch book from Kakao API: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    console.log('📚 API 응답 데이터:', data);
-
-    // Kakao Book API 응답 타입
-    interface KakaoBookDocument {
-      isbn: string;
-      title: string;
-      authors: string[];
-      publisher: string;
-      thumbnail: string;
-      contents: string;
-    }
 
     if (data.documents && data.documents.length > 0) {
       const books = data.documents.map((bookData: KakaoBookDocument) => {
-        console.log('📖 책 데이터:', bookData);
-
-        // Kakao API returns ISBN with a space sometimes (e.g., "8937462428 9788937462424")
         const cleanIsbn = bookData.isbn ? bookData.isbn.split(' ')[0] : 'unknown';
         return {
           isbn: cleanIsbn,
@@ -117,14 +98,16 @@ export async function searchBookByTitle(title: string): Promise<Book[]> {
           contents: bookData.contents,
         };
       });
-      console.log('✅ 변환된 책 목록:', books);
-      return books;
+      return {
+        books,
+        isEnd: data.meta?.is_end ?? true,
+        page,
+      };
     }
 
-    console.log('⚠️ 검색 결과 없음');
-    return [];
+    return { books: [], isEnd: true, page };
   } catch (error) {
-    console.error('❌ 제목 검색 오류:', error);
-    return [];
+    console.error('제목 검색 오류:', error);
+    return { books: [], isEnd: true, page };
   }
 }

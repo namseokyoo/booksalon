@@ -1,8 +1,10 @@
 /**
  * 북살롱 v0.5.1
  */
+import "./sentry";
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import * as Sentry from "@sentry/react";
 import './index.css';
 import App from './App';
 import { SupabaseAuthProvider } from './contexts/SupabaseAuthContext';
@@ -48,12 +50,14 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 root.render(
   <React.StrictMode>
-    {isSupabaseConfigured ? (
-      <SupabaseAuthProvider>
-        <App />
-      </SupabaseAuthProvider>
-    ) : (
-      <SupabaseNotConfigured />
-    )}
+    <Sentry.ErrorBoundary fallback={<p>오류가 발생했습니다. 페이지를 새로고침해주세요.</p>}>
+      {isSupabaseConfigured ? (
+        <SupabaseAuthProvider>
+          <App />
+        </SupabaseAuthProvider>
+      ) : (
+        <SupabaseNotConfigured />
+      )}
+    </Sentry.ErrorBoundary>
   </React.StrictMode>
 );

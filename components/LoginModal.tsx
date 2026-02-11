@@ -59,7 +59,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
   // };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4" role="dialog" aria-modal="true" aria-label="로그인">
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
         <div className="p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-medium leading-6 text-gray-900 mb-3 sm:mb-4 text-center">로그인</h3>
@@ -72,6 +72,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
               placeholder="이메일"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              aria-label="이메일 주소"
             />
             <input
               type="password"
@@ -80,6 +81,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
               placeholder="비밀번호"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              aria-label="비밀번호"
             />
           </div>
 

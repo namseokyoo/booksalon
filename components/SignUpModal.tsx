@@ -93,7 +93,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
   // };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4" role="dialog" aria-modal="true" aria-label="회원가입">
       <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
         <div className="p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-medium leading-6 text-gray-900 mb-3 sm:mb-4 text-center">회원가입</h3>
@@ -106,6 +106,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               placeholder="이메일"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              aria-label="이메일 주소"
             />
             <input
               type="text"
@@ -115,6 +116,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               maxLength={20}
+              aria-label="닉네임"
             />
             <input
               type="password"
@@ -123,6 +125,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               placeholder="비밀번호 (6자 이상)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              aria-label="비밀번호"
             />
             <input
               type="password"
@@ -131,6 +134,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               placeholder="비밀번호 확인"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
+              aria-label="비밀번호 확인"
             />
           </div>
 

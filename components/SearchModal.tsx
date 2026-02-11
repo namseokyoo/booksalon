@@ -57,6 +57,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
     // 검색된 검색어 (하이라이트용)
     const [searchedTerm, setSearchedTerm] = useState('');
 
+    // 페이지네이션
+    const [bookSearchPage, setBookSearchPage] = useState(1);
+    const [bookSearchIsEnd, setBookSearchIsEnd] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [lastBookSearchTerm, setLastBookSearchTerm] = useState('');
+
     const inputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
 
@@ -160,9 +166,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                         setError('해당 ISBN을 가진 책을 찾을 수 없습니다.');
                     }
                 } else {
-                    const books = await searchBookByTitle(term);
-                    if (books.length > 0) {
-                        setBookResults(books);
+                    const result = await searchBookByTitle(term, 1, 10);
+                    if (result.books.length > 0) {
+                        setBookResults(result.books);
+                        setBookSearchIsEnd(result.isEnd);
+                        setBookSearchPage(1);
+                        setLastBookSearchTerm(term);
                     } else {
                         setError('해당 제목의 책을 찾을 수 없습니다.');
                     }
@@ -220,18 +229,42 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
         }
     };
 
+    const handleBookLoadMore = useCallback(async () => {
+        if (bookSearchIsEnd || isLoadingMore || !lastBookSearchTerm) return;
+
+        setIsLoadingMore(true);
+        try {
+            const nextPage = bookSearchPage + 1;
+            const result = await searchBookByTitle(lastBookSearchTerm, nextPage, 10);
+            if (result.books.length > 0) {
+                setBookResults(prev => [...prev, ...result.books]);
+                setBookSearchPage(nextPage);
+                setBookSearchIsEnd(result.isEnd);
+            } else {
+                setBookSearchIsEnd(true);
+            }
+        } catch (error) {
+            console.error('추가 검색 실패:', error);
+        } finally {
+            setIsLoadingMore(false);
+        }
+    }, [bookSearchIsEnd, isLoadingMore, lastBookSearchTerm, bookSearchPage]);
+
     const resetSearch = () => {
         setSearchTerm('');
         setError(null);
         setBookResults([]);
         setCommunityResults({ forums: [], posts: [], comments: [] });
         setSearchedTerm('');
+        setBookSearchPage(1);
+        setBookSearchIsEnd(true);
+        setLastBookSearchTerm('');
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-label="통합 검색">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
                 {/* 헤더 */}
                 <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
@@ -239,6 +272,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label="검색 모달 닫기"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -287,11 +321,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onFocus={handleInputFocus}
                                 onKeyDown={handleKeyDown}
+                                aria-label={searchType === 'book' ? 'ISBN 또는 책 제목 검색' : '커뮤니티 검색'}
                             />
                             <button
                                 type="submit"
                                 className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-medium hover:bg-cyan-700 focus:ring-2 focus:ring-cyan-500 focus:outline-none disabled:opacity-50"
                                 disabled={isLoading || !searchTerm.trim()}
+                                aria-label="검색 실행"
                             >
                                 {isLoading ? (
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -332,30 +368,54 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                         // 책 검색 결과
                         <div className="space-y-3">
                             {bookResults.length > 0 ? (
-                                bookResults.map((book, index) => (
-                                    <div
-                                        key={`${book.isbn}-${index}`}
-                                        onClick={() => handleBookClick(book)}
-                                        className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:border-cyan-300 hover:shadow-sm cursor-pointer transition-all"
-                                    >
-                                        <div className="flex items-start gap-4">
-                                            <img
-                                                src={book.thumbnail}
-                                                alt={book.title}
-                                                className="w-16 h-auto rounded flex-shrink-0"
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="font-semibold text-gray-900 truncate">
-                                                    <HighlightText text={book.title} highlight={searchedTerm} />
-                                                </h3>
-                                                <p className="text-sm text-gray-600 truncate mt-1">
-                                                    <HighlightText text={book.authors.join(', ')} highlight={searchedTerm} />
-                                                </p>
-                                                <p className="text-xs text-gray-500 mt-1">{book.publisher}</p>
+                                <>
+                                    {bookResults.map((book, index) => (
+                                        <div
+                                            key={`${book.isbn}-${index}`}
+                                            onClick={() => handleBookClick(book)}
+                                            className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:border-cyan-300 hover:shadow-sm cursor-pointer transition-all"
+                                        >
+                                            <div className="flex items-start gap-4">
+                                                <img
+                                                    src={book.thumbnail}
+                                                    alt={`${book.title} 표지`}
+                                                    className="w-16 h-auto rounded flex-shrink-0"
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="font-semibold text-gray-900 truncate">
+                                                        <HighlightText text={book.title} highlight={searchedTerm} />
+                                                    </h3>
+                                                    <p className="text-sm text-gray-600 truncate mt-1">
+                                                        <HighlightText text={book.authors.join(', ')} highlight={searchedTerm} />
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-1">{book.publisher}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))
+                                    ))}
+                                    {!bookSearchIsEnd && (
+                                        <div className="text-center pt-4">
+                                            <button
+                                                onClick={handleBookLoadMore}
+                                                disabled={isLoadingMore}
+                                                className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                                aria-label="검색 결과 더보기"
+                                            >
+                                                {isLoadingMore ? (
+                                                    <span className="flex items-center justify-center gap-2">
+                                                        <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                        </svg>
+                                                        불러오는 중...
+                                                    </span>
+                                                ) : (
+                                                    '더보기'
+                                                )}
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
                             ) : searchedTerm ? (
                                 <p className="text-center text-gray-500 py-8">검색 결과가 없습니다.</p>
                             ) : (

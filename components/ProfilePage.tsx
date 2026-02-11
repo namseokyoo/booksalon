@@ -176,6 +176,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                     <button
                         onClick={onBack}
                         className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        aria-label="이전 페이지로 돌아가기"
                     >
                         ← 돌아가기
                     </button>

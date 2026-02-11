@@ -34,6 +34,10 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
   const [filteredForums, setFilteredForums] = useState<Forum[]>([]);
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
+  const [searchPage, setSearchPage] = useState(1);
+  const [searchIsEnd, setSearchIsEnd] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [lastSearchTerm, setLastSearchTerm] = useState('');
   const { currentUser } = useAuth();
 
   const sortOptions = [
@@ -220,11 +224,10 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     setSearchResult(null);
     setSearchResults([]);
     setExistingForums([]);
+    setSearchPage(1);
+    setSearchIsEnd(true);
+    setLastSearchTerm(trimmedSearchTerm);
 
-    // Firebase 체크를 임시로 비활성화하고 카카오 API만 테스트
-    console.log('🔍 검색 시작:', trimmedSearchTerm);
-
-    // 먼저 기존 살롱에서 비슷한 제목 검색
     const matchingForums = forums.filter(forum =>
       forum.book.title.toLowerCase().includes(trimmedSearchTerm.toLowerCase()) ||
       forum.book.authors.some(author => author.toLowerCase().includes(trimmedSearchTerm.toLowerCase()))
@@ -232,14 +235,11 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
     if (matchingForums.length > 0) {
       setExistingForums(matchingForums);
-      console.log('🏛️ 기존 살롱 발견:', matchingForums.length, '개');
     }
 
-    // ISBN인지 확인 (숫자로만 구성된 10자리 또는 13자리)
     const isIsbn = /^\d{10}$|^\d{13}$/.test(trimmedSearchTerm);
 
     if (isIsbn) {
-      // ISBN으로 검색
       const book = await searchBookByIsbn(trimmedSearchTerm);
       if (book) {
         setSearchResult(book);
@@ -247,15 +247,37 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         setError('해당 ISBN을 가진 책을 찾을 수 없습니다. 다른 ISBN을 시도해보세요.');
       }
     } else {
-      // 제목으로 검색
-      const books = await searchBookByTitle(trimmedSearchTerm);
-      if (books.length > 0) {
-        setSearchResults(books);
+      const result = await searchBookByTitle(trimmedSearchTerm, 1, 10);
+      if (result.books.length > 0) {
+        setSearchResults(result.books);
+        setSearchIsEnd(result.isEnd);
+        setSearchPage(1);
       } else if (matchingForums.length === 0) {
         setError('해당 제목의 책을 찾을 수 없습니다. 다른 제목을 시도해보세요.');
       }
     }
     setIsLoading(false);
+  };
+
+  const handleLoadMore = async () => {
+    if (searchIsEnd || isLoadingMore || !lastSearchTerm) return;
+
+    setIsLoadingMore(true);
+    try {
+      const nextPage = searchPage + 1;
+      const result = await searchBookByTitle(lastSearchTerm, nextPage, 10);
+      if (result.books.length > 0) {
+        setSearchResults(prev => [...prev, ...result.books]);
+        setSearchPage(nextPage);
+        setSearchIsEnd(result.isEnd);
+      } else {
+        setSearchIsEnd(true);
+      }
+    } catch (error) {
+      console.error('추가 검색 실패:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
   const handleCreateForum = async (book: Book, customTags?: string[]) => {
@@ -377,6 +399,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
             type="submit"
             className="-ml-px relative inline-flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 border border-l-0 border-gray-300 text-xs sm:text-sm font-medium rounded-r-lg text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200"
             disabled={isLoading}
+            aria-label="책 검색"
           >
             {isLoading ? (
               <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
@@ -397,6 +420,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         <button
           onClick={() => setIsFilterExpanded(!isFilterExpanded)}
           className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 transition-colors"
+          aria-label="필터 패널 열기/닫기"
+          aria-expanded={isFilterExpanded}
         >
           <div className="flex items-center gap-2">
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -606,7 +631,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
           <h2 className="text-lg font-semibold text-gray-900 mb-4">📚 새로운 도서 검색 결과</h2>
           <div className="space-y-3 sm:space-y-4">
             {searchResults.map((book, index) => {
-              // 기존 살롱에 같은 ISBN이 있는지 확인
               const existingForum = forums.find(forum => forum.isbn === book.isbn);
               const hasExistingForum = !!existingForum;
 
@@ -661,6 +685,28 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                 </div>
               );
             })}
+            {!searchIsEnd && (
+              <div className="text-center pt-4">
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="검색 결과 더보기"
+                >
+                  {isLoadingMore ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      불러오는 중...
+                    </span>
+                  ) : (
+                    '더보기'
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
