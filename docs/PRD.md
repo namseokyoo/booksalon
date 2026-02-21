@@ -4,12 +4,12 @@
 
 | 항목 | 내용 |
 |------|------|
-| **문서 버전** | 1.1 |
+| **문서 버전** | 2.0 |
 | **작성일** | 2026-02-05 |
-| **최종 수정일** | 2026-02-05 |
+| **최종 수정일** | 2026-02-21 |
 | **작성자** | Fullstack Dev |
 | **프로젝트명** | 북살롱 (Book Salon) |
-| **현재 버전** | 0.2.0 (베타) |
+| **현재 버전** | 1.0.0 (Phase 4 진행중) |
 | **목표 버전** | 1.0.0 (정식 출시) |
 
 ---
@@ -55,11 +55,11 @@
 
 | 지표 | 목표값 | 달성 시점 | 측정 방법 |
 |------|--------|----------|----------|
-| **월간 활성 사용자 (MAU)** | 1,000명 | 출시 후 3개월 | Firebase Analytics |
-| **일일 활성 사용자 (DAU)** | 100명 | 출시 후 3개월 | Firebase Analytics |
-| **평균 세션 시간** | 5분 이상 | 출시 후 3개월 | Firebase Analytics |
-| **살롱당 평균 게시물 수** | 10개 이상 | 출시 후 3개월 | Firestore 쿼리 |
-| **사용자 재방문율** | 30% 이상 | 출시 후 3개월 | Firebase Analytics |
+| **월간 활성 사용자 (MAU)** | 1,000명 | 출시 후 3개월 | Google Analytics 4 (GA4) |
+| **일일 활성 사용자 (DAU)** | 100명 | 출시 후 3개월 | Google Analytics 4 (GA4) |
+| **평균 세션 시간** | 5분 이상 | 출시 후 3개월 | Google Analytics 4 (GA4) |
+| **살롱당 평균 게시물 수** | 10개 이상 | 출시 후 3개월 | Supabase 쿼리 |
+| **사용자 재방문율** | 30% 이상 | 출시 후 3개월 | Google Analytics 4 (GA4) |
 | **페이지 로드 시간** | 3초 이내 | v1.0.0 출시 시 | Lighthouse |
 | **Lighthouse 점수** | 90점 이상 | v1.0.0 출시 시 | Lighthouse 감사 |
 
@@ -82,7 +82,7 @@
 | 기능 | 상태 | 설명 |
 |------|------|------|
 | 확장된 프로필 | ✅ 완료 | 닉네임, 프로필 이미지, 지역, 웹사이트, 독서 목표, 선호 장르 |
-| 프로필 이미지 업로드 | ✅ 완료 | Firebase Storage 연동 |
+| 프로필 이미지 업로드 | ✅ 완료 | Supabase Storage 연동 |
 | 활동 통계 | ✅ 완료 | 작성한 게시물/댓글 수, 생성한 살롱 수 |
 
 #### 소셜 기능
@@ -117,10 +117,10 @@
 | | TypeScript | 5.0+ |
 | | Vite | Latest |
 | | Tailwind CSS | 3.0+ |
-| **Backend** | Firebase | v12 |
-| | Firestore | 실시간 NoSQL DB |
-| | Firebase Auth | 사용자 인증 |
-| | Firebase Storage | 파일 저장소 |
+| **Backend** | Supabase | Latest |
+| | PostgreSQL | 관계형 DB (Supabase) |
+| | Supabase Auth | 이메일+비밀번호, Google OAuth |
+| | Supabase Storage | 파일 저장소 |
 | **External API** | 카카오 도서 검색 API | REST API |
 
 ### 3.3 프로젝트 구조
@@ -135,10 +135,9 @@ booksalon/
 │   │   ├── ProfilePage.tsx
 │   │   ├── SearchModal.tsx
 │   │   └── ...
-│   ├── services/            # 서비스 레이어
-│   │   ├── firebase.ts
-│   │   ├── userProfile.ts
-│   │   ├── bookmarkService.ts
+│   ├── lib/                 # 서비스 레이어
+│   │   ├── supabase.ts
+│   │   ├── services/
 │   │   └── ...
 │   ├── contexts/            # React Context
 │   │   └── AuthContext.tsx
@@ -146,8 +145,7 @@ booksalon/
 │   └── App.tsx              # 메인 앱 컴포넌트
 ├── public/                  # 정적 파일
 ├── docs/                    # 문서
-├── .env.local              # 환경변수
-└── firebase.json           # Firebase 설정
+└── .env.local              # 환경변수 (Supabase URL, Key)
 ```
 
 ---
@@ -243,33 +241,32 @@ booksalon/
 > **참고**: Board Advisor 권고에 따라 각 마일스톤에 1주 버퍼 추가 (총 10주 → 14주)
 
 ```
-현재 (v0.2.0)
+현재 (v1.0.0 Phase 4 진행중)
     │
     ▼
-v0.3.0 (Phase 1: 핵심 기능 강화) ─── 3주 (개발 2주 + 버퍼 1주)
+v0.3.0 (Phase 1: 핵심 기능 강화) ─── ✅ 완료
     │  - 태그 시스템
     │  - 전체 텍스트 검색 개선
     │  - 이미지 업로드
     │  - 평점 시스템
     │
     ▼
-v0.4.0 (Phase 2: 소셜 기능 확장) ─── 4주 (개발 3주 + 버퍼 1주)
+v0.5.0 (Phase 2: 소셜 기능 확장) ─── ✅ 완료
     │  - 소셜 로그인
-    │  - 게시물 통계
-    │  - 베스트 게시물
+    │  - 게시물 통계 (조회수/베스트 게시물)
     │  - 페이지네이션
     │
     ▼
-v0.5.0 (Phase 3: 커뮤니티 기능) ─── 4주 (개발 3주 + 버퍼 1주)
+v0.8.0 (Phase 3: 커뮤니티 기능) ─── ✅ 완료
     │  - 독서 로그
-    │  - 독서 배지
+    │  - 독서 배지 시스템
     │  ※ 북클럽 기능 → v1.1.0으로 이동
     │
     ▼
-v1.0.0 (정식 출시) ─── 3주 (개발 2주 + 버퍼 1주)
-    │  - SEO 최적화
-    │  - 성능 최적화
-    │  - 안정화 및 버그 수정
+v1.0.0 (Phase 4: 안정화 & 정식 출시) ─── 🔄 진행중
+    │  - 접근성 개선 (WCAG 2.1 AA)
+    │  - 성능 최적화 (React.memo, useCallback, lazy loading)
+    │  - QA 검증
     │  - 문서화 완료
     │
     ▼
@@ -350,7 +347,7 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
 |------|----------|----------|
 | **초기 로딩** | < 3초 | Lighthouse FCP |
 | **Time to Interactive** | < 3.5초 | Lighthouse TTI |
-| **API 응답 시간** | < 200ms | Firebase 모니터링 |
+| **API 응답 시간** | < 200ms | Supabase 모니터링 |
 | **이미지 로딩** | < 1초 | 네트워크 탭 |
 | **검색 응답** | < 500ms | 콘솔 측정 |
 
@@ -358,8 +355,8 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
 
 | 항목 | 요구사항 |
 |------|----------|
-| **인증** | Firebase Auth, 이메일 인증 필수 |
-| **권한** | Firestore Security Rules 적용 |
+| **인증** | Supabase Auth (이메일+비밀번호, Google OAuth) |
+| **권한** | Supabase RLS (Row Level Security) 적용 |
 | **데이터 보호** | 민감 정보 암호화, 환경변수 관리 |
 | **입력 검증** | XSS/SQL Injection 방지, 입력 sanitization |
 | **파일 업로드** | 파일 타입/크기 제한, 악성 파일 검사 |
@@ -388,9 +385,9 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
 | 항목 | 도구 | 설명 |
 |------|------|------|
 | **에러 모니터링** | Sentry | 프론트엔드/백엔드 에러 자동 수집 |
-| **크래시 리포팅** | Firebase Crashlytics | 앱 크래시 모니터링 및 알림 |
+| **크래시 리포팅** | Sentry | 앱 크래시 모니터링 및 알림 |
 | **에러 알림** | Slack 연동 | Critical 에러 발생 시 Slack 알림 |
-| **성능 모니터링** | Firebase Performance | API 응답 시간, 페이지 로드 시간 추적 |
+| **성능 모니터링** | Lighthouse + GA4 | 페이지 로드 시간, Core Web Vitals 추적 |
 
 #### 에러 알림 체계
 ```
@@ -409,7 +406,7 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
 
 | 리스크 | 영향도 | 발생 가능성 | 대응 방안 |
 |--------|--------|------------|----------|
-| **Firebase 비용 증가** | 높음 | 중간 | 사용량 모니터링, 캐싱 전략 |
+| **Supabase 무료 티어 초과** | 중간 | 낮음 | 사용량 모니터링, 유료 플랜 전환 대비 |
 | **카카오 API 제한** | 중간 | 낮음 | 요청 제한, 캐싱 적용 |
 | **사용자 증가 시 성능** | 높음 | 중간 | 페이지네이션, 인덱싱 최적화 |
 | **소셜 로그인 정책 변경** | 중간 | 낮음 | 다중 로그인 옵션 유지 |
@@ -421,7 +418,7 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
 | 가정 | 검증 방법 |
 |------|----------|
 | 사용자는 책에 대한 토론에 관심이 있다 | 사용자 설문, 활성도 측정 |
-| Firebase 무료 티어로 초기 운영 가능 | 사용량 모니터링 |
+| Supabase 무료 티어로 초기 운영 가능 | 사용량 모니터링 |
 | 카카오 API는 안정적으로 제공된다 | API 모니터링, 대안 API 준비 |
 | 사용자는 모바일 웹으로 충분히 만족한다 | 사용자 피드백, 이탈률 분석 |
 
@@ -429,9 +426,9 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
 
 | 의존성 | 대안 |
 |--------|------|
-| Firebase | Supabase, AWS Amplify |
+| Supabase | Firebase, AWS Amplify |
 | 카카오 도서 API | 알라딘 API, 네이버 도서 API |
-| Vercel/Firebase Hosting | Netlify, AWS S3 |
+| Vercel Hosting | Netlify, AWS S3 |
 
 ### 8.4 Cold Start 대응 전략
 
@@ -498,6 +495,7 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
 |------|------|--------|----------|
 | 1.0 | 2026-02-05 | Fullstack Dev | 최초 작성 |
 | 1.1 | 2026-02-05 | Fullstack Dev | Board Advisor 권고사항 반영 |
+| 2.0 | 2026-02-21 | Fullstack Dev | Supabase 전환 반영, Phase 1-3 완료/Phase 4 진행중 상태 업데이트 |
 
 #### v1.1 변경 상세 (2026-02-05)
 
@@ -525,6 +523,25 @@ v1.1.0 (Post-Launch: 커뮤니티 확장) ─── 출시 후 검토
    - Sentry 에러 모니터링
    - Firebase Crashlytics 연동
    - 에러 알림 체계 구축
+
+#### v2.0 변경 상세 (2026-02-21)
+
+**백엔드 전환:**
+1. **Firebase → Supabase 마이그레이션 완료**
+   - Firebase Auth → Supabase Auth (이메일+비밀번호, Google OAuth)
+   - Firestore → PostgreSQL (Supabase)
+   - Firebase Storage → Supabase Storage
+   - Firebase Crashlytics → Sentry
+   - Firestore Security Rules → Supabase RLS (Row Level Security)
+
+2. **KPI 측정 도구 변경**
+   - Firebase Analytics → Google Analytics 4 (GA4)
+
+**Phase 상태 업데이트:**
+3. **Phase 1 (v0.3.0)**: 완료 - 태그, 검색, 이미지 업로드, 평점
+4. **Phase 2 (v0.5.0)**: 완료 - 소셜 로그인, 조회수/베스트 게시물, 페이지네이션
+5. **Phase 3 (v0.8.0)**: 완료 - 독서 로그, 배지 시스템
+6. **Phase 4 (v1.0.0)**: 진행중 - 접근성, 성능 최적화, QA
 
 ---
 
