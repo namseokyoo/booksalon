@@ -238,10 +238,18 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
    * 인증 상태 변경 구독
    */
   useEffect(() => {
-    // 초기 세션 확인
+    // 초기 세션 확인 (5초 타임아웃 포함)
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise<{ data: { session: null } }>((resolve) =>
+          setTimeout(() => {
+            console.warn('Auth 초기화 타임아웃 (5초). 미인증 상태로 진행합니다.')
+            resolve({ data: { session: null } })
+          }, 5000)
+        )
+
+        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise])
 
         if (session?.user) {
           setCurrentUser(toCompatibleUser(session.user))
@@ -258,20 +266,33 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
 
     // 인증 상태 변경 리스너
     const { data: { subscription } } = onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        setCurrentUser(toCompatibleUser(session.user))
-        await loadOrCreateProfile(session.user)
-      } else if (event === 'SIGNED_OUT') {
-        setCurrentUser(null)
-        setUserProfile(null)
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        setCurrentUser(toCompatibleUser(session.user))
-      } else if (event === 'USER_UPDATED' && session?.user) {
-        setCurrentUser(toCompatibleUser(session.user))
-        await loadOrCreateProfile(session.user)
+      try {
+        if (event === 'INITIAL_SESSION') {
+          // Supabase v2: 등록 즉시 발생하는 초기 세션 이벤트
+          if (session?.user) {
+            setCurrentUser(toCompatibleUser(session.user))
+            await loadOrCreateProfile(session.user)
+          } else {
+            setCurrentUser(null)
+            setUserProfile(null)
+          }
+        } else if (event === 'SIGNED_IN' && session?.user) {
+          setCurrentUser(toCompatibleUser(session.user))
+          await loadOrCreateProfile(session.user)
+        } else if (event === 'SIGNED_OUT') {
+          setCurrentUser(null)
+          setUserProfile(null)
+        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+          setCurrentUser(toCompatibleUser(session.user))
+        } else if (event === 'USER_UPDATED' && session?.user) {
+          setCurrentUser(toCompatibleUser(session.user))
+          await loadOrCreateProfile(session.user)
+        }
+      } catch (error) {
+        console.error('인증 상태 변경 처리 실패:', error)
+      } finally {
+        setLoading(false)
       }
-
-      setLoading(false)
     })
 
     // 클린업

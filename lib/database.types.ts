@@ -1016,6 +1016,7 @@ export type Database = {
           post_count: number | null
           profile_image_url: string | null
           reading_goal: number | null
+          updated_at: string | null
           website: string | null
         }
         Insert: {
@@ -1036,6 +1037,7 @@ export type Database = {
           post_count?: number | null
           profile_image_url?: string | null
           reading_goal?: number | null
+          updated_at?: string | null
           website?: string | null
         }
         Update: {
@@ -1056,6 +1058,7 @@ export type Database = {
           post_count?: number | null
           profile_image_url?: string | null
           reading_goal?: number | null
+          updated_at?: string | null
           website?: string | null
         }
         Relationships: []
