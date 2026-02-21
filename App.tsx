@@ -1,20 +1,24 @@
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Header from './components/Header';
-import ForumList from './components/ForumList';
-import ForumView from './components/ForumView';
-import ProfilePage from './components/ProfilePage';
-import ActivityFeed from './components/ActivityFeed';
-import UserSearch from './components/UserSearch';
-import MessagingPage from './components/MessagingPage';
-import NotificationComponent from './components/NotificationComponent';
-import AdminDashboard from './components/AdminDashboard';
 import type { Forum, Book } from './types';
 import { useSupabaseAuth } from './contexts/SupabaseAuthContext';
-import LoginModal from './components/LoginModal';
-import SignUpModal from './components/SignUpModal';
-import DeleteAccountModal from './components/DeleteAccountModal';
-import SearchModal from './components/SearchModal';
+
+// React.lazy: 페이지 레벨 코드 스플리팅
+const ForumList = React.lazy(() => import('./components/ForumList'));
+const ForumView = React.lazy(() => import('./components/ForumView'));
+const ProfilePage = React.lazy(() => import('./components/ProfilePage'));
+const ActivityFeed = React.lazy(() => import('./components/ActivityFeed'));
+const UserSearch = React.lazy(() => import('./components/UserSearch'));
+const MessagingPage = React.lazy(() => import('./components/MessagingPage'));
+const NotificationComponent = React.lazy(() => import('./components/NotificationComponent'));
+const AdminDashboard = React.lazy(() => import('./components/AdminDashboard'));
+
+// React.lazy: 모달 코드 스플리팅
+const LoginModal = React.lazy(() => import('./components/LoginModal'));
+const SignUpModal = React.lazy(() => import('./components/SignUpModal'));
+const DeleteAccountModal = React.lazy(() => import('./components/DeleteAccountModal'));
+const SearchModal = React.lazy(() => import('./components/SearchModal'));
 
 const App = () => {
   const [currentView, setCurrentView] = useState<'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin'>('list');
@@ -171,50 +175,54 @@ const App = () => {
         onHomeClick={handleHomeClick}
       />
       <main aria-label="메인 콘텐츠">
-        {currentView === 'list' ? (
-          <ForumList onSelectForum={handleSelectForum} />
-        ) : currentView === 'profile' ? (
-          <ProfilePage onBack={handleBackToList} />
-        ) : currentView === 'activity' ? (
-          <ActivityFeed onBack={handleBackToList} />
-        ) : currentView === 'search' ? (
-          <UserSearch onBack={handleBackToList} />
-        ) : currentView === 'messaging' ? (
-          <MessagingPage targetUserId={messagingTargetUserId || undefined} />
-        ) : currentView === 'notifications' ? (
-          <NotificationComponent />
-        ) : currentView === 'admin' ? (
-          <AdminDashboard />
-        ) : selectedForum ? (
-          <ForumView
-            forum={selectedForum}
-            onBack={handleBackToList}
-            onNavigateToMessaging={(userId) => {
-              setMessagingTargetUserId(userId);
-              setCurrentView('messaging');
-            }}
-          />
-        ) : (
-          <div className="text-center p-8">
-            <p className="text-gray-900">오류: 해당 살롱을 찾을 수 없습니다.</p>
-            <button onClick={handleBackToList} className="mt-4 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors">
-              목록으로 돌아가기
-            </button>
-          </div>
-        )}
+        <Suspense fallback={<div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600" /></div>}>
+          {currentView === 'list' ? (
+            <ForumList onSelectForum={handleSelectForum} />
+          ) : currentView === 'profile' ? (
+            <ProfilePage onBack={handleBackToList} />
+          ) : currentView === 'activity' ? (
+            <ActivityFeed onBack={handleBackToList} />
+          ) : currentView === 'search' ? (
+            <UserSearch onBack={handleBackToList} />
+          ) : currentView === 'messaging' ? (
+            <MessagingPage targetUserId={messagingTargetUserId || undefined} />
+          ) : currentView === 'notifications' ? (
+            <NotificationComponent />
+          ) : currentView === 'admin' ? (
+            <AdminDashboard />
+          ) : selectedForum ? (
+            <ForumView
+              forum={selectedForum}
+              onBack={handleBackToList}
+              onNavigateToMessaging={(userId) => {
+                setMessagingTargetUserId(userId);
+                setCurrentView('messaging');
+              }}
+            />
+          ) : (
+            <div className="text-center p-8">
+              <p className="text-gray-900">오류: 해당 살롱을 찾을 수 없습니다.</p>
+              <button onClick={handleBackToList} className="mt-4 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors">
+                목록으로 돌아가기
+              </button>
+            </div>
+          )}
+        </Suspense>
       </main>
 
-      {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
-      {signupModalOpen && <SignUpModal onClose={() => setSignupModalOpen(false)} />}
-      {deleteModalOpen && <DeleteAccountModal onClose={() => setDeleteModalOpen(false)} />}
-      {searchModalOpen && (
-        <SearchModal
-          isOpen={searchModalOpen}
-          onClose={() => setSearchModalOpen(false)}
-          onSelectForum={handleSelectForum}
-          onCreateForum={handleCreateForumFromSearch}
-        />
-      )}
+      <Suspense fallback={null}>
+        {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
+        {signupModalOpen && <SignUpModal onClose={() => setSignupModalOpen(false)} />}
+        {deleteModalOpen && <DeleteAccountModal onClose={() => setDeleteModalOpen(false)} />}
+        {searchModalOpen && (
+          <SearchModal
+            isOpen={searchModalOpen}
+            onClose={() => setSearchModalOpen(false)}
+            onSelectForum={handleSelectForum}
+            onCreateForum={handleCreateForumFromSearch}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };
