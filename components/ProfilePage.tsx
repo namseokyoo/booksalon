@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService, BookmarkService, ProfileImageService } from '../lib/services';
 import { ReadingLogService, type ReadingLog, type ReadingStats } from '../lib/services/readingLogService';
@@ -37,6 +37,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
     const [bookmarkedForums, setBookmarkedForums] = useState<Forum[]>([]);
     const [readingLogs, setReadingLogs] = useState<ReadingLog[]>([]);
     const [readingStats, setReadingStats] = useState<ReadingStats>({ reading: 0, completed: 0, wantToRead: 0 });
+    const [bookInfoMap, setBookInfoMap] = useState<Map<string, { title: string; authors: string[]; thumbnail: string | null }>>(new Map());
     const [readingFilter, setReadingFilter] = useState<'all' | 'reading' | 'completed' | 'want_to_read'>('all');
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'stats' | 'bookmarks' | 'readingLog' | 'badges'>('stats');
@@ -51,6 +52,16 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
         favoriteGenres: [] as string[],
         profileImageFile: null as File | null
     });
+    const previewUrlRef = useRef<string | null>(null);
+
+    // Object URL 메모리 누수 방지
+    useEffect(() => {
+        return () => {
+            if (previewUrlRef.current) {
+                URL.revokeObjectURL(previewUrlRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (currentUser) {
@@ -90,6 +101,26 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                     ]);
                     setReadingLogs(logs);
                     setReadingStats(stats);
+
+                    // 책 정보 일괄 조회
+                    if (logs.length > 0) {
+                        const isbnList = [...new Set(logs.map(l => l.forumIsbn))];
+                        const { data: booksData } = await supabase
+                            .from('books')
+                            .select('isbn, title, authors, thumbnail')
+                            .in('isbn', isbnList);
+                        if (booksData) {
+                            const map = new Map<string, { title: string; authors: string[]; thumbnail: string | null }>();
+                            for (const book of booksData) {
+                                map.set(book.isbn, {
+                                    title: book.title,
+                                    authors: book.authors || [],
+                                    thumbnail: book.thumbnail,
+                                });
+                            }
+                            setBookInfoMap(map);
+                        }
+                    }
                 }
             }
 
@@ -139,6 +170,12 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
             // 선호 장르 업데이트 (별도 테이블)
             await UserService.updateFavoriteGenres(profile.id, editForm.favoriteGenres);
 
+            // preview URL 정리
+            if (previewUrlRef.current) {
+                URL.revokeObjectURL(previewUrlRef.current);
+                previewUrlRef.current = null;
+            }
+
             // 프로필 다시 로드
             await loadUserData();
             setIsEditing(false);
@@ -151,6 +188,11 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            // 이전 Object URL 해제
+            if (previewUrlRef.current) {
+                URL.revokeObjectURL(previewUrlRef.current);
+            }
+            previewUrlRef.current = URL.createObjectURL(file);
             setEditForm(prev => ({ ...prev, profileImageFile: file }));
         }
     };
@@ -250,9 +292,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">프로필 이미지</label>
                                         <div className="flex items-center space-x-4">
                                             <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300 flex items-center justify-center shadow-sm">
-                                                {editForm.profileImageFile ? (
+                                                {editForm.profileImageFile && previewUrlRef.current ? (
                                                     <img
-                                                        src={URL.createObjectURL(editForm.profileImageFile)}
+                                                        src={previewUrlRef.current}
                                                         alt="프로필 미리보기"
                                                         className="w-full h-full object-cover"
                                                     />
@@ -621,34 +663,57 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
 
                                 return (
                                     <div className="space-y-3">
-                                        {filteredLogs.map((log) => (
-                                            <div key={log.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm">
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <p className="font-medium text-gray-900">{log.forumIsbn}</p>
-                                                        <div className="flex items-center space-x-2 mt-1 text-sm text-gray-500">
-                                                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                                log.status === 'reading' ? 'bg-blue-100 text-blue-700' :
-                                                                log.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                                                'bg-amber-100 text-amber-700'
-                                                            }`}>
-                                                                {log.status === 'reading' ? '읽는 중' :
-                                                                 log.status === 'completed' ? '완독' : '읽고 싶음'}
-                                                            </span>
-                                                            {log.startedAt && (
-                                                                <span>시작: {formatDate(log.startedAt)}</span>
+                                        {filteredLogs.map((log) => {
+                                            const bookInfo = bookInfoMap.get(log.forumIsbn);
+                                            return (
+                                                <div key={log.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                                                    <div className="flex items-start space-x-4">
+                                                        {/* 책 표지 */}
+                                                        {bookInfo?.thumbnail ? (
+                                                            <img
+                                                                src={bookInfo.thumbnail}
+                                                                alt={bookInfo.title}
+                                                                className="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-sm"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-14 h-20 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm">
+                                                                <span className="text-2xl" role="img" aria-label="책">📚</span>
+                                                            </div>
+                                                        )}
+                                                        {/* 책 정보 */}
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="font-semibold text-gray-900 truncate">
+                                                                {bookInfo?.title || log.forumIsbn}
+                                                            </p>
+                                                            {bookInfo?.authors && bookInfo.authors.length > 0 && (
+                                                                <p className="text-sm text-gray-600 mt-0.5 truncate">
+                                                                    {bookInfo.authors.join(', ')}
+                                                                </p>
                                                             )}
-                                                            {log.finishedAt && (
-                                                                <span>완료: {formatDate(log.finishedAt)}</span>
-                                                            )}
+                                                            <div className="flex flex-wrap items-center gap-2 mt-2">
+                                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                                    log.status === 'reading' ? 'bg-blue-100 text-blue-700' :
+                                                                    log.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                                                    'bg-amber-100 text-amber-700'
+                                                                }`}>
+                                                                    {log.status === 'reading' ? '📖 읽는 중' :
+                                                                     log.status === 'completed' ? '✅ 완독' : '📋 읽고 싶음'}
+                                                                </span>
+                                                                {log.startedAt && (
+                                                                    <span className="text-xs text-gray-500">시작: {formatDate(log.startedAt)}</span>
+                                                                )}
+                                                                {log.finishedAt && (
+                                                                    <span className="text-xs text-gray-500">완료: {formatDate(log.finishedAt)}</span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                    {log.note && (
+                                                        <p className="text-gray-600 text-sm mt-3 border-t border-gray-200 pt-2">{log.note}</p>
+                                                    )}
                                                 </div>
-                                                {log.note && (
-                                                    <p className="text-gray-600 text-sm mt-2 border-t border-gray-200 pt-2">{log.note}</p>
-                                                )}
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 );
                             })()}

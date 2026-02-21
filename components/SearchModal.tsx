@@ -65,9 +65,49 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
 
     const inputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
 
     // 디바운스된 검색어 (자동완성용)
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+    // ESC 키로 모달 닫기
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleEscKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (showSuggestions) {
+                    setShowSuggestions(false);
+                } else {
+                    onClose();
+                }
+            }
+        };
+        document.addEventListener('keydown', handleEscKey);
+        return () => document.removeEventListener('keydown', handleEscKey);
+    }, [isOpen, onClose, showSuggestions]);
+
+    // 포커스 트래핑
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleTabKey = (e: KeyboardEvent) => {
+            if (e.key !== 'Tab' || !modalRef.current) return;
+            const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+                'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            );
+            if (focusableElements.length === 0) return;
+            const first = focusableElements[0];
+            const last = focusableElements[focusableElements.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        };
+        document.addEventListener('keydown', handleTabKey);
+        return () => document.removeEventListener('keydown', handleTabKey);
+    }, [isOpen]);
 
     // 초기 데이터 로드
     useEffect(() => {
@@ -225,7 +265,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
-            setShowSuggestions(false);
+            if (showSuggestions) {
+                setShowSuggestions(false);
+            } else {
+                onClose();
+            }
         }
     };
 
@@ -265,7 +309,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div ref={modalRef} className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
                 {/* 헤더 */}
                 <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
                     <h2 id="search-modal-title" className="text-lg sm:text-xl font-semibold text-gray-900">통합 검색</h2>
