@@ -38,6 +38,18 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, userId 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // ESC 키로 드롭다운 닫기
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   // 토스트 자동 닫기
   useEffect(() => {
     if (toast) {
@@ -74,6 +86,8 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, userId 
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
         className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
           currentStatus
             ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-100'
@@ -93,11 +107,19 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, userId 
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[160px]">
+        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[160px]" role="listbox" aria-label="독서 상태 선택">
           {STATUS_OPTIONS.map((option) => (
             <button
               key={option.value}
+              role="option"
+              aria-selected={currentStatus === option.value}
               onClick={() => handleSelect(option.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSelect(option.value);
+                }
+              }}
               className={`w-full text-left px-4 py-2.5 text-sm flex items-center space-x-2 hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
                 currentStatus === option.value ? 'bg-cyan-50 text-cyan-700 font-medium' : 'text-gray-700'
               }`}

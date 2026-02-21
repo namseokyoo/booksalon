@@ -18,9 +18,43 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
   // const { signup, loginWithGoogle, loginWithKakao } = useAuth();
   const { signup, loginWithGoogle } = useAuth();
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     emailInputRef.current?.focus();
+  }, []);
+
+  // ESC 키 닫기
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  // 포커스 트래핑
+  useEffect(() => {
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !modalRef.current) return;
+      const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements.length === 0) return;
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleTabKey);
+    return () => document.removeEventListener('keydown', handleTabKey);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,7 +133,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title">
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
+      <form ref={modalRef} onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
         <div className="p-4 sm:p-6">
           <h3 id="signup-modal-title" className="text-base sm:text-lg font-medium leading-6 text-gray-900 mb-3 sm:mb-4 text-center">회원가입</h3>
           {error && <p className="bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm p-2 sm:p-3 rounded-lg mb-3 sm:mb-4">{error}</p>}
