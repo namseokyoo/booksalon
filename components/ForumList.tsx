@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Forum, Book } from '../types';
 import {
   searchBookByIsbn,
@@ -181,7 +181,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     }
   };
 
-  const handleToggleBookmark = async (isbn: string, e: React.MouseEvent) => {
+  const handleToggleBookmark = useCallback(async (isbn: string, e: React.MouseEvent) => {
     e.stopPropagation(); // 포럼 클릭 이벤트 방지
 
     if (!currentUser) {
@@ -211,7 +211,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
       console.error('북마크 토글 실패:', error);
       alert('북마크 처리 중 오류가 발생했습니다.');
     }
-  };
+  }, [currentUser, forums]);
 
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -344,12 +344,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     onSelectForum(newForum);
   };
 
-  const handleSelectCategory = (category?: string) => {
+  const handleSelectCategory = useCallback((category?: string) => {
     setFilterOptions(prev => ({
       ...prev,
       category: category === '전체' ? undefined : category,
     }));
-  };
+  }, []);
 
   const handleToggleTag = (tag: string) => {
     setFilterOptions(prev => {
@@ -362,12 +362,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     });
   };
 
-  const handleSortChange = (sortBy: FilterOptions['sortBy']) => {
+  const handleSortChange = useCallback((sortBy: FilterOptions['sortBy']) => {
     setFilterOptions(prev => ({
       ...prev,
       sortBy,
     }));
-  };
+  }, []);
 
   const handleResetFilters = () => {
     setFilterOptions({});
@@ -537,6 +537,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   src={forum.book.thumbnail}
                   alt={forum.book.title}
                   className="w-10 h-auto sm:w-12 sm:h-auto rounded-lg flex-shrink-0 shadow-sm"
+                  loading="lazy"
                 />
                 <div className="flex-grow min-w-0">
                   <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{forum.book.title}</h3>
@@ -588,6 +589,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     src={forum.book.thumbnail}
                     alt={forum.book.title}
                     className="w-10 h-auto sm:w-12 sm:h-auto rounded flex-shrink-0"
+                    loading="lazy"
                   />
                   <div className="flex-grow min-w-0">
                     <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{forum.book.title}</h3>
@@ -645,6 +647,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     src={book.thumbnail}
                     alt={book.title}
                     className="w-10 h-auto sm:w-12 sm:h-auto rounded flex-shrink-0"
+                    loading="lazy"
                   />
                   <div className="flex-grow min-w-0">
                     <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{book.title}</h3>
@@ -734,6 +737,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     src={forum.book.thumbnail}
                     alt={forum.book.title}
                     className="w-10 h-auto sm:w-12 sm:h-auto rounded flex-shrink-0"
+                    loading="lazy"
                   />
                   <div className="flex-grow min-w-0">
                     <div className="flex items-center space-x-2 mb-1">

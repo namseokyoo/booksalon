@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Forum, Post, UserProfile, PostImage } from '../types';
 import BookInfo from './BookInfo';
 import PostList from './PostList';
@@ -11,6 +11,7 @@ import { ArrowLeftIcon, PlusIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService, TagService, PostImageService } from '../lib/services';
+import ReadingStatusButton from './ReadingStatusButton';
 
 interface ForumViewProps {
   forum: Forum;
@@ -26,7 +27,23 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { currentUser } = useAuth();
+
+  useEffect(() => {
+    if (!currentUser) {
+      setCurrentUserId(null);
+      return;
+    }
+    supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', currentUser.uid)
+      .single()
+      .then(({ data }) => {
+        if (data) setCurrentUserId((data as { id: string }).id);
+      });
+  }, [currentUser]);
 
   useEffect(() => {
     if (!forum.isbn) return;
@@ -44,7 +61,8 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           created_at,
           updated_at,
           comment_count,
-          like_count
+          like_count,
+          view_count
         `)
         .eq('forum_isbn', forum.isbn)
         .order('created_at', { ascending: false });
@@ -120,6 +138,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
         updated_at: string | null;
         comment_count: number;
         like_count: number;
+        view_count: number | null;
       }) => {
         const author = authorMap.get(post.author_id);
         return {
@@ -137,6 +156,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           likes: likesByPost.get(post.id) || [],
           tags: tagsByPost.get(post.id) || [],
           images: imagesByPost.get(post.id) || [],
+          viewCount: post.view_count ?? 0,
         };
       });
 
@@ -266,9 +286,9 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
     }
   };
 
-  const handlePostClick = (post: Post) => {
+  const handlePostClick = useCallback((post: Post) => {
     setSelectedPost(post);
-  };
+  }, []);
 
   const handleUserClick = (user: UserProfile) => {
     setSelectedUser(user);
@@ -296,9 +316,9 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
     }
   };
 
-  const handleBackToList = () => {
+  const handleBackToList = useCallback(() => {
     setSelectedPost(null);
-  };
+  }, []);
 
   if (selectedPost) {
     return (
@@ -319,7 +339,16 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>목록으로 돌아가기</span>
         </button>
-        <BookInfo book={forum.book} forum={forum} />
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <BookInfo book={forum.book} forum={forum} />
+          </div>
+          {currentUserId && (
+            <div className="ml-4 flex-shrink-0">
+              <ReadingStatusButton isbn={forum.isbn} userId={currentUserId} />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="px-3 sm:px-6 lg:px-8 pb-20">

@@ -633,6 +633,7 @@ export type Database = {
           search_text: string | null
           title: string
           updated_at: string | null
+          view_count: number | null
         }
         Insert: {
           author_id: string
@@ -645,6 +646,7 @@ export type Database = {
           search_text?: string | null
           title: string
           updated_at?: string | null
+          view_count?: number | null
         }
         Update: {
           author_id?: string
@@ -657,6 +659,7 @@ export type Database = {
           search_text?: string | null
           title?: string
           updated_at?: string | null
+          view_count?: number | null
         }
         Relationships: [
           {
@@ -668,6 +671,57 @@ export type Database = {
           },
           {
             foreignKeyName: "posts_forum_isbn_fkey"
+            columns: ["forum_isbn"]
+            isOneToOne: false
+            referencedRelation: "forums"
+            referencedColumns: ["isbn"]
+          },
+        ]
+      }
+      reading_logs: {
+        Row: {
+          id: string
+          user_id: string
+          forum_isbn: string
+          status: string
+          started_at: string | null
+          finished_at: string | null
+          note: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          forum_isbn: string
+          status: string
+          started_at?: string | null
+          finished_at?: string | null
+          note?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          forum_isbn?: string
+          status?: string
+          started_at?: string | null
+          finished_at?: string | null
+          note?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reading_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reading_logs_forum_isbn_fkey"
             columns: ["forum_isbn"]
             isOneToOne: false
             referencedRelation: "forums"
@@ -1012,6 +1066,10 @@ export type Database = {
     }
     Functions: {
       get_current_user_id: { Args: never; Returns: string }
+      increment_view_count: {
+        Args: { post_id: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
     }

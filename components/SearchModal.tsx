@@ -264,11 +264,11 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-label="통합 검색">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
             <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
                 {/* 헤더 */}
                 <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-                    <h2 className="text-lg sm:text-xl font-semibold text-gray-900">통합 검색</h2>
+                    <h2 id="search-modal-title" className="text-lg sm:text-xl font-semibold text-gray-900">통합 검색</h2>
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -380,6 +380,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                                     src={book.thumbnail}
                                                     alt={`${book.title} 표지`}
                                                     className="w-16 h-auto rounded flex-shrink-0"
+                                                    loading="lazy"
                                                 />
                                                 <div className="flex-1 min-w-0">
                                                     <h3 className="font-semibold text-gray-900 truncate">

@@ -67,3 +67,14 @@ export { searchBookByIsbn, searchBookByTitle, type BookSearchResult } from './ka
 
 // Search History Service (localStorage 기반, Firebase 의존성 없음)
 export { SearchHistoryService, type SearchHistory } from './searchHistoryService'
+
+// View Count Service (조회수 관리)
+export { ViewCountService } from './viewCountService'
+
+// Reading Log Service (독서 로그 관리)
+export {
+  ReadingLogService,
+  type ReadingLog,
+  type ReadingStatus,
+  type ReadingStats,
+} from './readingLogService'
