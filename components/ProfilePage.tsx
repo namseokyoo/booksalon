@@ -1,46 +1,30 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { UserService, BookmarkService, ProfileImageService } from '../lib/services';
-import { ReadingLogService, type ReadingLog, type ReadingStats } from '../lib/services/readingLogService';
 import { supabase } from '../lib/supabase';
-import BadgeList from './BadgeList';
-import type { BadgeStats } from '../lib/badges';
+import { UserService, BookmarkService, ProfileImageService, ReadingLogService } from '../lib/services';
+import type { ReadingLog, ReadingStatus, ReadingStats } from '../lib/services/readingLogService';
 import type { UserProfile, Post, Comment, Forum } from '../types';
+import type { BadgeStats } from '../lib/badges';
+import BadgeList from './BadgeList';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-
-// 배지 섹션 래퍼
-const BadgeListSection: React.FC<{
-    readingStats: ReadingStats;
-    totalPosts: number;
-    totalComments: number;
-}> = ({ readingStats, totalPosts, totalComments }) => {
-    const badgeStats: BadgeStats = {
-        reading: readingStats.reading,
-        completed: readingStats.completed,
-        wantToRead: readingStats.wantToRead,
-        totalPosts,
-        totalComments,
-    };
-    return <BadgeList stats={badgeStats} />;
-};
 
 interface ProfilePageProps {
     onBack: () => void;
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile: authUserProfile } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
     const [comments, setComments] = useState<Comment[]>([]);
     const [bookmarkedForums, setBookmarkedForums] = useState<Forum[]>([]);
     const [readingLogs, setReadingLogs] = useState<ReadingLog[]>([]);
     const [readingStats, setReadingStats] = useState<ReadingStats>({ reading: 0, completed: 0, wantToRead: 0 });
-    const [bookInfoMap, setBookInfoMap] = useState<Map<string, { title: string; authors: string[]; thumbnail: string | null }>>(new Map());
-    const [readingFilter, setReadingFilter] = useState<'all' | 'reading' | 'completed' | 'want_to_read'>('all');
+    const [readingLogBooks, setReadingLogBooks] = useState<Map<string, { title: string; thumbnail: string; authors: string[] }>>(new Map());
+    const [readingFilter, setReadingFilter] = useState<ReadingStatus | 'all'>('all');
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'stats' | 'bookmarks' | 'readingLog' | 'badges'>('stats');
+    const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'stats' | 'bookmarks' | 'reading' | 'badges'>('stats');
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({
         displayName: '',
@@ -52,16 +36,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
         favoriteGenres: [] as string[],
         profileImageFile: null as File | null
     });
-    const previewUrlRef = useRef<string | null>(null);
-
-    // Object URL 메모리 누수 방지
-    useEffect(() => {
-        return () => {
-            if (previewUrlRef.current) {
-                URL.revokeObjectURL(previewUrlRef.current);
-            }
-        };
-    }, []);
 
     useEffect(() => {
         if (currentUser) {
@@ -74,53 +48,49 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
 
         try {
             setLoading(true);
-            const [profileData, postsData, commentsData, bookmarksData] = await Promise.all([
+            // users 테이블에서 실제 user_id 조회
+            const { data: userData } = await supabase
+                .from('users')
+                .select('id')
+                .eq('auth_id', currentUser.uid)
+                .single();
+
+            const internalUserId = userData ? (userData as { id: string }).id : null;
+
+            const [profileData, postsData, commentsData, bookmarksData, logsData, statsData] = await Promise.all([
                 UserService.getUserProfileByAuthId(currentUser.uid),
-                UserService.getUserPosts(currentUser.uid),
-                UserService.getUserComments(currentUser.uid),
-                BookmarkService.getBookmarkedForums(currentUser.uid)
+                internalUserId ? UserService.getUserPosts(internalUserId) : Promise.resolve([]),
+                internalUserId ? UserService.getUserComments(internalUserId) : Promise.resolve([]),
+                internalUserId ? BookmarkService.getBookmarkedForums(internalUserId) : Promise.resolve([]),
+                internalUserId ? ReadingLogService.getReadingLogs(internalUserId) : Promise.resolve([]),
+                internalUserId ? ReadingLogService.getReadingStats(internalUserId) : Promise.resolve({ reading: 0, completed: 0, wantToRead: 0 }),
             ]);
 
             setProfile(profileData);
             setPosts(postsData);
             setComments(commentsData);
             setBookmarkedForums(bookmarksData);
+            setReadingLogs(logsData);
+            setReadingStats(statsData);
 
-            // 독서 로그 로드 (프로필의 users 테이블 id 필요)
-            if (profileData?.uid) {
-                const { data: userData } = await supabase
-                    .from('users')
-                    .select('id')
-                    .eq('auth_id', profileData.uid)
-                    .single();
-                if (userData) {
-                    const dbUserId = (userData as { id: string }).id;
-                    const [logs, stats] = await Promise.all([
-                        ReadingLogService.getReadingLogs(dbUserId),
-                        ReadingLogService.getReadingStats(dbUserId),
-                    ]);
-                    setReadingLogs(logs);
-                    setReadingStats(stats);
+            // 독서 로그의 책 정보 로드
+            if (logsData.length > 0) {
+                const isbns = logsData.map((log) => log.forumIsbn);
+                const { data: books } = await supabase
+                    .from('books')
+                    .select('isbn, title, thumbnail, authors')
+                    .in('isbn', isbns);
 
-                    // 책 정보 일괄 조회
-                    if (logs.length > 0) {
-                        const isbnList = [...new Set(logs.map(l => l.forumIsbn))];
-                        const { data: booksData } = await supabase
-                            .from('books')
-                            .select('isbn, title, authors, thumbnail')
-                            .in('isbn', isbnList);
-                        if (booksData) {
-                            const map = new Map<string, { title: string; authors: string[]; thumbnail: string | null }>();
-                            for (const book of booksData) {
-                                map.set(book.isbn, {
-                                    title: book.title,
-                                    authors: book.authors || [],
-                                    thumbnail: book.thumbnail,
-                                });
-                            }
-                            setBookInfoMap(map);
-                        }
-                    }
+                if (books) {
+                    const bookMap = new Map<string, { title: string; thumbnail: string; authors: string[] }>();
+                    (books as Array<{ isbn: string; title: string; thumbnail: string | null; authors: string[] }>).forEach((book) => {
+                        bookMap.set(book.isbn, {
+                            title: book.title,
+                            thumbnail: book.thumbnail || '',
+                            authors: book.authors || [],
+                        });
+                    });
+                    setReadingLogBooks(bookMap);
                 }
             }
 
@@ -170,12 +140,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
             // 선호 장르 업데이트 (별도 테이블)
             await UserService.updateFavoriteGenres(profile.id, editForm.favoriteGenres);
 
-            // preview URL 정리
-            if (previewUrlRef.current) {
-                URL.revokeObjectURL(previewUrlRef.current);
-                previewUrlRef.current = null;
-            }
-
             // 프로필 다시 로드
             await loadUserData();
             setIsEditing(false);
@@ -188,11 +152,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // 이전 Object URL 해제
-            if (previewUrlRef.current) {
-                URL.revokeObjectURL(previewUrlRef.current);
-            }
-            previewUrlRef.current = URL.createObjectURL(file);
             setEditForm(prev => ({ ...prev, profileImageFile: file }));
         }
     };
@@ -292,9 +251,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                         <label className="block text-sm font-medium text-gray-700 mb-2">프로필 이미지</label>
                                         <div className="flex items-center space-x-4">
                                             <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300 flex items-center justify-center shadow-sm">
-                                                {editForm.profileImageFile && previewUrlRef.current ? (
+                                                {editForm.profileImageFile ? (
                                                     <img
-                                                        src={previewUrlRef.current}
+                                                        src={URL.createObjectURL(editForm.profileImageFile)}
                                                         alt="프로필 미리보기"
                                                         className="w-full h-full object-cover"
                                                     />
@@ -495,13 +454,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                         북마크한 살롱 ({bookmarkedForums.length})
                     </button>
                     <button
-                        onClick={() => setActiveTab('readingLog')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'readingLog'
+                        onClick={() => setActiveTab('reading')}
+                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'reading'
                             ? 'bg-white border-t border-x border-gray-200 text-cyan-600 border-b-2 border-b-cyan-600 -mb-px'
                             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                             }`}
                     >
-                        독서 로그
+                        독서 로그 ({readingLogs.length})
                     </button>
                     <button
                         onClick={() => setActiveTab('badges')}
@@ -609,41 +568,41 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                         </div>
                     )}
 
-                    {activeTab === 'readingLog' && (
+                    {activeTab === 'reading' && (
                         <div>
                             <h2 className="text-xl font-bold text-gray-900 mb-4">독서 로그</h2>
 
-                            {/* 독서 통계 카드 */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center shadow-sm">
-                                    <div className="text-3xl font-bold text-blue-600">{readingStats.reading}</div>
-                                    <div className="text-blue-700 mt-1">읽는 중</div>
+                            {/* 통계 요약 */}
+                            <div className="grid grid-cols-3 gap-3 mb-6">
+                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-center">
+                                    <div className="text-2xl font-bold text-blue-600">{readingStats.reading}</div>
+                                    <div className="text-xs text-blue-600 mt-0.5">{'\uD83D\uDCD6'} 읽는 중</div>
                                 </div>
-                                <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center shadow-sm">
-                                    <div className="text-3xl font-bold text-green-600">{readingStats.completed}</div>
-                                    <div className="text-green-700 mt-1">완독</div>
+                                <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-center">
+                                    <div className="text-2xl font-bold text-green-600">{readingStats.completed}</div>
+                                    <div className="text-xs text-green-600 mt-0.5">{'\u2705'} 완독</div>
                                 </div>
-                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center shadow-sm">
-                                    <div className="text-3xl font-bold text-amber-600">{readingStats.wantToRead}</div>
-                                    <div className="text-amber-700 mt-1">읽고 싶음</div>
+                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                                    <div className="text-2xl font-bold text-amber-600">{readingStats.wantToRead}</div>
+                                    <div className="text-xs text-amber-600 mt-0.5">{'\uD83D\uDCCB'} 읽고 싶음</div>
                                 </div>
                             </div>
 
-                            {/* 상태 필터 */}
+                            {/* 필터 */}
                             <div className="flex space-x-2 mb-4">
-                                {[
+                                {([
                                     { value: 'all' as const, label: '전체' },
-                                    { value: 'reading' as const, label: '읽는 중' },
-                                    { value: 'completed' as const, label: '완독' },
-                                    { value: 'want_to_read' as const, label: '읽고 싶음' },
-                                ].map((filter) => (
+                                    { value: 'reading' as const, label: '\uD83D\uDCD6 읽는 중' },
+                                    { value: 'completed' as const, label: '\u2705 완독' },
+                                    { value: 'want_to_read' as const, label: '\uD83D\uDCCB 읽고 싶음' },
+                                ]).map((filter) => (
                                     <button
                                         key={filter.value}
                                         onClick={() => setReadingFilter(filter.value)}
-                                        className={`px-3 py-1.5 text-sm rounded-full transition-colors ${
+                                        className={`px-3 py-1.5 text-xs rounded-full transition-colors duration-200 ${
                                             readingFilter === filter.value
-                                                ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 font-medium'
-                                                : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'
+                                                ? 'bg-cyan-600 text-white'
+                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                         }`}
                                     >
                                         {filter.label}
@@ -651,83 +610,82 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                 ))}
                             </div>
 
-                            {/* 책 목록 */}
-                            {(() => {
-                                const filteredLogs = readingFilter === 'all'
-                                    ? readingLogs
-                                    : readingLogs.filter((log) => log.status === readingFilter);
+                            {/* 독서 로그 목록 */}
+                            {readingLogs.length === 0 ? (
+                                <p className="text-gray-500 text-center py-8">독서 로그가 없습니다.</p>
+                            ) : (
+                                <div className="space-y-4">
+                                    {readingLogs
+                                        .filter((log) => readingFilter === 'all' || log.status === readingFilter)
+                                        .map((log) => {
+                                            const book = readingLogBooks.get(log.forumIsbn);
+                                            const statusLabel =
+                                                log.status === 'reading' ? '\uD83D\uDCD6 읽는 중' :
+                                                log.status === 'completed' ? '\u2705 완독' :
+                                                '\uD83D\uDCCB 읽고 싶음';
+                                            const statusColor =
+                                                log.status === 'reading' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                log.status === 'completed' ? 'bg-green-50 text-green-700 border-green-200' :
+                                                'bg-amber-50 text-amber-700 border-amber-200';
 
-                                if (filteredLogs.length === 0) {
-                                    return <p className="text-gray-500 text-center py-8">독서 로그가 없습니다.</p>;
-                                }
-
-                                return (
-                                    <div className="space-y-3">
-                                        {filteredLogs.map((log) => {
-                                            const bookInfo = bookInfoMap.get(log.forumIsbn);
                                             return (
-                                                <div key={log.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                                                <div key={log.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
                                                     <div className="flex items-start space-x-4">
-                                                        {/* 책 표지 */}
-                                                        {bookInfo?.thumbnail ? (
+                                                        {book?.thumbnail && (
                                                             <img
-                                                                src={bookInfo.thumbnail}
-                                                                alt={bookInfo.title}
-                                                                className="w-14 h-20 object-cover rounded-lg flex-shrink-0 shadow-sm"
+                                                                src={book.thumbnail}
+                                                                alt={book?.title || '책 표지'}
+                                                                className="w-14 h-auto rounded-lg flex-shrink-0 shadow-sm"
                                                             />
-                                                        ) : (
-                                                            <div className="w-14 h-20 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center shadow-sm">
-                                                                <span className="text-2xl" role="img" aria-label="책">📚</span>
-                                                            </div>
                                                         )}
-                                                        {/* 책 정보 */}
-                                                        <div className="flex-1 min-w-0">
-                                                            <p className="font-semibold text-gray-900 truncate">
-                                                                {bookInfo?.title || log.forumIsbn}
-                                                            </p>
-                                                            {bookInfo?.authors && bookInfo.authors.length > 0 && (
-                                                                <p className="text-sm text-gray-600 mt-0.5 truncate">
-                                                                    {bookInfo.authors.join(', ')}
-                                                                </p>
+                                                        <div className="flex-grow min-w-0">
+                                                            <h3 className="font-semibold text-gray-900 mb-1">
+                                                                {book?.title || log.forumIsbn}
+                                                            </h3>
+                                                            {book?.authors && book.authors.length > 0 && (
+                                                                <p className="text-gray-600 text-sm mb-2">{book.authors.join(', ')}</p>
                                                             )}
-                                                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                                                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                                    log.status === 'reading' ? 'bg-blue-100 text-blue-700' :
-                                                                    log.status === 'completed' ? 'bg-green-100 text-green-700' :
-                                                                    'bg-amber-100 text-amber-700'
-                                                                }`}>
-                                                                    {log.status === 'reading' ? '📖 읽는 중' :
-                                                                     log.status === 'completed' ? '✅ 완독' : '📋 읽고 싶음'}
+                                                            <div className="flex items-center space-x-3 text-sm">
+                                                                <span className={`px-2 py-0.5 rounded-full text-xs border ${statusColor}`}>
+                                                                    {statusLabel}
                                                                 </span>
                                                                 {log.startedAt && (
-                                                                    <span className="text-xs text-gray-500">시작: {formatDate(log.startedAt)}</span>
+                                                                    <span className="text-gray-500 text-xs">
+                                                                        시작: {formatDate(log.startedAt)}
+                                                                    </span>
                                                                 )}
                                                                 {log.finishedAt && (
-                                                                    <span className="text-xs text-gray-500">완료: {formatDate(log.finishedAt)}</span>
+                                                                    <span className="text-gray-500 text-xs">
+                                                                        완독: {formatDate(log.finishedAt)}
+                                                                    </span>
                                                                 )}
                                                             </div>
+                                                            {log.note && (
+                                                                <p className="text-gray-600 text-sm mt-2 italic">{log.note}</p>
+                                                            )}
                                                         </div>
                                                     </div>
-                                                    {log.note && (
-                                                        <p className="text-gray-600 text-sm mt-3 border-t border-gray-200 pt-2">{log.note}</p>
-                                                    )}
                                                 </div>
                                             );
                                         })}
-                                    </div>
-                                );
-                            })()}
+                                    {readingLogs.filter((log) => readingFilter === 'all' || log.status === readingFilter).length === 0 && (
+                                        <p className="text-gray-500 text-center py-8">해당 상태의 독서 로그가 없습니다.</p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
 
-                    {activeTab === 'badges' && profile && (
-                        <div>
-                            <BadgeListSection
-                                readingStats={readingStats}
-                                totalPosts={profile.postCount || 0}
-                                totalComments={profile.commentCount || 0}
-                            />
-                        </div>
+                    {activeTab === 'badges' && (
+                        <BadgeList
+                            stats={{
+                                reading: readingStats.reading,
+                                completed: readingStats.completed,
+                                wantToRead: readingStats.wantToRead,
+                                totalPosts: profile.postCount || 0,
+                                totalComments: profile.commentCount || 0,
+                            } as BadgeStats}
+                        />
                     )}
 
                 </div>

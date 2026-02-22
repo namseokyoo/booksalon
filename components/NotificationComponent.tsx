@@ -9,14 +9,14 @@ const NotificationComponent: React.FC = () => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [unreadCount, setUnreadCount] = useState(0);
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
 
     useEffect(() => {
         if (!currentUser) return;
 
         // 실시간 알림 리스너
         const unsubscribe = NotificationService.subscribeToNotifications(
-            currentUser.uid,
+            userProfile?.id || '',
             (newNotifications) => {
                 setNotifications(newNotifications);
                 setUnreadCount(newNotifications.filter(n => !n.isRead).length);
@@ -39,7 +39,7 @@ const NotificationComponent: React.FC = () => {
         if (!currentUser) return;
 
         try {
-            await NotificationService.markAllAsRead(currentUser.uid);
+            await NotificationService.markAllAsRead(userProfile?.id || '');
         } catch (error) {
             console.error('모든 알림 읽음 처리 실패:', error);
         }

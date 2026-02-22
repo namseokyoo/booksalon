@@ -25,7 +25,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
   const [showDistribution, setShowDistribution] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { currentUser } = useAuth();
+  const { currentUser, userProfile } = useAuth();
 
   useEffect(() => {
     const loadRatings = async () => {
@@ -45,7 +45,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
         if (currentUser) {
           const userRating = await RatingService.getUserRating(
             forum.isbn,
-            currentUser.uid
+            userProfile?.id || ''
           );
           setMyRating(userRating);
         }
@@ -66,7 +66,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
     setIsSubmitting(true);
 
     try {
-      await RatingService.setUserRating(forum.isbn, currentUser.uid, rating);
+      await RatingService.setUserRating(forum.isbn, userProfile?.id || '', rating);
       setMyRating(rating);
       setShowRatingModal(false);
 

@@ -9,7 +9,7 @@ interface TagBadgeProps {
     className?: string;
 }
 
-const TagBadge: React.FC<TagBadgeProps> = ({
+const TagBadge: React.FC<TagBadgeProps> = React.memo(({
     tag,
     onClick,
     onRemove,
@@ -74,6 +74,8 @@ const TagBadge: React.FC<TagBadgeProps> = ({
             )}
         </span>
     );
-};
+});
+
+TagBadge.displayName = 'TagBadge';
 
 export default TagBadge;

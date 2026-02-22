@@ -81,7 +81,7 @@ export class BookmarkService {
       .select('id')
       .eq('user_id', userId)
       .eq('forum_isbn', forumIsbn)
-      .single()
+      .maybeSingle()
 
     const existingData = existing as BookmarkRow | null
 
@@ -183,7 +183,7 @@ export class BookmarkService {
       .select('id')
       .eq('user_id', userId)
       .eq('forum_isbn', forumIsbn)
-      .single()
+      .maybeSingle()
 
     // 데이터가 없으면 false, 있으면 true
     return !error && !!data
@@ -220,7 +220,7 @@ export class BookmarkService {
       .from('user_notification_settings')
       .select('id')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (existing) {
       // 업데이트
@@ -264,7 +264,7 @@ export class BookmarkService {
       .from('user_notification_settings')
       .select('new_posts, new_comments, forum_updates')
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (error || !data) {
       // 기본값 반환

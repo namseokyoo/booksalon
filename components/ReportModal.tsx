@@ -21,7 +21,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
     const [reason, setReason] = useState('');
     const [description, setDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,7 +47,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
             }
 
             await AdminService.createReport(
-                currentUser.uid,
+                userProfile?.id || '',
                 reportType,
                 reason.trim(),
                 description.trim(),

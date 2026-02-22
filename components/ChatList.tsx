@@ -29,7 +29,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
     useEffect(() => {
         const loadOtherUser = async () => {
             try {
-                const user = await UserService.getUserProfileByAuthId(otherUserId);
+                const user = await UserService.getUserProfileById(otherUserId);
                 setOtherUser(user);
             } catch (error) {
                 console.error('사용자 정보 로딩 실패:', error);
@@ -100,14 +100,14 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
 const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
     const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
 
     useEffect(() => {
         if (!currentUser) return;
 
         const loadChatRooms = async () => {
             try {
-                const rooms = await MessagingService.getChatRooms(currentUser.uid);
+                const rooms = await MessagingService.getChatRooms(userProfile?.id || '');
                 setChatRooms(rooms);
             } catch (error) {
                 console.error('채팅방 목록 로딩 실패:', error);
@@ -122,11 +122,11 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
     const getOtherUser = async (chatRoom: ChatRoom): Promise<UserProfile | null> => {
         if (!currentUser) return null;
 
-        const otherUserId = chatRoom.participants.find(id => id !== currentUser.uid);
+        const otherUserId = chatRoom.participants.find(id => id !== userProfile?.id);
         if (!otherUserId) return null;
 
         try {
-            return await UserService.getUserProfileByAuthId(otherUserId);
+            return await UserService.getUserProfileById(otherUserId);
         } catch (error) {
             console.error('사용자 정보 로딩 실패:', error);
             return null;
@@ -158,7 +158,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
     return (
         <div className="space-y-2">
             {chatRooms.map((chatRoom) => {
-                const otherUserId = chatRoom.participants.find(id => id !== currentUser?.uid);
+                const otherUserId = chatRoom.participants.find(id => id !== userProfile?.id);
                 if (!otherUserId) return null;
 
                 return (
@@ -167,7 +167,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
                         chatRoom={chatRoom}
                         otherUserId={otherUserId}
                         onSelectChat={onSelectChat}
-                        currentUserId={currentUser?.uid || ''}
+                        currentUserId={userProfile?.id || ''}
                     />
                 );
             })}

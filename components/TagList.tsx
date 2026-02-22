@@ -10,7 +10,7 @@ interface TagListProps {
     className?: string;
 }
 
-const TagList: React.FC<TagListProps> = ({
+const TagList: React.FC<TagListProps> = React.memo(({
     tags,
     onTagClick,
     maxDisplay = 5,
@@ -45,6 +45,8 @@ const TagList: React.FC<TagListProps> = ({
             )}
         </div>
     );
-};
+});
+
+TagList.displayName = 'TagList';
 
 export default TagList;

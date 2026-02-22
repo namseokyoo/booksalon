@@ -187,7 +187,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('auth_id', authId)
-      .single()
+      .maybeSingle()
 
     if (error || !user) return null
 
@@ -196,7 +196,7 @@ export class UserService {
     // 관련 데이터 조회
     const [socialLinks, notificationSettings, favoriteGenres] = await Promise.all([
       supabase.from('user_social_links').select('*').eq('user_id', userData.id),
-      supabase.from('user_notification_settings').select('*').eq('user_id', userData.id).single(),
+      supabase.from('user_notification_settings').select('*').eq('user_id', userData.id).maybeSingle(),
       supabase.from('user_favorite_genres').select('*').eq('user_id', userData.id),
     ])
 
@@ -216,7 +216,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (error || !user) return null
 
@@ -225,7 +225,7 @@ export class UserService {
     // 관련 데이터 조회
     const [socialLinks, notificationSettings, favoriteGenres] = await Promise.all([
       supabase.from('user_social_links').select('*').eq('user_id', userData.id),
-      supabase.from('user_notification_settings').select('*').eq('user_id', userData.id).single(),
+      supabase.from('user_notification_settings').select('*').eq('user_id', userData.id).maybeSingle(),
       supabase.from('user_favorite_genres').select('*').eq('user_id', userData.id),
     ])
 

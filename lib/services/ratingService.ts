@@ -60,7 +60,7 @@ export class RatingService {
       .select('id')
       .eq('book_isbn', bookIsbn)
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     const existingData = existing as Pick<RatingRow, 'id'> | null
 
@@ -103,7 +103,7 @@ export class RatingService {
       .select('rating')
       .eq('book_isbn', bookIsbn)
       .eq('user_id', userId)
-      .single()
+      .maybeSingle()
 
     if (error || !data) return null
     const ratingData = data as Pick<RatingRow, 'rating'>

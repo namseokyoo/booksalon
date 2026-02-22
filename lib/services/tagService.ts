@@ -101,7 +101,7 @@ export class TagService {
       .select('id, count')
       .eq('name', normalizedTag)
       .eq('tag_type', type)
-      .single()
+      .maybeSingle()
 
     const existingData = existing as Pick<TagRow, 'id' | 'count'> | null
 
@@ -142,7 +142,7 @@ export class TagService {
       .select('id, count')
       .eq('name', normalizedTag)
       .eq('tag_type', type)
-      .single()
+      .maybeSingle()
 
     const existingData = existing as Pick<TagRow, 'id' | 'count'> | null
 

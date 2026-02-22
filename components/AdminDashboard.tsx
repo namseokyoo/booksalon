@@ -11,14 +11,14 @@ const AdminDashboard: React.FC = () => {
     const [users, setUsers] = useState<Awaited<ReturnType<typeof AdminService.getUsers>>>([]);
     const [forums, setForums] = useState<Awaited<ReturnType<typeof AdminService.getForums>>>([]);
     const [reports, setReports] = useState<Report[]>([]);
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
 
     useEffect(() => {
         if (!currentUser) return;
 
         const checkAdminStatus = async () => {
             try {
-                const adminStatus = await AdminService.isAdmin(currentUser.uid);
+                const adminStatus = await AdminService.isAdmin(userProfile?.id || '');
                 setIsAdmin(adminStatus);
 
                 if (adminStatus) {

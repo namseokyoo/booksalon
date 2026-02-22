@@ -8,8 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UserService, PostImageService, SocialService } from '../lib/services';
-import { ViewCountService } from '../lib/services/viewCountService';
+import { UserService, PostImageService, SocialService, ViewCountService } from '../lib/services';
 import { LikeIcon } from './icons/LikeIcon';
 
 interface PostDetailProps {
@@ -30,10 +29,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(post.title);
     const [editContent, setEditContent] = useState(post.content);
+    const [viewCount, setViewCount] = useState(post.viewCount || 0);
     const [showMentionList, setShowMentionList] = useState(false);
     const [mentionSearch, setMentionSearch] = useState('');
     const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
-    const [viewCount, setViewCount] = useState(post.viewCount || 0);
     const { currentUser } = useAuth();
 
     useEffect(() => {
@@ -51,8 +50,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         loadAuthorProfile();
     }, [post.author.uid]);
 
+    // 조회수 증가 (마운트 시 1회)
     useEffect(() => {
         ViewCountService.incrementViewCount(post.id).then(() => {
+            // 증가 후 최신 조회수 반영
             ViewCountService.getViewCount(post.id).then(setViewCount);
         });
     }, [post.id]);
@@ -599,7 +600,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                 <UserProfilePreview
                     user={selectedUser}
                     onClose={handleCloseUserProfile}
-                    onSendMessage={onSendMessage ? () => onSendMessage(selectedUser.uid) : undefined}
+                    onSendMessage={onSendMessage ? () => onSendMessage(selectedUser.id) : undefined}
                 />
             )}
         </div>

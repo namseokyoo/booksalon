@@ -1,11 +1,10 @@
 /**
  * Reading Log Service - 독서 로그 관리
  *
- * 북살롱 - 사용자의 독서 상태 추적 (읽는 중, 완독, 읽고 싶음)
+ * 북살롱 Phase 3-1 - 독서 로그 기능
  *
  * @description
- * bookmarkService.ts 패턴을 참조하여 작성.
- * reading_logs 테이블을 통한 독서 상태 관리.
+ * 사용자의 독서 활동(읽는 중, 완독, 읽고 싶은 책)을 기록하고 관리합니다.
  */
 
 import { supabase } from '../supabase'
@@ -13,6 +12,7 @@ import type { Database } from '../database.types'
 
 type ReadingLogRow = Database['public']['Tables']['reading_logs']['Row']
 type ReadingLogInsert = Database['public']['Tables']['reading_logs']['Insert']
+type ReadingLogUpdate = Database['public']['Tables']['reading_logs']['Update']
 
 export type ReadingStatus = 'reading' | 'completed' | 'want_to_read'
 
@@ -50,7 +50,7 @@ function transformToReadingLog(row: ReadingLogRow): ReadingLog {
 
 export class ReadingLogService {
   /**
-   * 사용자의 모든 독서 로그 조회
+   * 사용자의 전체 독서 로그 조회
    */
   static async getReadingLogs(userId: string): Promise<ReadingLog[]> {
     const { data, error } = await supabase
@@ -59,12 +59,17 @@ export class ReadingLogService {
       .eq('user_id', userId)
       .order('updated_at', { ascending: false })
 
-    if (error || !data) return []
-    return (data as ReadingLogRow[]).map(transformToReadingLog)
+    if (error) {
+      console.error('독서 로그 조회 실패:', error)
+      return []
+    }
+
+    const rows = (data || []) as ReadingLogRow[]
+    return rows.map(transformToReadingLog)
   }
 
   /**
-   * 특정 책의 독서 상태 조회
+   * 특정 책의 독서 로그 조회
    */
   static async getReadingLogByIsbn(
     userId: string,
@@ -75,97 +80,84 @@ export class ReadingLogService {
       .select('*')
       .eq('user_id', userId)
       .eq('forum_isbn', isbn)
-      .single()
+      .maybeSingle()
 
     if (error || !data) return null
+
     return transformToReadingLog(data as ReadingLogRow)
   }
 
   /**
-   * 독서 로그 upsert (생성 또는 업데이트)
-   *
-   * - reading 상태로 변경 시 started_at 자동 설정
-   * - completed 상태로 변경 시 finished_at 자동 설정
+   * 독서 로그 추가/업데이트 (upsert)
    */
   static async upsertReadingLog(
     userId: string,
     isbn: string,
     status: ReadingStatus,
-    note?: string,
-    startedAt?: string,
-    finishedAt?: string
-  ): Promise<ReadingLog> {
-    const now = new Date().toISOString()
-
+    note?: string | null,
+    startedAt?: string | null,
+    finishedAt?: string | null
+  ): Promise<void> {
     // 기존 로그 확인
     const { data: existing } = await supabase
       .from('reading_logs')
-      .select('*')
+      .select('id')
       .eq('user_id', userId)
       .eq('forum_isbn', isbn)
-      .single()
+      .maybeSingle()
 
-    const existingData = existing as ReadingLogRow | null
+    const now = new Date().toISOString()
 
-    // 자동 타임스탬프 설정
-    let resolvedStartedAt = startedAt || existingData?.started_at || null
-    let resolvedFinishedAt = finishedAt || existingData?.finished_at || null
-
-    if (status === 'reading' && !resolvedStartedAt) {
-      resolvedStartedAt = now
-    }
-    if (status === 'completed' && !resolvedFinishedAt) {
-      resolvedFinishedAt = now
-      if (!resolvedStartedAt) {
-        resolvedStartedAt = now
-      }
-    }
-
-    if (existingData) {
+    if (existing) {
       // 업데이트
-      const { data, error } = await supabase
+      const updateData: ReadingLogUpdate = {
+        status,
+        updated_at: now,
+      }
+      if (note !== undefined) updateData.note = note
+      if (startedAt !== undefined) updateData.started_at = startedAt
+      if (finishedAt !== undefined) updateData.finished_at = finishedAt
+
+      // 상태에 따른 자동 날짜 설정
+      if (status === 'reading' && startedAt === undefined) {
+        updateData.started_at = now
+      }
+      if (status === 'completed' && finishedAt === undefined) {
+        updateData.finished_at = now
+      }
+
+      const { error } = await supabase
         .from('reading_logs')
-        .update({
-          status,
-          started_at: resolvedStartedAt,
-          finished_at: resolvedFinishedAt,
-          note: note !== undefined ? note : existingData.note,
-          updated_at: now,
-        })
-        .eq('id', existingData.id)
-        .select()
-        .single()
+        .update(updateData)
+        .eq('id', (existing as { id: string }).id)
 
       if (error) throw new Error(`독서 로그 업데이트 실패: ${error.message}`)
-      return transformToReadingLog(data as ReadingLogRow)
     } else {
-      // 생성
+      // 새로 생성
       const insertData: ReadingLogInsert = {
         user_id: userId,
         forum_isbn: isbn,
         status,
-        started_at: resolvedStartedAt,
-        finished_at: resolvedFinishedAt,
         note: note || null,
-        created_at: now,
-        updated_at: now,
+        started_at: startedAt || (status === 'reading' ? now : null),
+        finished_at: finishedAt || (status === 'completed' ? now : null),
       }
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('reading_logs')
         .insert(insertData)
-        .select()
-        .single()
 
       if (error) throw new Error(`독서 로그 생성 실패: ${error.message}`)
-      return transformToReadingLog(data as ReadingLogRow)
     }
   }
 
   /**
    * 독서 로그 삭제
    */
-  static async deleteReadingLog(userId: string, isbn: string): Promise<void> {
+  static async deleteReadingLog(
+    userId: string,
+    isbn: string
+  ): Promise<void> {
     const { error } = await supabase
       .from('reading_logs')
       .delete()
@@ -188,12 +180,24 @@ export class ReadingLogService {
       return { reading: 0, completed: 0, wantToRead: 0 }
     }
 
-    const logs = data as Pick<ReadingLogRow, 'status'>[]
-    return {
-      reading: logs.filter((l) => l.status === 'reading').length,
-      completed: logs.filter((l) => l.status === 'completed').length,
-      wantToRead: logs.filter((l) => l.status === 'want_to_read').length,
-    }
+    const rows = data as Pick<ReadingLogRow, 'status'>[]
+    const stats: ReadingStats = { reading: 0, completed: 0, wantToRead: 0 }
+
+    rows.forEach((row) => {
+      switch (row.status) {
+        case 'reading':
+          stats.reading++
+          break
+        case 'completed':
+          stats.completed++
+          break
+        case 'want_to_read':
+          stats.wantToRead++
+          break
+      }
+    })
+
+    return stats
   }
 }
 

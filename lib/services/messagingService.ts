@@ -245,7 +245,7 @@ export class MessagingService {
       .select('id, unread_count')
       .eq('chat_room_id', chatRoomId)
       .eq('user_id', receiverId)
-      .single()
+      .maybeSingle()
 
     const participant = participantData as Pick<ParticipantRow, 'id' | 'unread_count'> | null
     if (participant) {

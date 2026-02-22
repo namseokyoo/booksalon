@@ -17,7 +17,7 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ targetUserId }) => {
         chatRoomId: string;
         otherUser: UserProfile;
     } | null>(null);
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile: myProfile } = useAuth();
 
     // targetUserId가 있으면 자동으로 해당 사용자와의 채팅 시작
     useEffect(() => {
@@ -25,15 +25,16 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ targetUserId }) => {
             if (!targetUserId || !currentUser) return;
 
             try {
-                const userProfile = await UserService.getUserProfileByAuthId(targetUserId);
-                if (!userProfile) return;
+                // targetUserId는 users.id로 전달됨
+                const targetProfile = await UserService.getUserProfileById(targetUserId);
+                if (!targetProfile) return;
 
                 const chatRoom = await MessagingService.getOrCreateChatRoom(
-                    currentUser.uid,
-                    targetUserId
+                    myProfile?.id || '',
+                    targetProfile.id
                 );
 
-                setSelectedChat({ chatRoomId: chatRoom.id, otherUser: userProfile });
+                setSelectedChat({ chatRoomId: chatRoom.id, otherUser: targetProfile });
                 setActiveTab('chats');
             } catch (error) {
                 console.error('채팅 시작 실패:', error);
@@ -53,8 +54,8 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ targetUserId }) => {
         try {
             // 채팅방 생성 또는 기존 채팅방 찾기
             const chatRoom = await MessagingService.getOrCreateChatRoom(
-                currentUser.uid,
-                user.uid
+                myProfile?.id || '',
+                user.id
             );
 
             setSelectedChat({ chatRoomId: chatRoom.id, otherUser: user });

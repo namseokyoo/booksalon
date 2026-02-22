@@ -58,7 +58,7 @@ export class AdminService {
   /**
    * 관리자 권한 확인
    *
-   * @param userId - 사용자의 auth_id (currentUser.uid)
+   * @param userId - 사용자의 users.id
    * @returns admin 역할인 경우 true
    */
   static async isAdmin(userId: string): Promise<boolean> {
@@ -67,7 +67,7 @@ export class AdminService {
         .from('admins')
         .select('role')
         .eq('user_id', userId)
-        .single()
+        .maybeSingle()
 
       if (error || !data) return false
 
@@ -82,7 +82,7 @@ export class AdminService {
   /**
    * 관리자 권한 확인 (moderator 포함)
    *
-   * @param userId - 사용자의 auth_id (currentUser.uid)
+   * @param userId - 사용자의 users.id
    * @returns admin 또는 moderator 역할인 경우 true
    */
   static async isModerator(userId: string): Promise<boolean> {
@@ -91,7 +91,7 @@ export class AdminService {
         .from('admins')
         .select('role')
         .eq('user_id', userId)
-        .single()
+        .maybeSingle()
 
       if (error || !data) return false
 

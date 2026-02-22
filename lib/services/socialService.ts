@@ -58,7 +58,7 @@ export class SocialService {
       .select('id')
       .eq('follower_id', currentUserId)
       .eq('following_id', targetUserId)
-      .single()
+      .maybeSingle()
 
     const existingData = existing as Pick<FollowRow, 'id'> | null
 
@@ -122,7 +122,7 @@ export class SocialService {
       .select('id')
       .eq('follower_id', currentUserId)
       .eq('following_id', targetUserId)
-      .single()
+      .maybeSingle()
 
     return !error && !!data
   }
@@ -264,7 +264,7 @@ export class SocialService {
       .select('id')
       .eq('post_id', postId)
       .eq('user_id', currentUserId)
-      .single()
+      .maybeSingle()
 
     const existingData = existing as Pick<PostLikeRow, 'id'> | null
 
@@ -327,7 +327,7 @@ export class SocialService {
       .select('id')
       .eq('comment_id', commentId)
       .eq('user_id', currentUserId)
-      .single()
+      .maybeSingle()
 
     const existingData = existing as Pick<CommentLikeRow, 'id'> | null
 
@@ -394,7 +394,7 @@ export class SocialService {
         .select('id')
         .eq('post_id', targetId)
         .eq('user_id', currentUserId)
-        .single()
+        .maybeSingle()
       return !error && !!data
     } else {
       const { data, error } = await supabase
@@ -402,7 +402,7 @@ export class SocialService {
         .select('id')
         .eq('comment_id', targetId)
         .eq('user_id', currentUserId)
-        .single()
+        .maybeSingle()
       return !error && !!data
     }
   }
@@ -496,7 +496,7 @@ export class SocialService {
       .from('users')
       .select('email, display_name')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     const userData = user as Pick<UserRow, 'email' | 'display_name'> | null
 

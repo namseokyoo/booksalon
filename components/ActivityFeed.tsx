@@ -10,7 +10,7 @@ interface ActivityFeedProps {
 }
 
 const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'following' | 'my'>('following');
@@ -29,9 +29,9 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
             let activitiesData: Activity[] = [];
 
             if (activeTab === 'following') {
-                activitiesData = await SocialService.getFollowingActivityFeed(currentUser.uid);
+                activitiesData = await SocialService.getFollowingActivityFeed(userProfile?.id || '');
             } else {
-                activitiesData = await SocialService.getUserActivityFeed(currentUser.uid);
+                activitiesData = await SocialService.getUserActivityFeed(userProfile?.id || '');
             }
 
             setActivities(activitiesData);

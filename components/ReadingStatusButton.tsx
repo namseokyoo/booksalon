@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ReadingLogService, type ReadingStatus } from '../lib/services/readingLogService';
+import { useAuth } from '../contexts/AuthContext';
+import { ReadingLogService } from '../lib/services';
+import type { ReadingStatus } from '../lib/services/readingLogService';
+import { supabase } from '../lib/supabase';
 
 interface ReadingStatusButtonProps {
   isbn: string;
-  userId: string;
 }
 
 const STATUS_OPTIONS: { value: ReadingStatus; label: string; icon: string }[] = [
@@ -12,22 +14,45 @@ const STATUS_OPTIONS: { value: ReadingStatus; label: string; icon: string }[] = 
   { value: 'want_to_read', label: '읽고 싶음', icon: '\uD83D\uDCCB' },
 ];
 
-const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, userId }) => {
+const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
+  const { currentUser } = useAuth();
   const [currentStatus, setCurrentStatus] = useState<ReadingStatus | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // users 테이블에서 id 조회
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const fetchUserId = async () => {
+      const { data } = await supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', currentUser.uid)
+        .single();
+
+      if (data) {
+        setUserId((data as { id: string }).id);
+      }
+    };
+    fetchUserId();
+  }, [currentUser]);
+
+  // 현재 독서 상태 로드
   useEffect(() => {
     if (!userId) return;
-    ReadingLogService.getReadingLogByIsbn(userId, isbn).then((log) => {
-      if (log) setCurrentStatus(log.status);
-      setLoading(false);
-    });
+
+    const loadStatus = async () => {
+      const log = await ReadingLogService.getReadingLogByIsbn(userId, isbn);
+      setCurrentStatus(log?.status || null);
+    };
+    loadStatus();
   }, [userId, isbn]);
 
-  // 외부 클릭 닫기
+  // 드롭다운 외부 클릭 시 닫기
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -38,46 +63,49 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, userId 
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // ESC 키로 드롭다운 닫기
+  // 메시지 자동 숨김
   useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
-
-  // 토스트 자동 닫기
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => setToast(null), 2000);
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 2000);
       return () => clearTimeout(timer);
     }
-  }, [toast]);
+  }, [message]);
 
-  if (!userId || loading) return null;
+  if (!currentUser) return null;
 
-  const handleSelect = async (status: ReadingStatus) => {
+  const handleStatusChange = async (status: ReadingStatus) => {
+    if (!userId || isLoading) return;
+
+    setIsLoading(true);
     try {
-      if (currentStatus === status) {
-        // 같은 상태 클릭 시 해제
-        await ReadingLogService.deleteReadingLog(userId, isbn);
-        setCurrentStatus(null);
-        setToast('독서 상태가 해제되었습니다');
-      } else {
-        await ReadingLogService.upsertReadingLog(userId, isbn, status);
-        setCurrentStatus(status);
-        const option = STATUS_OPTIONS.find((o) => o.value === status);
-        setToast(`${option?.icon} ${option?.label}(으)로 설정되었습니다`);
-      }
+      await ReadingLogService.upsertReadingLog(userId, isbn, status);
+      setCurrentStatus(status);
+      const option = STATUS_OPTIONS.find((o) => o.value === status);
+      setMessage(`${option?.icon} ${option?.label}(으)로 설정되었습니다`);
     } catch (error) {
       console.error('독서 상태 변경 실패:', error);
-      setToast('상태 변경에 실패했습니다');
+      setMessage('상태 변경에 실패했습니다');
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false);
     }
-    setIsOpen(false);
+  };
+
+  const handleRemoveStatus = async () => {
+    if (!userId || isLoading) return;
+
+    setIsLoading(true);
+    try {
+      await ReadingLogService.deleteReadingLog(userId, isbn);
+      setCurrentStatus(null);
+      setMessage('독서 상태가 제거되었습니다');
+    } catch (error) {
+      console.error('독서 상태 제거 실패:', error);
+      setMessage('상태 제거에 실패했습니다');
+    } finally {
+      setIsLoading(false);
+      setIsOpen(false);
+    }
   };
 
   const currentOption = STATUS_OPTIONS.find((o) => o.value === currentStatus);
@@ -86,60 +114,66 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, userId 
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+        disabled={isLoading}
+        className={`flex items-center space-x-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors duration-200 ${
           currentStatus
-            ? 'bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-100'
-            : 'bg-gray-100 text-gray-700 border border-gray-200 hover:bg-gray-200'
-        }`}
+            ? 'bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100'
+            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+        } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
-        <span>{currentOption ? currentOption.icon : '\uD83D\uDCD6'}</span>
-        <span>{currentOption ? currentOption.label : '독서 상태'}</span>
-        <svg
-          className={`w-3.5 h-3.5 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        {isLoading ? (
+          <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+        ) : currentOption ? (
+          <span>{currentOption.icon} {currentOption.label}</span>
+        ) : (
+          <span>📚 독서 상태</span>
+        )}
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-1 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-20 min-w-[160px]" role="listbox" aria-label="독서 상태 선택">
+        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
           {STATUS_OPTIONS.map((option) => (
             <button
               key={option.value}
-              role="option"
-              aria-selected={currentStatus === option.value}
-              onClick={() => handleSelect(option.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleSelect(option.value);
-                }
-              }}
-              className={`w-full text-left px-4 py-2.5 text-sm flex items-center space-x-2 hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg ${
-                currentStatus === option.value ? 'bg-cyan-50 text-cyan-700 font-medium' : 'text-gray-700'
+              onClick={() => handleStatusChange(option.value)}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-200 flex items-center space-x-2 ${
+                currentStatus === option.value
+                  ? 'bg-cyan-50 text-cyan-700 font-medium'
+                  : 'text-gray-700 hover:bg-gray-50'
               }`}
             >
               <span>{option.icon}</span>
               <span>{option.label}</span>
               {currentStatus === option.value && (
-                <svg className="w-4 h-4 ml-auto text-cyan-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg className="h-4 w-4 ml-auto text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               )}
             </button>
           ))}
+          {currentStatus && (
+            <>
+              <div className="border-t border-gray-100" />
+              <button
+                onClick={handleRemoveStatus}
+                className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+              >
+                상태 제거
+              </button>
+            </>
+          )}
         </div>
       )}
 
-      {/* 토스트 메시지 */}
-      {toast && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg text-sm z-50 animate-fade-in">
-          {toast}
+      {message && (
+        <div className="absolute top-full left-0 mt-1 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-30">
+          {message}
         </div>
       )}
     </div>

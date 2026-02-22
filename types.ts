@@ -16,7 +16,8 @@ export interface Author {
 }
 
 export interface UserProfile {
-  uid: string;
+  id: string; // users 테이블 PK (내부 DB ID)
+  uid: string; // auth_id (Supabase Auth UID) - 기존 호환성
   email: string;
   displayName?: string;
   nickname?: string; // 사용자 닉네임
@@ -78,6 +79,7 @@ export interface Post {
   commentCount: number;
   likes?: string[]; // 좋아요한 사용자 UID 목록
   likeCount?: number; // 좋아요 수
+  viewCount?: number; // 조회수
   tags?: string[]; // 태그 목록 (최대 3개)
   searchText?: string; // 검색 최적화용 필드
   images?: PostImage[]; // 이미지 목록 (최대 3장)

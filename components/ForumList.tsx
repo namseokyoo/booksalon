@@ -17,12 +17,29 @@ import { useAuth } from '../contexts/AuthContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
 
+// 베스트 게시물 타입
+interface BestPost {
+  id: string;
+  title: string;
+  author_id: string;
+  author_name: string;
+  forum_isbn: string;
+  book_title: string;
+  like_count: number;
+  comment_count: number;
+  view_count: number;
+  score: number;
+}
+
 interface ForumListProps {
   onSelectForum: (forum: Forum) => void;
 }
 
+const FORUMS_PAGE_SIZE = 20;
+
 const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
   const [forums, setForums] = useState<Forum[]>([]);
+  const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +55,10 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
   const [searchIsEnd, setSearchIsEnd] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [lastSearchTerm, setLastSearchTerm] = useState('');
-  const { currentUser } = useAuth();
+  const [forumsPage, setForumsPage] = useState(0);
+  const [hasMoreForums, setHasMoreForums] = useState(true);
+  const [isLoadingMoreForums, setIsLoadingMoreForums] = useState(false);
+  const { currentUser, userProfile } = useAuth();
 
   const sortOptions = [
     { value: 'recent', label: '최신순' },
@@ -47,9 +67,177 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     { value: 'title', label: '제목순' },
   ];
 
+  const enrichForumsData = (
+    forumsData: Array<{
+      isbn: string;
+      post_count: number;
+      category: string | null;
+      popularity: number;
+      average_rating: number;
+      total_ratings: number;
+      last_activity_at: string | null;
+      created_at: string;
+      books: {
+        isbn: string;
+        title: string;
+        authors: string[];
+        publisher: string;
+        thumbnail: string;
+        contents: string;
+      } | null;
+    }>,
+    tagsByForum: Map<string, string[]>
+  ): Forum[] => {
+    return forumsData.map((forum) => ({
+      isbn: forum.isbn,
+      book: forum.books ? {
+        isbn: forum.books.isbn,
+        title: forum.books.title,
+        authors: forum.books.authors || [],
+        publisher: forum.books.publisher || '',
+        thumbnail: forum.books.thumbnail || '',
+        contents: forum.books.contents || '',
+      } : {
+        isbn: forum.isbn,
+        title: '',
+        authors: [],
+        publisher: '',
+        thumbnail: '',
+        contents: '',
+      },
+      postCount: forum.post_count,
+      category: forum.category || undefined,
+      tags: tagsByForum.get(forum.isbn) || [],
+      popularity: forum.popularity,
+      averageRating: forum.average_rating,
+      totalRatings: forum.total_ratings,
+      lastActivityAt: forum.last_activity_at ? new Date(forum.last_activity_at) : undefined,
+      createdAt: forum.created_at ? new Date(forum.created_at) : undefined,
+    }));
+  };
+
+  const fetchForumTags = async (): Promise<Map<string, string[]>> => {
+    const { data: forumTags } = await supabase
+      .from('forum_tags')
+      .select('forum_isbn, tag_name');
+
+    const tagsByForum = new Map<string, string[]>();
+    forumTags?.forEach((ft: { forum_isbn: string; tag_name: string }) => {
+      const tags = tagsByForum.get(ft.forum_isbn) || [];
+      tags.push(ft.tag_name);
+      tagsByForum.set(ft.forum_isbn, tags);
+    });
+    return tagsByForum;
+  };
+
+  // 베스트 게시물 로딩
   useEffect(() => {
-    // 초기 데이터 로드
+    const loadBestPosts = async () => {
+      try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const { data, error: postsError } = await supabase
+          .from('posts')
+          .select('id, title, author_id, forum_isbn, like_count, comment_count, view_count, created_at')
+          .gte('created_at', thirtyDaysAgo.toISOString())
+          .order('like_count', { ascending: false })
+          .limit(20);
+
+        if (postsError || !data || data.length === 0) {
+          setBestPosts([]);
+          return;
+        }
+
+        // 인기도 점수 계산 후 상위 5개 선택
+        const scored = data
+          .map(p => ({
+            ...p,
+            like_count: p.like_count || 0,
+            comment_count: p.comment_count || 0,
+            view_count: p.view_count || 0,
+            score: (p.like_count || 0) * 2 + (p.comment_count || 0) * 1.5 + (p.view_count || 0) * 0.1,
+          }))
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5);
+
+        // 작성자 이름 조회
+        const authorIds = [...new Set(scored.map(p => p.author_id))];
+        const { data: usersData } = await supabase
+          .from('users')
+          .select('id, display_name, nickname')
+          .in('id', authorIds);
+
+        const userMap = new Map<string, string>();
+        usersData?.forEach((u: { id: string; display_name: string | null; nickname: string | null }) => {
+          userMap.set(u.id, u.nickname || u.display_name || '익명');
+        });
+
+        // 책 제목 조회
+        const forumIsbns = [...new Set(scored.map(p => p.forum_isbn))];
+        const { data: booksData } = await supabase
+          .from('books')
+          .select('isbn, title')
+          .in('isbn', forumIsbns);
+
+        const bookMap = new Map<string, string>();
+        booksData?.forEach((b: { isbn: string; title: string }) => {
+          bookMap.set(b.isbn, b.title);
+        });
+
+        const bestPostsResult: BestPost[] = scored.map(p => ({
+          id: p.id,
+          title: p.title,
+          author_id: p.author_id,
+          author_name: userMap.get(p.author_id) || '익명',
+          forum_isbn: p.forum_isbn,
+          book_title: bookMap.get(p.forum_isbn) || '',
+          like_count: p.like_count,
+          comment_count: p.comment_count,
+          view_count: p.view_count,
+          score: p.score,
+        }));
+
+        setBestPosts(bestPostsResult);
+      } catch (err) {
+        console.error('베스트 게시물 로드 실패:', err);
+        setBestPosts([]);
+      }
+    };
+
+    loadBestPosts();
+  }, []);
+
+  // 베스트 게시물 클릭 시 해당 포럼으로 이동
+  const handleBestPostClick = (post: BestPost) => {
+    // 이미 로드된 forums에서 해당 포럼을 찾기
+    const existingForum = forums.find(f => f.isbn === post.forum_isbn);
+    if (existingForum) {
+      onSelectForum(existingForum);
+    } else {
+      // forums에 없는 경우 최소 Forum 객체를 구성하여 이동
+      const minimalForum: Forum = {
+        isbn: post.forum_isbn,
+        book: {
+          isbn: post.forum_isbn,
+          title: post.book_title,
+          authors: [],
+          publisher: '',
+          thumbnail: '',
+          contents: '',
+        },
+        postCount: 0,
+      };
+      onSelectForum(minimalForum);
+    }
+  };
+
+  useEffect(() => {
+    // 초기 데이터 로드 (첫 페이지)
     const loadForums = async () => {
+      const from = 0;
+      const to = FORUMS_PAGE_SIZE - 1;
+
       const { data: forumsData, error } = await supabase
         .from('forums')
         .select(`
@@ -70,79 +258,101 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
             contents
           )
         `)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) {
         console.error('포럼 로드 실패:', error);
         return;
       }
 
-      // 포럼 태그 조회
-      const { data: forumTags } = await supabase
-        .from('forum_tags')
-        .select('forum_isbn, tag_name');
-
-      const tagsByForum = new Map<string, string[]>();
-      forumTags?.forEach((ft: { forum_isbn: string; tag_name: string }) => {
-        const tags = tagsByForum.get(ft.forum_isbn) || [];
-        tags.push(ft.tag_name);
-        tagsByForum.set(ft.forum_isbn, tags);
-      });
-
-      const enrichedForums: Forum[] = (forumsData || []).map((forum: {
-        isbn: string;
-        post_count: number;
-        category: string | null;
-        popularity: number;
-        average_rating: number;
-        total_ratings: number;
-        last_activity_at: string | null;
-        created_at: string;
-        books: {
-          isbn: string;
-          title: string;
-          authors: string[];
-          publisher: string;
-          thumbnail: string;
-          contents: string;
-        } | null;
-      }) => ({
-        isbn: forum.isbn,
-        book: forum.books ? {
-          isbn: forum.books.isbn,
-          title: forum.books.title,
-          authors: forum.books.authors || [],
-          publisher: forum.books.publisher || '',
-          thumbnail: forum.books.thumbnail || '',
-          contents: forum.books.contents || '',
-        } : {
-          isbn: forum.isbn,
-          title: '',
-          authors: [],
-          publisher: '',
-          thumbnail: '',
-          contents: '',
-        },
-        postCount: forum.post_count,
-        category: forum.category || undefined,
-        tags: tagsByForum.get(forum.isbn) || [],
-        popularity: forum.popularity,
-        averageRating: forum.average_rating,
-        totalRatings: forum.total_ratings,
-        lastActivityAt: forum.last_activity_at ? new Date(forum.last_activity_at) : undefined,
-        createdAt: forum.created_at ? new Date(forum.created_at) : undefined,
-      }));
+      const tagsByForum = await fetchForumTags();
+      const enrichedForums = enrichForumsData(forumsData || [], tagsByForum);
 
       setForums(enrichedForums);
+      setForumsPage(0);
+      setHasMoreForums((forumsData || []).length >= FORUMS_PAGE_SIZE);
     };
 
     loadForums();
 
-    // Supabase 실시간 구독
+    // Supabase 실시간 구독 — 새 포럼 추가 시 첫 페이지만 리로드
     const subscription = supabase
       .channel('forums_changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'forums' }, () => {
-        loadForums();
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'forums' }, async (payload) => {
+        // 새 포럼이 추가되면 해당 포럼 데이터를 조회하여 목록 상단에 추가
+        const newIsbn = (payload.new as { isbn: string }).isbn;
+        const { data: newForumData } = await supabase
+          .from('forums')
+          .select(`
+            isbn,
+            post_count,
+            category,
+            popularity,
+            average_rating,
+            total_ratings,
+            last_activity_at,
+            created_at,
+            books (
+              isbn,
+              title,
+              authors,
+              publisher,
+              thumbnail,
+              contents
+            )
+          `)
+          .eq('isbn', newIsbn)
+          .single();
+
+        if (newForumData) {
+          const tagsByForum = await fetchForumTags();
+          const enriched = enrichForumsData([newForumData], tagsByForum);
+          if (enriched.length > 0) {
+            setForums(prev => {
+              // 중복 방지
+              const exists = prev.some(f => f.isbn === enriched[0].isbn);
+              if (exists) return prev;
+              return [enriched[0], ...prev];
+            });
+          }
+        }
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'forums' }, async () => {
+        // UPDATE 시 현재 로드된 범위만 리로드
+        const currentTo = ((forumsPage + 1) * FORUMS_PAGE_SIZE) - 1;
+        const { data: forumsData } = await supabase
+          .from('forums')
+          .select(`
+            isbn,
+            post_count,
+            category,
+            popularity,
+            average_rating,
+            total_ratings,
+            last_activity_at,
+            created_at,
+            books (
+              isbn,
+              title,
+              authors,
+              publisher,
+              thumbnail,
+              contents
+            )
+          `)
+          .order('created_at', { ascending: false })
+          .range(0, currentTo);
+
+        if (forumsData) {
+          const tagsByForum = await fetchForumTags();
+          const enrichedForums = enrichForumsData(forumsData, tagsByForum);
+          setForums(enrichedForums);
+        }
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'forums' }, async (payload) => {
+        const deletedIsbn = (payload.old as { isbn: string }).isbn;
+        setForums(prev => prev.filter(f => f.isbn !== deletedIsbn));
       })
       .subscribe();
 
@@ -150,6 +360,64 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  const handleLoadMoreForums = async () => {
+    if (!hasMoreForums || isLoadingMoreForums) return;
+
+    setIsLoadingMoreForums(true);
+    try {
+      const nextPage = forumsPage + 1;
+      const from = nextPage * FORUMS_PAGE_SIZE;
+      const to = from + FORUMS_PAGE_SIZE - 1;
+
+      const { data: forumsData, error } = await supabase
+        .from('forums')
+        .select(`
+          isbn,
+          post_count,
+          category,
+          popularity,
+          average_rating,
+          total_ratings,
+          last_activity_at,
+          created_at,
+          books (
+            isbn,
+            title,
+            authors,
+            publisher,
+            thumbnail,
+            contents
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) {
+        console.error('추가 포럼 로드 실패:', error);
+        return;
+      }
+
+      if ((forumsData || []).length < FORUMS_PAGE_SIZE) {
+        setHasMoreForums(false);
+      }
+
+      const tagsByForum = await fetchForumTags();
+      const enrichedForums = enrichForumsData(forumsData || [], tagsByForum);
+
+      setForums(prev => {
+        // 중복 제거
+        const existingIsbns = new Set(prev.map(f => f.isbn));
+        const newForums = enrichedForums.filter(f => !existingIsbns.has(f.isbn));
+        return [...prev, ...newForums];
+      });
+      setForumsPage(nextPage);
+    } catch (error) {
+      console.error('추가 포럼 로드 실패:', error);
+    } finally {
+      setIsLoadingMoreForums(false);
+    }
+  };
 
   // 필터링 적용
   useEffect(() => {
@@ -171,7 +439,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     if (!currentUser) return;
 
     try {
-      const bookmarkedForumsData = await BookmarkService.getBookmarkedForums(currentUser.uid);
+      const bookmarkedForumsData = await BookmarkService.getBookmarkedForums(userProfile?.id || '');
       setBookmarkedForums(bookmarkedForumsData);
 
       const bookmarkSet = new Set(bookmarkedForumsData.map(forum => forum.isbn));
@@ -190,7 +458,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     }
 
     try {
-      const isBookmarked = await BookmarkService.toggleBookmark(currentUser.uid, isbn);
+      const isBookmarked = await BookmarkService.toggleBookmark(userProfile?.id || '', isbn);
 
       if (isBookmarked) {
         setBookmarks(prev => new Set([...prev, isbn]));
@@ -351,7 +619,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     }));
   }, []);
 
-  const handleToggleTag = (tag: string) => {
+  const handleToggleTag = useCallback((tag: string) => {
     setFilterOptions(prev => {
       const current = prev.tags || [];
       const exists = current.includes(tag);
@@ -360,7 +628,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         tags: exists ? current.filter(t => t !== tag) : [...current, tag],
       };
     });
-  };
+  }, []);
 
   const handleSortChange = useCallback((sortBy: FilterOptions['sortBy']) => {
     setFilterOptions(prev => ({
@@ -369,9 +637,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
     }));
   }, []);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setFilterOptions({});
-  };
+  }, []);
+
+  // 필터 변경 시 hasMoreForums도 재계산 (필터링은 프론트엔드에서 수행되므로 전체 데이터 기준)
+  // 참고: 필터링은 이미 로드된 forums 배열에 대해 수행되므로 페이지네이션은 DB 로드 기준으로 유지
 
   const hasActiveFilters = () => {
     return !!(filterOptions.category || (filterOptions.tags && filterOptions.tags.length > 0) || filterOptions.sortBy);
@@ -521,6 +792,31 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
           </div>
         )}
       </div>
+
+      {/* 인기 게시물 섹션 */}
+      {bestPosts.length > 0 && (
+        <section className="mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">🔥 인기 게시물</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+            {bestPosts.map(post => (
+              <div
+                key={post.id}
+                onClick={() => handleBestPostClick(post)}
+                className="min-w-[250px] max-w-[280px] bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
+              >
+                <h3 className="font-medium text-gray-900 text-sm line-clamp-2">{post.title}</h3>
+                <p className="text-xs text-gray-500 mt-1 truncate">{post.book_title}</p>
+                <p className="text-xs text-gray-400 mt-1 truncate">{post.author_name}</p>
+                <div className="flex gap-3 mt-2 text-xs text-gray-400">
+                  <span>❤️ {post.like_count}</span>
+                  <span>💬 {post.comment_count}</span>
+                  <span>👁 {post.view_count}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 북마크한 살롱 표시 */}
       {bookmarkedForums.length > 0 && (
@@ -719,15 +1015,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">📚 최근 개설된 살롱</h2>
         <div className="space-y-3 sm:space-y-4">
           {filteredForums.length > 0 ? (
-            filteredForums
-              .sort((a, b) => {
-                // createdAt 기준으로 정렬 (최신순)
-                const aTime = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt || 0);
-                const bTime = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt || 0);
-                return bTime.getTime() - aTime.getTime();
-              })
-              .slice(0, 5) // 최대 5개만 표시
-              .map(forum => (
+            <>
+              {filteredForums.map(forum => (
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
@@ -790,7 +1079,30 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     </div>
                   </div>
                 </div>
-              ))
+              ))}
+              {hasMoreForums && (
+                <div className="text-center pt-4">
+                  <button
+                    onClick={handleLoadMoreForums}
+                    disabled={isLoadingMoreForums}
+                    className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="살롱 더 보기"
+                  >
+                    {isLoadingMoreForums ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        불러오는 중...
+                      </span>
+                    ) : (
+                      '더 보기'
+                    )}
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="text-center py-8 sm:py-10 px-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
               <p className="text-sm sm:text-base text-gray-700">

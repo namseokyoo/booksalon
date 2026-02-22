@@ -10,7 +10,7 @@ interface UserMenuProps {
 }
 
 const UserMenu: React.FC<UserMenuProps> = ({ user, onClose, onShowProfile }) => {
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSendMessage = async () => {
@@ -23,8 +23,8 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onClose, onShowProfile }) => 
         try {
             // 채팅방 생성 또는 기존 채팅방 찾기
             const chatRoom = await MessagingService.getOrCreateChatRoom(
-                currentUser.uid,
-                user.uid
+                userProfile?.id || '',
+                user.id
             );
 
             // TODO: 메시지 페이지로 이동하는 로직 추가

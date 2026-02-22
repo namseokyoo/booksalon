@@ -7,17 +7,19 @@ import UserMenu from './UserMenu';
 import UserProfilePreview from './UserProfilePreview';
 import CreatePostModal from './CreatePostModal';
 import type { ImagePreview } from './ImageUploader';
+import ReadingStatusButton from './ReadingStatusButton';
 import { ArrowLeftIcon, PlusIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService, TagService, PostImageService } from '../lib/services';
-import ReadingStatusButton from './ReadingStatusButton';
 
 interface ForumViewProps {
   forum: Forum;
   onBack: () => void;
   onNavigateToMessaging?: (userId: string) => void;
 }
+
+const POSTS_PAGE_SIZE = 20;
 
 const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessaging }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,29 +29,106 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [postsPage, setPostsPage] = useState(0);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const { currentUser } = useAuth();
 
-  useEffect(() => {
-    if (!currentUser) {
-      setCurrentUserId(null);
-      return;
-    }
-    supabase
-      .from('users')
-      .select('id')
-      .eq('auth_id', currentUser.uid)
-      .single()
-      .then(({ data }) => {
-        if (data) setCurrentUserId((data as { id: string }).id);
+  const enrichPostsData = async (postsData: Array<{
+    id: string;
+    title: string;
+    content: string;
+    author_id: string;
+    forum_isbn: string;
+    created_at: string;
+    updated_at: string | null;
+    comment_count: number;
+    like_count: number;
+    view_count: number | null;
+  }>): Promise<Post[]> => {
+    if (postsData.length === 0) return [];
+
+    const postIds = postsData.map(p => p.id);
+
+    // 배치 조회: 이미지, 작성자, 태그, 좋아요
+    const [postImagesResult, authorsResult, postTagsResult, postLikesResult] = await Promise.all([
+      supabase
+        .from('post_images')
+        .select('id, post_id, url, thumbnail_url, width, height, display_order')
+        .in('post_id', postIds),
+      supabase
+        .from('users')
+        .select('id, auth_id, email, display_name, nickname')
+        .in('id', [...new Set(postsData.map(p => p.author_id))]),
+      supabase
+        .from('post_tags')
+        .select('post_id, tag_name')
+        .in('post_id', postIds),
+      supabase
+        .from('post_likes')
+        .select('post_id, user_id')
+        .in('post_id', postIds),
+    ]);
+
+    const imagesByPost = new Map<string, PostImage[]>();
+    (postImagesResult.data || []).forEach((img: { id: string; post_id: string; url: string; thumbnail_url: string | null; width: number; height: number; display_order: number | null }) => {
+      const images = imagesByPost.get(img.post_id) || [];
+      images.push({
+        id: img.id,
+        url: img.url,
+        thumbnailUrl: img.thumbnail_url || undefined,
+        width: img.width,
+        height: img.height,
+        order: img.display_order || 0,
       });
-  }, [currentUser]);
+      imagesByPost.set(img.post_id, images);
+    });
+
+    const authorMap = new Map((authorsResult.data || []).map((a: { id: string; auth_id: string; email: string; display_name: string | null; nickname: string | null }) => [a.id, a]));
+
+    const tagsByPost = new Map<string, string[]>();
+    (postTagsResult.data || []).forEach((pt: { post_id: string; tag_name: string }) => {
+      const tags = tagsByPost.get(pt.post_id) || [];
+      tags.push(pt.tag_name);
+      tagsByPost.set(pt.post_id, tags);
+    });
+
+    const likesByPost = new Map<string, string[]>();
+    (postLikesResult.data || []).forEach((pl: { post_id: string; user_id: string }) => {
+      const likes = likesByPost.get(pl.post_id) || [];
+      likes.push(pl.user_id);
+      likesByPost.set(pl.post_id, likes);
+    });
+
+    return postsData.map((post) => {
+      const author = authorMap.get(post.author_id);
+      return {
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        author: {
+          uid: author?.auth_id || post.author_id,
+          email: author?.email || '',
+        },
+        createdAt: post.created_at ? new Date(post.created_at) : new Date(),
+        updatedAt: post.updated_at ? new Date(post.updated_at) : undefined,
+        commentCount: post.comment_count,
+        likeCount: post.like_count,
+        viewCount: post.view_count || 0,
+        likes: likesByPost.get(post.id) || [],
+        tags: tagsByPost.get(post.id) || [],
+        images: imagesByPost.get(post.id) || [],
+      };
+    });
+  };
 
   useEffect(() => {
     if (!forum.isbn) return;
 
     const loadPosts = async () => {
-      // 게시물 로드
+      const from = 0;
+      const to = POSTS_PAGE_SIZE - 1;
+
       const { data: postsData, error } = await supabase
         .from('posts')
         .select(`
@@ -65,111 +144,85 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           view_count
         `)
         .eq('forum_isbn', forum.isbn)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .range(from, to);
 
       if (error) {
         console.error('게시물 로드 실패:', error);
         return;
       }
 
-      // 게시물 이미지 조회
-      const postIds = (postsData || []).map((p: { id: string }) => p.id);
-      const { data: postImagesData } = await supabase
-        .from('post_images')
-        .select('id, post_id, url, thumbnail_url, width, height, display_order')
-        .in('post_id', postIds);
-
-      const imagesByPost = new Map<string, PostImage[]>();
-      (postImagesData || []).forEach((img: { id: string; post_id: string; url: string; thumbnail_url: string | null; width: number; height: number; display_order: number | null }) => {
-        const images = imagesByPost.get(img.post_id) || [];
-        images.push({
-          id: img.id,
-          url: img.url,
-          thumbnailUrl: img.thumbnail_url || undefined,
-          width: img.width,
-          height: img.height,
-          order: img.display_order || 0,
-        });
-        imagesByPost.set(img.post_id, images);
-      });
-
-      // 작성자 정보 조회
-      const authorIds = [...new Set((postsData || []).map((p: { author_id: string }) => p.author_id))];
-      const { data: authors } = await supabase
-        .from('users')
-        .select('id, auth_id, email, display_name, nickname')
-        .in('id', authorIds);
-
-      const authorMap = new Map((authors || []).map((a: { id: string; auth_id: string; email: string; display_name: string | null; nickname: string | null }) => [a.id, a]));
-
-      // 게시물 태그 조회
-      const { data: postTags } = await supabase
-        .from('post_tags')
-        .select('post_id, tag_name')
-        .in('post_id', postIds);
-
-      const tagsByPost = new Map<string, string[]>();
-      postTags?.forEach((pt: { post_id: string; tag_name: string }) => {
-        const tags = tagsByPost.get(pt.post_id) || [];
-        tags.push(pt.tag_name);
-        tagsByPost.set(pt.post_id, tags);
-      });
-
-      // 좋아요한 사용자 목록 조회
-      const { data: postLikes } = await supabase
-        .from('post_likes')
-        .select('post_id, user_id')
-        .in('post_id', postIds);
-
-      const likesByPost = new Map<string, string[]>();
-      postLikes?.forEach((pl: { post_id: string; user_id: string }) => {
-        const likes = likesByPost.get(pl.post_id) || [];
-        likes.push(pl.user_id);
-        likesByPost.set(pl.post_id, likes);
-      });
-
-      const posts: Post[] = (postsData || []).map((post: {
-        id: string;
-        title: string;
-        content: string;
-        author_id: string;
-        forum_isbn: string;
-        created_at: string;
-        updated_at: string | null;
-        comment_count: number;
-        like_count: number;
-        view_count: number | null;
-      }) => {
-        const author = authorMap.get(post.author_id);
-        return {
-          id: post.id,
-          title: post.title,
-          content: post.content,
-          author: {
-            uid: author?.auth_id || post.author_id,
-            email: author?.email || '',
-          },
-          createdAt: post.created_at ? new Date(post.created_at) : new Date(),
-          updatedAt: post.updated_at ? new Date(post.updated_at) : undefined,
-          commentCount: post.comment_count,
-          likeCount: post.like_count,
-          likes: likesByPost.get(post.id) || [],
-          tags: tagsByPost.get(post.id) || [],
-          images: imagesByPost.get(post.id) || [],
-          viewCount: post.view_count ?? 0,
-        };
-      });
-
-      setPosts(posts);
+      const enrichedPosts = await enrichPostsData(postsData || []);
+      setPosts(enrichedPosts);
+      setPostsPage(0);
+      setHasMorePosts((postsData || []).length >= POSTS_PAGE_SIZE);
     };
 
     loadPosts();
 
-    // Supabase 실시간 구독
+    // Supabase 실시간 구독 — 새 게시물 추가 시 첫 페이지 리로드
     const subscription = supabase
       .channel(`posts_${forum.isbn}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, () => {
-        loadPosts();
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, async (payload) => {
+        // 새 게시물을 조회하여 목록 상단에 추가
+        const newPostId = (payload.new as { id: string }).id;
+        const { data: newPostData } = await supabase
+          .from('posts')
+          .select(`
+            id,
+            title,
+            content,
+            author_id,
+            forum_isbn,
+            created_at,
+            updated_at,
+            comment_count,
+            like_count,
+            view_count
+          `)
+          .eq('id', newPostId)
+          .single();
+
+        if (newPostData) {
+          const enriched = await enrichPostsData([newPostData]);
+          if (enriched.length > 0) {
+            setPosts(prev => {
+              const exists = prev.some(p => p.id === enriched[0].id);
+              if (exists) return prev;
+              return [enriched[0], ...prev];
+            });
+          }
+        }
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, async () => {
+        // UPDATE 시 현재 로드된 범위만 리로드
+        const currentTo = ((postsPage + 1) * POSTS_PAGE_SIZE) - 1;
+        const { data: postsData } = await supabase
+          .from('posts')
+          .select(`
+            id,
+            title,
+            content,
+            author_id,
+            forum_isbn,
+            created_at,
+            updated_at,
+            comment_count,
+            like_count,
+            view_count
+          `)
+          .eq('forum_isbn', forum.isbn)
+          .order('created_at', { ascending: false })
+          .range(0, currentTo);
+
+        if (postsData) {
+          const enrichedPosts = await enrichPostsData(postsData);
+          setPosts(enrichedPosts);
+        }
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, (payload) => {
+        const deletedId = (payload.old as { id: string }).id;
+        setPosts(prev => prev.filter(p => p.id !== deletedId));
       })
       .subscribe();
 
@@ -177,6 +230,57 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
       subscription.unsubscribe();
     };
   }, [forum.isbn]);
+
+  const handleLoadMorePosts = async () => {
+    if (!hasMorePosts || isLoadingMorePosts) return;
+
+    setIsLoadingMorePosts(true);
+    try {
+      const nextPage = postsPage + 1;
+      const from = nextPage * POSTS_PAGE_SIZE;
+      const to = from + POSTS_PAGE_SIZE - 1;
+
+      const { data: postsData, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          content,
+          author_id,
+          forum_isbn,
+          created_at,
+          updated_at,
+          comment_count,
+          like_count,
+          view_count
+        `)
+        .eq('forum_isbn', forum.isbn)
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) {
+        console.error('추가 게시물 로드 실패:', error);
+        return;
+      }
+
+      if ((postsData || []).length < POSTS_PAGE_SIZE) {
+        setHasMorePosts(false);
+      }
+
+      const enrichedPosts = await enrichPostsData(postsData || []);
+
+      setPosts(prev => {
+        const existingIds = new Set(prev.map(p => p.id));
+        const newPosts = enrichedPosts.filter(p => !existingIds.has(p.id));
+        return [...prev, ...newPosts];
+      });
+      setPostsPage(nextPage);
+    } catch (error) {
+      console.error('추가 게시물 로드 실패:', error);
+    } finally {
+      setIsLoadingMorePosts(false);
+    }
+  };
 
   const handleAddPost = async (title: string, content: string, tags?: string[], imagePreviews?: ImagePreview[]) => {
     if (!currentUser) {
@@ -290,31 +394,31 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
     setSelectedPost(post);
   }, []);
 
-  const handleUserClick = (user: UserProfile) => {
+  const handleUserClick = useCallback((user: UserProfile) => {
     setSelectedUser(user);
     setShowUserMenu(true);
-  };
+  }, []);
 
-  const handleShowProfile = () => {
+  const handleShowProfile = useCallback(() => {
     setShowUserMenu(false);
     setShowUserProfile(true);
-  };
+  }, []);
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = useCallback(() => {
     setShowUserMenu(false);
     setSelectedUser(null);
-  };
+  }, []);
 
-  const handleCloseUserProfile = () => {
+  const handleCloseUserProfile = useCallback(() => {
     setShowUserProfile(false);
     setSelectedUser(null);
-  };
+  }, []);
 
-  const handleSendMessage = (userId: string) => {
+  const handleSendMessage = useCallback((userId: string) => {
     if (onNavigateToMessaging) {
       onNavigateToMessaging(userId);
     }
-  };
+  }, [onNavigateToMessaging]);
 
   const handleBackToList = useCallback(() => {
     setSelectedPost(null);
@@ -340,14 +444,12 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           <span>목록으로 돌아가기</span>
         </button>
         <div className="flex items-start justify-between">
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <BookInfo book={forum.book} forum={forum} />
           </div>
-          {currentUserId && (
-            <div className="ml-4 flex-shrink-0">
-              <ReadingStatusButton isbn={forum.isbn} userId={currentUserId} />
-            </div>
-          )}
+          <div className="ml-3 flex-shrink-0">
+            <ReadingStatusButton isbn={forum.isbn} />
+          </div>
         </div>
       </div>
 
@@ -357,6 +459,28 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
           onPostClick={handlePostClick}
           onUserClick={handleUserClick}
         />
+        {hasMorePosts && posts.length > 0 && (
+          <div className="text-center pt-4">
+            <button
+              onClick={handleLoadMorePosts}
+              disabled={isLoadingMorePosts}
+              className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="게시물 더 보기"
+            >
+              {isLoadingMorePosts ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  불러오는 중...
+                </span>
+              ) : (
+                '더 보기'
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       <button

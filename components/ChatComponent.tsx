@@ -17,13 +17,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
     const [newMessage, setNewMessage] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
 
     useEffect(() => {
         if (!chatRoomId || !currentUser) return;
 
         // 메시지 읽음 처리
-        MessagingService.markAsRead(chatRoomId, currentUser.uid);
+        MessagingService.markAsRead(chatRoomId, userProfile?.id || '');
 
         // 실시간 메시지 리스너
         const unsubscribe = MessagingService.subscribeToMessages(chatRoomId, (newMessages) => {
@@ -49,8 +49,8 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
         try {
             await MessagingService.sendMessage(
                 chatRoomId,
-                currentUser.uid,
-                otherUser.uid,
+                userProfile?.id || '',
+                otherUser.id,
                 newMessage.trim()
             );
             setNewMessage('');
@@ -112,16 +112,16 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                     messages.map((message) => (
                         <div
                             key={message.id}
-                            className={`flex ${message.senderId === currentUser?.uid ? 'justify-end' : 'justify-start'}`}
+                            className={`flex ${message.senderId === userProfile?.id ? 'justify-end' : 'justify-start'}`}
                         >
                             <div
-                                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl shadow-sm ${message.senderId === currentUser?.uid
+                                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl shadow-sm ${message.senderId === userProfile?.id
                                         ? 'bg-cyan-50 text-gray-900'
                                         : 'bg-white border border-gray-200 text-gray-900'
                                     }`}
                             >
                                 <p className="text-sm">{message.content}</p>
-                                <p className={`text-xs mt-1 ${message.senderId === currentUser?.uid ? 'text-gray-500' : 'text-gray-500'
+                                <p className={`text-xs mt-1 ${message.senderId === userProfile?.id ? 'text-gray-500' : 'text-gray-500'
                                     }`}>
                                     {formatMessageTime(message.createdAt)}
                                 </p>

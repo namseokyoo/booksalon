@@ -14,48 +14,43 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState(false);
-  // [KAKAO_DISABLED] 카카오 비즈니스 인증 보류로 임시 비활성화 (복원 시 주석 해제)
-  // const { signup, loginWithGoogle, loginWithKakao } = useAuth();
   const { signup, loginWithGoogle } = useAuth();
-  const emailInputRef = useRef<HTMLInputElement>(null);
-  const modalRef = useRef<HTMLFormElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    emailInputRef.current?.focus();
-  }, []);
-
-  // ESC 키 닫기
+  // ESC 키로 닫기 + 포커스 트래핑
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+          'input, button, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstEl = focusableElements[0];
+        const lastEl = focusableElements[focusableElements.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl) {
+            e.preventDefault();
+            lastEl?.focus();
+          }
+        } else {
+          if (document.activeElement === lastEl) {
+            e.preventDefault();
+            firstEl?.focus();
+          }
+        }
       }
     };
+
     document.addEventListener('keydown', handleKeyDown);
+
+    const firstInput = modalRef.current?.querySelector<HTMLElement>('input');
+    firstInput?.focus();
+
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
-
-  // 포커스 트래핑
-  useEffect(() => {
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab' || !modalRef.current) return;
-      const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements.length === 0) return;
-      const first = focusableElements[0];
-      const last = focusableElements[focusableElements.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener('keydown', handleTabKey);
-    return () => document.removeEventListener('keydown', handleTabKey);
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,23 +112,24 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
     setSocialLoading(false);
   };
 
-  // [KAKAO_DISABLED] 카카오 비즈니스 인증 보류로 임시 비활성화 (복원 시 주석 해제)
+  // [KAKAO_DISABLED] 카카오 비즈니스 인증 완료 전까지 비활성화
   // const handleKakaoSignUp = async () => {
   //   try {
   //     setError('');
   //     setSocialLoading(true);
   //     await loginWithKakao();
   //     onClose();
-  //   } catch (err: any) {
-  //     setError(err.message || '카카오 로그인에 실패했습니다.');
+  //   } catch (err: unknown) {
+  //     const errorMessage = err instanceof Error ? err.message : '카카오 로그인에 실패했습니다.';
+  //     setError(errorMessage);
   //     console.error(err);
   //   }
   //   setSocialLoading(false);
   // };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title">
-      <form ref={modalRef} onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title" ref={modalRef}>
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
         <div className="p-4 sm:p-6">
           <h3 id="signup-modal-title" className="text-base sm:text-lg font-medium leading-6 text-gray-900 mb-3 sm:mb-4 text-center">회원가입</h3>
           {error && <p className="bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm p-2 sm:p-3 rounded-lg mb-3 sm:mb-4">{error}</p>}
@@ -141,7 +137,6 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
             <div>
               <label htmlFor="signup-email" className="sr-only">이메일 주소</label>
               <input
-                ref={emailInputRef}
                 id="signup-email"
                 type="email"
                 required
@@ -223,7 +218,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               )}
             </button>
 
-            {/* [KAKAO_DISABLED] 카카오 비즈니스 인증 보류로 임시 비활성화 (복원 시 주석 해제)
+            {/* [KAKAO_DISABLED] 카카오 비즈니스 인증 완료 전까지 비활성화
             <button
               type="button"
               onClick={handleKakaoSignUp}
