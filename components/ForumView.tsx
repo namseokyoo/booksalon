@@ -381,6 +381,27 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
       // 사용자 통계 업데이트
       await UserService.incrementStat(currentUser.uid, 'post_count');
 
+      // 로컬 state에 새 글 즉시 추가 (Realtime 지연 대비)
+      const { data: newPostFull } = await supabase
+        .from('posts')
+        .select(`
+          id, title, content, author_id, forum_isbn,
+          created_at, updated_at, comment_count, like_count, view_count
+        `)
+        .eq('id', postId)
+        .single();
+
+      if (newPostFull) {
+        const enriched = await enrichPostsData([newPostFull]);
+        if (enriched.length > 0) {
+          setPosts(prev => {
+            const exists = prev.some(p => p.id === enriched[0].id);
+            if (exists) return prev;
+            return [enriched[0], ...prev];
+          });
+        }
+      }
+
       setIsModalOpen(false);
     } catch (error) {
       console.error('게시물 작성 실패:', error);

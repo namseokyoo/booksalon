@@ -22,6 +22,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
+  const [commentCount, setCommentCount] = useState(post.commentCount || 0);
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -189,6 +190,9 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
         // 사용자 통계 업데이트
         await UserService.incrementStat(currentUser.uid, 'comment_count');
 
+        // 로컬 댓글 카운트 즉시 갱신
+        setCommentCount(prev => prev + 1);
+
         setNewComment('');
       } catch (error) {
         console.error('댓글 작성 실패:', error);
@@ -222,7 +226,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
           <span className="hidden sm:inline">{formatDate(post.createdAt)}</span>
           <div className="flex items-center space-x-1">
             <ChatBubbleIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span>{post.commentCount || 0}</span>
+            <span>{commentCount}</span>
           </div>
           <div className="flex items-center space-x-1">
             <button

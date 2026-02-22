@@ -83,7 +83,6 @@ export interface Post {
   tags?: string[]; // 태그 목록 (최대 3개)
   searchText?: string; // 검색 최적화용 필드
   images?: PostImage[]; // 이미지 목록 (최대 3장)
-  viewCount?: number; // 조회수
 }
 
 // Activity 메타데이터 타입

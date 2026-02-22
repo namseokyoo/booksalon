@@ -427,19 +427,19 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
   // 북마크 데이터 로드
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && userProfile?.id) {
       loadBookmarks();
-    } else {
+    } else if (!currentUser) {
       setBookmarkedForums([]);
       setBookmarks(new Set());
     }
-  }, [currentUser]);
+  }, [currentUser, userProfile?.id]);
 
   const loadBookmarks = async () => {
-    if (!currentUser) return;
+    if (!currentUser || !userProfile?.id) return;
 
     try {
-      const bookmarkedForumsData = await BookmarkService.getBookmarkedForums(userProfile?.id || '');
+      const bookmarkedForumsData = await BookmarkService.getBookmarkedForums(userProfile.id);
       setBookmarkedForums(bookmarkedForumsData);
 
       const bookmarkSet = new Set(bookmarkedForumsData.map(forum => forum.isbn));
@@ -452,13 +452,13 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
   const handleToggleBookmark = useCallback(async (isbn: string, e: React.MouseEvent) => {
     e.stopPropagation(); // 포럼 클릭 이벤트 방지
 
-    if (!currentUser) {
+    if (!currentUser || !userProfile?.id) {
       alert('북마크하려면 로그인이 필요합니다.');
       return;
     }
 
     try {
-      const isBookmarked = await BookmarkService.toggleBookmark(userProfile?.id || '', isbn);
+      const isBookmarked = await BookmarkService.toggleBookmark(userProfile.id, isbn);
 
       if (isBookmarked) {
         setBookmarks(prev => new Set([...prev, isbn]));
