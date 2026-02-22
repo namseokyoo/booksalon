@@ -302,6 +302,20 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             // 사용자 통계 업데이트
             await UserService.incrementStat(currentUser.uid, 'comment_count');
 
+            // 로컬 댓글 목록 즉시 갱신 (Realtime 의존하지 않음)
+            const newCommentObj: Comment = {
+                id: crypto.randomUUID(),
+                content: newComment,
+                author: {
+                    uid: currentUser.uid,
+                    email: currentUser.email || '',
+                },
+                createdAt: new Date(),
+                likeCount: 0,
+                likes: [],
+            };
+            setComments(prev => [...prev, newCommentObj]);
+
             setNewComment('');
             setShowMentionList(false);
         } catch (error) {

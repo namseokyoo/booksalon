@@ -193,6 +193,19 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
         // 로컬 댓글 카운트 즉시 갱신
         setCommentCount(prev => prev + 1);
 
+        // 로컬 댓글 목록 즉시 갱신 (Realtime 의존하지 않음)
+        const newCommentObj: Comment = {
+          id: crypto.randomUUID(),
+          content: newComment.trim(),
+          author: {
+            uid: currentUser.uid,
+            email: currentUser.email || '',
+          },
+          createdAt: new Date(),
+          likeCount: 0,
+        };
+        setComments(prev => [...prev, newCommentObj]);
+
         setNewComment('');
       } catch (error) {
         console.error('댓글 작성 실패:', error);
