@@ -172,7 +172,7 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
       )}
 
       {message && (
-        <div className="absolute top-full left-0 mt-1 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-30">
+        <div className="absolute top-full left-0 mt-1 px-3 py-2 bg-surface text-foreground text-xs rounded-lg shadow-lg whitespace-nowrap z-30">
           {message}
         </div>
       )}

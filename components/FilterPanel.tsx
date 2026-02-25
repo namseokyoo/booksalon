@@ -52,21 +52,21 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
         currentOptions.searchTerm;
 
     return (
-        <div className="bg-gray-800 rounded-lg p-4 mb-6">
+        <div className="bg-surface rounded-lg p-4 mb-6">
             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">필터 및 정렬</h3>
+                <h3 className="text-lg font-semibold text-foreground">필터 및 정렬</h3>
                 <div className="flex items-center space-x-2">
                     {hasActiveFilters && (
                         <button
                             onClick={clearFilters}
-                            className="px-3 py-1 text-xs text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 rounded transition-colors duration-200"
+                            className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground bg-muted hover:bg-accent rounded transition-colors duration-200"
                         >
                             필터 초기화
                         </button>
                     )}
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="px-3 py-1 text-xs text-primary hover:text-primary-700 bg-gray-700 hover:bg-gray-600 rounded transition-colors duration-200"
+                        className="px-3 py-1 text-xs text-primary hover:text-primary-700 bg-muted hover:bg-accent rounded transition-colors duration-200"
                     >
                         {isExpanded ? '접기' : '펼치기'}
                     </button>
@@ -75,11 +75,11 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
 
             {/* 검색 */}
             <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-500 mb-2">검색</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2">검색</label>
                 <input
                     type="text"
                     placeholder="제목, 저자, 출판사, 태그로 검색..."
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 text-sm focus:ring-ring focus:border-primary focus:outline-none"
+                    className="w-full px-3 py-2 bg-muted border border-border rounded-md text-surface-foreground text-sm focus:ring-ring focus:border-primary focus:outline-none"
                     value={currentOptions.searchTerm || ''}
                     onChange={(e) => handleSearchChange(e.target.value)}
                 />
@@ -87,7 +87,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
 
             {/* 정렬 */}
             <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-500 mb-2">정렬</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-2">정렬</label>
                 <div className="flex flex-wrap gap-2">
                     {[
                         { value: 'recent', label: '최근 활동' },
@@ -100,7 +100,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                             onClick={() => handleSortChange(value as FilterOptions['sortBy'])}
                             className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.sortBy === value
                                     ? 'bg-primary text-primary-foreground'
-                                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                    : 'bg-muted text-surface-foreground hover:bg-accent'
                                 }`}
                         >
                             {label}
@@ -113,13 +113,13 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                 <>
                     {/* 카테고리 */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-500 mb-2">카테고리</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-2">카테고리</label>
                         <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => handleCategoryChange('전체')}
                                 className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${!currentOptions.category
                                         ? 'bg-primary text-primary-foreground'
-                                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                        : 'bg-muted text-surface-foreground hover:bg-accent'
                                     }`}
                             >
                                 전체
@@ -130,7 +130,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                     onClick={() => handleCategoryChange(category)}
                                     className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.category === category
                                             ? 'bg-primary text-primary-foreground'
-                                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                            : 'bg-muted text-surface-foreground hover:bg-accent'
                                         }`}
                                 >
                                     {category}
@@ -141,7 +141,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
 
                     {/* 태그 */}
                     <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-500 mb-2">태그</label>
+                        <label className="block text-sm font-medium text-muted-foreground mb-2">태그</label>
                         <div className="flex flex-wrap gap-2">
                             {FilterService.POPULAR_TAGS.map((tag) => (
                                 <button
@@ -149,7 +149,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                     onClick={() => handleTagToggle(tag)}
                                     className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.tags?.includes(tag)
                                             ? 'bg-yellow-600 text-white'
-                                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                            : 'bg-muted text-surface-foreground hover:bg-accent'
                                         }`}
                                 >
                                     {tag}

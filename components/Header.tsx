@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BookOpenIcon } from './icons';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile } from '../types';
+import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {
     onLoginClick: () => void;
@@ -114,6 +115,8 @@ const Header: React.FC<HeaderProps> = ({
 
                     {/* 검색 버튼 및 사용자 메뉴 */}
                     <div className="flex items-center space-x-1 sm:space-x-2">
+                        {/* 테마 토글 */}
+                        <ThemeToggle />
                         {/* 통합 검색 버튼 */}
                         <button
                             onClick={onSearchClick}

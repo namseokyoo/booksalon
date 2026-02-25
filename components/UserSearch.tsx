@@ -52,7 +52,7 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
                     value={searchQuery}
                     onChange={handleInputChange}
                     placeholder="사용자 이름으로 검색..."
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-ring focus:border-primary focus:outline-none"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-ring focus:border-primary focus:outline-none"
                 />
             </div>
 
@@ -64,24 +64,24 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
 
             {searchResults.length > 0 && (
                 <div className="space-y-2">
-                    <h3 className="text-white font-semibold">검색 결과</h3>
+                    <h3 className="text-foreground font-semibold">검색 결과</h3>
                     {searchResults.map((user) => (
                         <div
                             key={user.uid}
                             onClick={() => onSelectUser(user)}
-                            className="bg-gray-800 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors"
+                            className="bg-surface p-3 rounded-lg hover:bg-muted cursor-pointer transition-colors"
                         >
                             <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                                    <span className="text-white font-semibold text-sm">
+                                    <span className="text-primary-foreground font-semibold text-sm">
                                         {user.nickname?.charAt(0) || user.displayName?.charAt(0) || 'U'}
                                     </span>
                                 </div>
                                 <div>
-                                    <h4 className="text-white font-medium">
+                                    <h4 className="text-foreground font-medium">
                                         {user.nickname || user.displayName}
                                     </h4>
-                                    <p className="text-gray-500 text-sm">{user.email}</p>
+                                    <p className="text-muted-foreground text-sm">{user.email}</p>
                                 </div>
                             </div>
                         </div>
@@ -90,7 +90,7 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
             )}
 
             {searchQuery && !isSearching && searchResults.length === 0 && (
-                <div className="text-center text-gray-500 py-4">
+                <div className="text-center text-muted-foreground py-4">
                     검색 결과가 없습니다.
                 </div>
             )}

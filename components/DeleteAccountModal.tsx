@@ -63,24 +63,24 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="delete-account-modal-title" ref={modalRef}>
-      <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-sm">
+      <div className="bg-surface rounded-lg shadow-xl w-full max-w-sm">
         <div className="p-6">
-          <h3 id="delete-account-modal-title" className="text-lg font-medium leading-6 text-white mb-2 text-center">정말 탈퇴하시겠습니까?</h3>
+          <h3 id="delete-account-modal-title" className="text-lg font-medium leading-6 text-foreground mb-2 text-center">정말 탈퇴하시겠습니까?</h3>
           <p className="text-center text-sm text-muted-foreground mb-4">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.</p>
           {error && <p className="bg-red-900/50 text-red-300 text-sm p-3 rounded-md my-4">{error}</p>}
         </div>
-        <div className="bg-gray-900 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
+        <div className="bg-background px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
           <button
             type="button"
             disabled={loading}
             onClick={handleDelete}
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-gray-500"
+            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-muted"
           >
             {loading ? '삭제 중...' : '네, 탈퇴합니다.'}
           </button>
           <button
             type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-700 text-base font-medium text-gray-200 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+            className="mt-3 w-full inline-flex justify-center rounded-md border border-border shadow-sm px-4 py-2 bg-muted text-base font-medium text-surface-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
             onClick={onClose}
           >
             취소

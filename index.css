@@ -104,6 +104,60 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  /* ===== 다크 테마 오버라이드 ===== */
+  .dark {
+    color-scheme: dark;
+
+    /* 배경/표면 - 순수 검정 회피, 따뜻한 다크 (hue 80 유지) */
+    --color-background: oklch(0.145 0.005 80);
+    --color-foreground: oklch(0.985 0.002 80);
+    --color-surface: oklch(0.205 0.005 80);
+    --color-surface-foreground: oklch(0.940 0.002 80);
+
+    /* 뮤트 */
+    --color-muted: oklch(0.269 0.005 80);
+    --color-muted-foreground: oklch(0.556 0.01 60);
+
+    /* 프라이머리 - 다크에서 약간 밝게 */
+    --color-primary: oklch(0.650 0.135 200);
+    --color-primary-foreground: oklch(0.145 0.015 200);
+
+    /* 세컨더리 / 액센트 */
+    --color-secondary: oklch(0.269 0.005 80);
+    --color-secondary-foreground: oklch(0.940 0.002 80);
+    --color-accent: oklch(0.269 0.010 80);
+    --color-accent-foreground: oklch(0.940 0.002 80);
+
+    /* 상태 색상 */
+    --color-destructive: oklch(0.600 0.220 27);
+    --color-destructive-foreground: oklch(1.0 0 0);
+    --color-success: oklch(0.660 0.180 149);
+    --color-success-foreground: oklch(1.0 0 0);
+    --color-warning: oklch(0.800 0.170 70);
+    --color-warning-foreground: oklch(0.145 0.015 60);
+
+    /* UI 요소 */
+    --color-border: oklch(0.350 0.005 80);
+    --color-input: oklch(0.350 0.005 80);
+    --color-ring: oklch(0.650 0.135 200);
+
+    /* 프라이머리 스케일 (다크에서 반전) */
+    --color-primary-50: oklch(0.200 0.020 200);
+    --color-primary-100: oklch(0.250 0.040 200);
+    --color-primary-200: oklch(0.320 0.070 200);
+    --color-primary-300: oklch(0.420 0.100 200);
+    --color-primary-500: oklch(0.600 0.140 200);
+    --color-primary-600: oklch(0.650 0.135 200);
+    --color-primary-700: oklch(0.720 0.120 200);
+
+    /* 그림자 - 다크에서 강화 */
+    --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.15);
+    --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.25), 0 1px 2px oklch(0 0 0 / 0.15);
+    --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.25), 0 2px 4px -2px oklch(0 0 0 / 0.15);
+    --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.25), 0 4px 6px -4px oklch(0 0 0 / 0.15);
+    --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.25), 0 8px 10px -6px oklch(0 0 0 / 0.15);
+  }
 }
 
 /* 가로 스크롤 스크롤바 숨김 */

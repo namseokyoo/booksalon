@@ -97,10 +97,10 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
 
     if (!currentUser) {
         return (
-            <div className="min-h-screen bg-gray-900 text-white">
+            <div className="min-h-screen bg-background text-foreground">
                 <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
                     <div className="text-center py-8">
-                        <p className="text-gray-500">로그인이 필요합니다.</p>
+                        <p className="text-muted-foreground">로그인이 필요합니다.</p>
                     </div>
                 </div>
             </div>
@@ -108,19 +108,19 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
+        <div className="min-h-screen bg-background text-foreground">
             <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
                 <div className="flex items-center justify-between mb-6">
                     <button
                         onClick={onBack}
-                        className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200"
+                        className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200"
                     >
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         <span>돌아가기</span>
                     </button>
-                    <h1 className="text-2xl font-bold text-white">활동 피드</h1>
+                    <h1 className="text-2xl font-bold text-foreground">활동 피드</h1>
                     <div></div>
                 </div>
 
@@ -130,7 +130,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                         onClick={() => setActiveTab('following')}
                         className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'following'
                                 ? 'bg-primary text-primary-foreground'
-                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                : 'bg-muted text-surface-foreground hover:bg-accent'
                             }`}
                     >
                         팔로잉 활동
@@ -139,7 +139,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                         onClick={() => setActiveTab('my')}
                         className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'my'
                                 ? 'bg-primary text-primary-foreground'
-                                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                : 'bg-muted text-surface-foreground hover:bg-accent'
                             }`}
                     >
                         내 활동
@@ -147,15 +147,15 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                 </div>
 
                 {/* 활동 목록 */}
-                <div className="bg-gray-800 rounded-lg p-6">
+                <div className="bg-surface rounded-lg p-6">
                     {loading ? (
                         <div className="text-center py-8">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                            <p className="text-gray-500 mt-2">활동을 불러오는 중...</p>
+                            <p className="text-muted-foreground mt-2">활동을 불러오는 중...</p>
                         </div>
                     ) : activities.length === 0 ? (
                         <div className="text-center py-8">
-                            <p className="text-gray-500">
+                            <p className="text-muted-foreground">
                                 {activeTab === 'following'
                                     ? '팔로잉 중인 사용자의 활동이 없습니다.'
                                     : '아직 활동 기록이 없습니다.'
@@ -165,17 +165,17 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                     ) : (
                         <div className="space-y-4">
                             {activities.map((activity) => (
-                                <div key={activity.id} className="bg-gray-700 rounded-lg p-4">
+                                <div key={activity.id} className="bg-muted rounded-lg p-4">
                                     <div className="flex items-start space-x-3">
                                         <div className="text-2xl">{getActivityIcon(activity.type)}</div>
                                         <div className="flex-grow">
                                             <div className="flex items-center space-x-2 mb-1">
-                                                <span className="font-semibold text-white">{activity.userName}</span>
-                                                <span className="text-xs text-gray-500">{formatDate(activity.createdAt)}</span>
+                                                <span className="font-semibold text-foreground">{activity.userName}</span>
+                                                <span className="text-xs text-muted-foreground">{formatDate(activity.createdAt)}</span>
                                             </div>
-                                            <p className="text-gray-300 text-sm">{getActivityText(activity)}</p>
+                                            <p className="text-surface-foreground text-sm">{getActivityText(activity)}</p>
                                             {activity.forumTitle && (
-                                                <p className="text-xs text-gray-500 mt-1">살롱: {activity.forumTitle}</p>
+                                                <p className="text-xs text-muted-foreground mt-1">살롱: {activity.forumTitle}</p>
                                             )}
                                         </div>
                                     </div>

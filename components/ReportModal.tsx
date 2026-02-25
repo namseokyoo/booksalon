@@ -117,13 +117,13 @@ const ReportModal: React.FC<ReportModalProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-surface rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-white">🚨 신고하기</h2>
+                        <h2 className="text-xl font-bold text-foreground">🚨 신고하기</h2>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-white transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -132,10 +132,10 @@ const ReportModal: React.FC<ReportModalProps> = ({
                     </div>
 
                     <div className="mb-4">
-                        <p className="text-gray-300 text-sm">
+                        <p className="text-surface-foreground text-sm">
                             <span className="font-semibold">{getTypeLabel()}</span>을(를) 신고합니다.
                             {targetTitle && (
-                                <span className="block mt-1 text-gray-500">
+                                <span className="block mt-1 text-muted-foreground">
                                     "{targetTitle}"
                                 </span>
                             )}
@@ -144,13 +144,13 @@ const ReportModal: React.FC<ReportModalProps> = ({
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-surface-foreground mb-2">
                                 신고 사유
                             </label>
                             <select
                                 value={reportType}
                                 onChange={(e) => setReportType(e.target.value as Report['type'])}
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-ring focus:border-primary focus:outline-none"
+                                className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-foreground focus:ring-ring focus:border-primary focus:outline-none"
                             >
                                 {getTypeReasonOptions().map((option) => (
                                     <option key={option.value} value={option.value}>
@@ -161,7 +161,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-surface-foreground mb-2">
                                 신고 제목
                             </label>
                             <input
@@ -169,13 +169,13 @@ const ReportModal: React.FC<ReportModalProps> = ({
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
                                 placeholder="신고 사유를 간단히 입력하세요"
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-ring focus:border-primary focus:outline-none"
+                                className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-ring focus:border-primary focus:outline-none"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-2">
+                            <label className="block text-sm font-medium text-surface-foreground mb-2">
                                 상세 설명
                             </label>
                             <textarea
@@ -183,7 +183,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="신고 내용을 자세히 설명해주세요"
                                 rows={4}
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-ring focus:border-primary focus:outline-none resize-none"
+                                className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-ring focus:border-primary focus:outline-none resize-none"
                                 required
                             />
                         </div>
@@ -192,7 +192,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                                className="flex-1 px-4 py-2 bg-accent text-foreground rounded-lg hover:bg-muted transition-colors"
                             >
                                 취소
                             </button>

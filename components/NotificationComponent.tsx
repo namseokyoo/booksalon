@@ -109,11 +109,11 @@ const NotificationComponent: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-900 p-4">
+        <div className="min-h-screen bg-background p-4">
             <div className="max-w-4xl mx-auto">
                 <div className="mb-6">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold text-white mb-2">🔔 알림</h1>
+                        <h1 className="text-2xl font-bold text-foreground mb-2">🔔 알림</h1>
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllAsRead}
@@ -123,13 +123,13 @@ const NotificationComponent: React.FC = () => {
                             </button>
                         )}
                     </div>
-                    <p className="text-gray-500">
+                    <p className="text-muted-foreground">
                         {unreadCount > 0 ? `${unreadCount}개의 읽지 않은 알림이 있습니다.` : '모든 알림을 확인했습니다.'}
                     </p>
                 </div>
 
                 {notifications.length === 0 ? (
-                    <div className="text-center text-gray-500 py-8">
+                    <div className="text-center text-muted-foreground py-8">
                         <svg className="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 17h5l-5 5v-5zM9 7H4l5-5v5z" />
                         </svg>
@@ -141,7 +141,7 @@ const NotificationComponent: React.FC = () => {
                         {notifications.map((notification) => (
                             <div
                                 key={notification.id}
-                                className={`bg-gray-800 p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''
+                                className={`bg-surface p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''
                                     }`}
                             >
                                 <div className="flex items-start space-x-3">
@@ -150,12 +150,12 @@ const NotificationComponent: React.FC = () => {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between">
-                                            <h3 className={`font-semibold ${!notification.isRead ? 'text-white' : 'text-gray-300'
+                                            <h3 className={`font-semibold ${!notification.isRead ? 'text-foreground' : 'text-surface-foreground'
                                                 }`}>
                                                 {notification.title}
                                             </h3>
                                             <div className="flex items-center space-x-2">
-                                                <span className="text-gray-500 text-sm">
+                                                <span className="text-muted-foreground text-sm">
                                                     {formatNotificationTime(notification.createdAt)}
                                                 </span>
                                                 {!notification.isRead && (
@@ -168,13 +168,13 @@ const NotificationComponent: React.FC = () => {
                                                 )}
                                                 <button
                                                     onClick={() => handleDeleteNotification(notification.id)}
-                                                    className="text-gray-400 hover:text-red-400 text-sm"
+                                                    className="text-muted-foreground hover:text-red-400 text-sm"
                                                 >
                                                     삭제
                                                 </button>
                                             </div>
                                         </div>
-                                        <p className={`mt-1 ${!notification.isRead ? 'text-gray-200' : 'text-gray-500'
+                                        <p className={`mt-1 ${!notification.isRead ? 'text-surface-foreground' : 'text-muted-foreground'
                                             }`}>
                                             {notification.content}
                                         </p>
