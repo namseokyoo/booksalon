@@ -99,13 +99,13 @@ const Header: React.FC<HeaderProps> = ({
     };
 
     return (
-        <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-20">
+        <header className="bg-surface border-b border-border shadow-sm sticky top-0 z-20">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* 로고/홈 버튼 */}
                     <button
                         onClick={onHomeClick}
-                        className="flex items-center space-x-2 text-gray-900 hover:text-cyan-600 transition-colors duration-200"
+                        className="flex items-center space-x-2 text-foreground hover:text-primary transition-colors duration-200"
                         aria-label="북살롱 홈으로 이동"
                     >
                         <BookOpenIcon className="h-6 w-6 sm:h-8 sm:w-8" />
@@ -117,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({
                         {/* 통합 검색 버튼 */}
                         <button
                             onClick={onSearchClick}
-                            className="p-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                            className="p-2 text-surface-foreground hover:bg-accent rounded-md transition-colors duration-200"
                             title="통합 검색"
                             aria-label="통합 검색 열기"
                         >
@@ -130,13 +130,13 @@ const Header: React.FC<HeaderProps> = ({
                                 {/* 사용자 프로필 버튼 */}
                                 <button
                                     onClick={handleUserMenuClick}
-                                    className="flex items-center space-x-2 px-2 sm:px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                                    className="flex items-center space-x-2 px-2 sm:px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-accent rounded-md transition-colors duration-200"
                                     aria-label="사용자 메뉴 열기"
                                     aria-expanded={isDropdownOpen}
                                     aria-haspopup="true"
                                 >
                                     {/* 프로필 이미지 */}
-                                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-gray-200 border border-gray-300 flex items-center justify-center shadow-sm">
+                                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full overflow-hidden bg-muted border border-border flex items-center justify-center shadow-sm">
                                         {getProfileImageUrl() ? (
                                             <img
                                                 src={getProfileImageUrl()!}
@@ -144,7 +144,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <span className="text-gray-700 text-xs sm:text-sm font-semibold">
+                                            <span className="text-surface-foreground text-xs sm:text-sm font-semibold">
                                                 {getProfileInitial()}
                                             </span>
                                         )}
@@ -168,13 +168,13 @@ const Header: React.FC<HeaderProps> = ({
 
                                 {/* 드롭다운 메뉴 */}
                                 {isDropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50" role="menu" aria-label="사용자 메뉴">
+                                    <div className="absolute right-0 mt-2 w-48 bg-surface border border-border rounded-lg shadow-lg py-1 z-50" role="menu" aria-label="사용자 메뉴">
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
                                                 onProfileClick();
                                             }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -187,7 +187,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 setIsDropdownOpen(false);
                                                 onActivityClick();
                                             }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -200,7 +200,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 setIsDropdownOpen(false);
                                                 onSearchClick();
                                             }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -213,7 +213,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 setIsDropdownOpen(false);
                                                 onMessagingClick();
                                             }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -226,7 +226,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 setIsDropdownOpen(false);
                                                 onNotificationsClick();
                                             }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM9 7H4l5-5v5z" />
@@ -239,7 +239,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 setIsDropdownOpen(false);
                                                 onAdminClick();
                                             }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -247,14 +247,14 @@ const Header: React.FC<HeaderProps> = ({
                                             관리자
                                         </button>
 
-                                        <hr className="my-1 border-gray-200" />
+                                        <hr className="my-1 border-border" />
 
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
                                                 onDeleteClick();
                                             }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-red-50 transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -264,7 +264,7 @@ const Header: React.FC<HeaderProps> = ({
 
                                         <button
                                             onClick={handleLogout}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
                                             <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -278,14 +278,14 @@ const Header: React.FC<HeaderProps> = ({
                             <div className="flex space-x-2">
                                 <button
                                     onClick={onSignUpClick}
-                                    className="px-3 py-1 text-xs sm:text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors duration-200"
+                                    className="px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-accent rounded-md transition-colors duration-200"
                                     aria-label="회원가입"
                                 >
                                     회원가입
                                 </button>
                                 <button
                                     onClick={onLoginClick}
-                                    className="px-3 py-1 text-xs sm:text-sm bg-cyan-600 text-white hover:bg-cyan-700 rounded-md transition-colors duration-200 font-medium"
+                                    className="px-3 py-1 text-xs sm:text-sm bg-primary text-primary-foreground hover:bg-primary-700 rounded-md transition-colors duration-200 font-medium"
                                     aria-label="로그인"
                                 >
                                     로그인

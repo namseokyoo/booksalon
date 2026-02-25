@@ -650,8 +650,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-3 sm:p-6 lg:p-8">
-      <form onSubmit={handleSearch} className="mb-4 sm:mb-6 sticky top-[65px] z-10 bg-white border-b border-gray-200 py-3 sm:py-4 rounded-lg shadow-sm">
-        <label htmlFor="isbn-search" className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+      <form onSubmit={handleSearch} className="mb-4 sm:mb-6 sticky top-[65px] z-10 bg-surface border-b border-border py-3 sm:py-4 rounded-lg shadow-sm">
+        <label htmlFor="isbn-search" className="block text-xs sm:text-sm font-medium text-surface-foreground mb-2">
           ISBN 또는 책 제목으로 검색
         </label>
         <div className="mt-1 flex rounded-lg shadow-sm">
@@ -660,7 +660,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
               type="text"
               name="isbn-search"
               id="isbn-search"
-              className="focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 block w-full rounded-none rounded-l-lg bg-white border border-gray-300 text-gray-900 pl-3 sm:pl-4 text-sm sm:text-sm"
+              className="focus:ring-2 focus:ring-ring focus:border-primary block w-full rounded-none rounded-l-lg bg-surface border border-border text-foreground pl-3 sm:pl-4 text-sm sm:text-sm"
               placeholder="ISBN 번호 또는 책 제목을 입력하세요"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -668,7 +668,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
           </div>
           <button
             type="submit"
-            className="-ml-px relative inline-flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 border border-l-0 border-gray-300 text-xs sm:text-sm font-medium rounded-r-lg text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200"
+            className="-ml-px relative inline-flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 border border-l-0 border-border text-xs sm:text-sm font-medium rounded-r-lg text-primary-foreground bg-primary hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200"
             disabled={isLoading}
             aria-label="책 검색"
           >
@@ -682,25 +682,25 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
             )}
           </button>
         </div>
-        {error && <p className="mt-2 text-xs sm:text-sm text-red-500">{error}</p>}
+        {error && <p className="mt-2 text-xs sm:text-sm text-destructive">{error}</p>}
       </form>
 
       {/* 컴팩트 필터 바 */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm mb-6">
+      <div className="bg-surface border border-border rounded-lg shadow-sm mb-6">
         {/* 필터 헤더 (항상 표시) */}
         <button
           onClick={() => setIsFilterExpanded(!isFilterExpanded)}
-          className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-muted transition-colors"
           aria-label="필터 패널 열기/닫기"
           aria-expanded={isFilterExpanded}
         >
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            <span className="text-sm font-medium text-gray-900">필터</span>
+            <span className="text-sm font-medium text-foreground">필터</span>
             {hasActiveFilters() && (
-              <span className="px-2 py-0.5 text-xs bg-cyan-100 text-cyan-700 rounded-full font-medium">
+              <span className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 rounded-full font-medium">
                 활성
               </span>
             )}
@@ -712,13 +712,13 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   e.stopPropagation();
                   handleResetFilters();
                 }}
-                className="text-xs text-gray-500 hover:text-gray-700 underline"
+                className="text-xs text-muted-foreground hover:text-foreground underline"
               >
                 초기화
               </button>
             )}
             <svg
-              className={`w-5 h-5 text-gray-600 transition-transform ${isFilterExpanded ? 'rotate-180' : ''}`}
+              className={`w-5 h-5 text-muted-foreground transition-transform ${isFilterExpanded ? 'rotate-180' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -730,10 +730,10 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
         {/* 필터 내용 (접기/펼치기) */}
         {isFilterExpanded && (
-          <div className="border-t border-gray-200 p-3 sm:p-4 space-y-4">
+          <div className="border-t border-border p-3 sm:p-4 space-y-4">
             {/* 카테고리 */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2">카테고리</label>
+              <label className="block text-xs font-medium text-surface-foreground mb-2">카테고리</label>
               <div className="flex flex-wrap gap-2">
                 {['전체', ...FilterService.CATEGORIES].map(cat => (
                   <button
@@ -741,8 +741,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     onClick={() => handleSelectCategory(cat)}
                     className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
                       (filterOptions.category || '전체') === cat
-                        ? 'border-cyan-500 bg-cyan-50 text-cyan-700 font-semibold'
-                        : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-cyan-200 hover:text-cyan-700'
+                        ? 'border-primary bg-primary-50 text-primary-700 font-semibold'
+                        : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
                     }`}
                     type="button"
                   >
@@ -754,7 +754,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
             {/* 태그 */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2">태그</label>
+              <label className="block text-xs font-medium text-surface-foreground mb-2">태그</label>
               <div className="flex flex-wrap gap-2">
                 {FilterService.POPULAR_TAGS.map(tag => {
                   const active = (filterOptions.tags || []).includes(tag);
@@ -765,8 +765,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                       type="button"
                       className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
                         active
-                          ? 'border-cyan-500 bg-cyan-50 text-cyan-700 font-semibold'
-                          : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-cyan-200 hover:text-cyan-700'
+                          ? 'border-primary bg-primary-50 text-primary-700 font-semibold'
+                          : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
                       }`}
                     >
                       #{tag}
@@ -778,11 +778,11 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
             {/* 정렬 */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2">정렬</label>
+              <label className="block text-xs font-medium text-surface-foreground mb-2">정렬</label>
               <select
                 value={filterOptions.sortBy || 'recent'}
                 onChange={(e) => handleSortChange(e.target.value as FilterOptions['sortBy'])}
-                className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                className="text-sm border border-border rounded-lg px-3 py-2 bg-surface focus:ring-2 focus:ring-ring focus:border-primary"
               >
                 {sortOptions.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -796,18 +796,18 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
       {/* 인기 게시물 섹션 */}
       {bestPosts.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">🔥 인기 게시물</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-3">🔥 인기 게시물</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {bestPosts.map(post => (
               <div
                 key={post.id}
                 onClick={() => handleBestPostClick(post)}
-                className="min-w-[250px] max-w-[280px] bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
+                className="min-w-[250px] max-w-[280px] bg-surface rounded-xl shadow-sm border border-border p-4 flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
               >
-                <h3 className="font-medium text-gray-900 text-sm line-clamp-2">{post.title}</h3>
-                <p className="text-xs text-gray-500 mt-1 truncate">{post.book_title}</p>
-                <p className="text-xs text-gray-400 mt-1 truncate">{post.author_name}</p>
-                <div className="flex gap-3 mt-2 text-xs text-gray-400">
+                <h3 className="font-medium text-foreground text-sm line-clamp-2">{post.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1 truncate">{post.book_title}</p>
+                <p className="text-xs text-muted-foreground mt-1 truncate">{post.author_name}</p>
+                <div className="flex gap-3 mt-2 text-xs text-muted-foreground">
                   <span>❤️ {post.like_count}</span>
                   <span>💬 {post.comment_count}</span>
                   <span>👁 {post.view_count}</span>
@@ -821,13 +821,13 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
       {/* 북마크한 살롱 표시 */}
       {bookmarkedForums.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">⭐ 북마크한 살롱</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">⭐ 북마크한 살롱</h2>
           <div className="space-y-3 sm:space-y-4">
             {bookmarkedForums.map((forum) => (
               <div
                 key={forum.isbn}
                 onClick={() => onSelectForum(forum)}
-                className="bg-white border border-gray-200 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-cyan-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 border-l-4 border-l-amber-400"
+                className="bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 border-l-4 border-l-amber-400"
               >
                 <img
                   src={forum.book.thumbnail}
@@ -836,9 +836,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   loading="lazy"
                 />
                 <div className="flex-grow min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{forum.book.title}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 truncate mt-1">{forum.book.authors.join(', ')}</p>
-                  <p className="text-xs text-gray-500 mt-1">{forum.book.publisher}</p>
+                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{forum.book.authors.join(', ')}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{forum.book.publisher}</p>
                 </div>
                 <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
                   <button
@@ -852,7 +852,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     />
                   </button>
                   <div>
-                    <p className="text-xs sm:text-sm text-gray-500">게시물</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">게시물</p>
                     <p className="text-base sm:text-lg font-bold text-amber-500">{forum.postCount || 0}</p>
                   </div>
                 </div>
@@ -865,7 +865,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
       {/* 기존 살롱 검색 결과 표시 */}
       {existingForums.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">📚 최근 개설된 살롱</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">📚 최근 개설된 살롱</h2>
           <div className="space-y-3 sm:space-y-4">
             {existingForums
               .sort((a, b) => {
@@ -879,7 +879,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="bg-white border border-gray-200 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-cyan-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 border-l-4 border-l-cyan-500"
+                  className="bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 border-l-4 border-l-primary"
                 >
                   <img
                     src={forum.book.thumbnail}
@@ -888,15 +888,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     loading="lazy"
                   />
                   <div className="flex-grow min-w-0">
-                    <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{forum.book.title}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate mt-1">{forum.book.authors.join(', ')}</p>
-                    <p className="text-xs text-gray-500 mt-1">{forum.book.publisher}</p>
+                    <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{forum.book.authors.join(', ')}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{forum.book.publisher}</p>
                     {forum.averageRating && forum.averageRating > 0 && (
                       <div className="flex items-center gap-1 mt-1">
                         <StarRating value={forum.averageRating} readonly size="sm" allowHalf />
                         <span className="text-xs text-amber-500 font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
                         {forum.totalRatings && (
-                          <span className="text-xs text-gray-500">({forum.totalRatings})</span>
+                          <span className="text-xs text-muted-foreground">({forum.totalRatings})</span>
                         )}
                       </div>
                     )}
@@ -904,7 +904,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
                     <button
                       onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                      className="p-1 hover:bg-cyan-50 rounded transition-colors duration-200"
+                      className="p-1 hover:bg-primary-50 rounded transition-colors duration-200"
                       title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
                     >
                       <BookmarkIcon
@@ -913,8 +913,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                       />
                     </button>
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-500">게시물</p>
-                      <p className="text-base sm:text-lg font-bold text-cyan-400">{forum.postCount || 0}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">게시물</p>
+                      <p className="text-base sm:text-lg font-bold text-primary">{forum.postCount || 0}</p>
                     </div>
                   </div>
                 </div>
@@ -926,7 +926,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
       {/* 새로운 도서 검색 결과 표시 */}
       {searchResults.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">📚 새로운 도서 검색 결과</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">📚 새로운 도서 검색 결과</h2>
           <div className="space-y-3 sm:space-y-4">
             {searchResults.map((book, index) => {
               const existingForum = forums.find(forum => forum.isbn === book.isbn);
@@ -936,7 +936,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                 <div
                   key={`${book.isbn}-${index}`}
                   onClick={hasExistingForum ? () => onSelectForum(existingForum!) : () => setSearchResult(book)}
-                  className={`bg-white border border-gray-200 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-cyan-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 ${hasExistingForum ? 'border-l-4 border-l-amber-400' : 'border-l-4 border-l-cyan-500'
+                  className={`bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 ${hasExistingForum ? 'border-l-4 border-l-amber-400' : 'border-l-4 border-l-primary'
                     }`}
                 >
                   <img
@@ -946,15 +946,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                     loading="lazy"
                   />
                   <div className="flex-grow min-w-0">
-                    <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{book.title}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate mt-1">{book.authors.join(', ')}</p>
-                    <p className="text-xs text-gray-500 mt-1">{book.publisher}</p>
+                    <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{book.title}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{book.authors.join(', ')}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{book.publisher}</p>
                     {hasExistingForum && existingForum!.averageRating && existingForum!.averageRating > 0 && (
                       <div className="flex items-center gap-1 mt-1">
                         <StarRating value={existingForum!.averageRating} readonly size="sm" allowHalf />
                         <span className="text-xs text-amber-500 font-semibold ml-1">{existingForum!.averageRating.toFixed(1)}</span>
                         {existingForum!.totalRatings && (
-                          <span className="text-xs text-gray-500">({existingForum!.totalRatings})</span>
+                          <span className="text-xs text-muted-foreground">({existingForum!.totalRatings})</span>
                         )}
                       </div>
                     )}
@@ -962,7 +962,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
                     <button
                       onClick={(e) => handleToggleBookmark(book.isbn, e)}
-                      className="p-1 hover:bg-cyan-50 rounded transition-colors duration-200"
+                      className="p-1 hover:bg-primary-50 rounded transition-colors duration-200"
                       title={bookmarks.has(book.isbn) ? "북마크 해제" : "북마크 추가"}
                     >
                       <BookmarkIcon
@@ -974,10 +974,10 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                       {hasExistingForum ? (
                         <>
                           <p className="text-xs sm:text-sm text-amber-600 font-medium">기존 살롱 참여</p>
-                          <p className="text-xs text-gray-500">게시물 {existingForum!.postCount || 0}개</p>
+                          <p className="text-xs text-muted-foreground">게시물 {existingForum!.postCount || 0}개</p>
                         </>
                       ) : (
-                        <p className="text-xs sm:text-sm text-cyan-600 font-medium">살롱 만들기</p>
+                        <p className="text-xs sm:text-sm text-primary font-medium">살롱 만들기</p>
                       )}
                     </div>
                   </div>
@@ -989,12 +989,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
-                  className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="검색 결과 더보기"
                 >
                   {isLoadingMore ? (
                     <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                       </svg>
@@ -1012,7 +1012,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
       {/* 최근 개설된 살롱 */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">📚 최근 개설된 살롱</h2>
+        <h2 className="text-lg font-semibold text-foreground mb-4">📚 최근 개설된 살롱</h2>
         <div className="space-y-3 sm:space-y-4">
           {filteredForums.length > 0 ? (
             <>
@@ -1020,7 +1020,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="bg-white border border-gray-200 p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-cyan-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4"
+                  className="bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4"
                 >
                   <img
                     src={forum.book.thumbnail}
@@ -1030,32 +1030,32 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   />
                   <div className="flex-grow min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-sm sm:text-base text-gray-900 truncate">{forum.book.title}</h3>
+                      <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
                       {forum.category && (
-                        <span className="px-2 py-1 text-xs bg-cyan-50 text-cyan-700 border border-cyan-200 rounded-full font-medium">
+                        <span className="px-2 py-1 text-xs bg-primary-50 text-primary-700 border border-primary-200 rounded-full font-medium">
                           {forum.category}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-600 truncate mt-1">{forum.book.authors.join(', ')}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{forum.book.authors.join(', ')}</p>
                     {forum.averageRating && forum.averageRating > 0 && (
                       <div className="flex items-center gap-1 mt-1">
                         <StarRating value={forum.averageRating} readonly size="sm" allowHalf />
                         <span className="text-xs text-amber-500 font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
                         {forum.totalRatings && (
-                          <span className="text-xs text-gray-500">({forum.totalRatings})</span>
+                          <span className="text-xs text-muted-foreground">({forum.totalRatings})</span>
                         )}
                       </div>
                     )}
                     {forum.tags && forum.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {forum.tags.slice(0, 3).map((tag, index) => (
-                          <span key={index} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 border border-gray-200 rounded-full">
+                          <span key={index} className="px-2 py-1 text-xs bg-muted text-surface-foreground border border-border rounded-full">
                             #{tag}
                           </span>
                         ))}
                         {forum.tags.length > 3 && (
-                          <span className="px-2 py-1 text-xs bg-gray-100 text-gray-500 border border-gray-200 rounded-full">
+                          <span className="px-2 py-1 text-xs bg-muted text-muted-foreground border border-border rounded-full">
                             +{forum.tags.length - 3}
                           </span>
                         )}
@@ -1065,17 +1065,17 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
                     <button
                       onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                      className="p-1 hover:bg-cyan-50 rounded transition-colors duration-200"
+                      className="p-1 hover:bg-primary-50 rounded transition-colors duration-200"
                       title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
                     >
                       <BookmarkIcon
-                        className={`h-4 w-4 ${bookmarks.has(forum.isbn) ? 'text-amber-500' : 'text-gray-400'} hover:text-amber-500`}
+                        className={`h-4 w-4 ${bookmarks.has(forum.isbn) ? 'text-amber-500' : 'text-muted-foreground'} hover:text-amber-500`}
                         filled={bookmarks.has(forum.isbn)}
                       />
                     </button>
                     <div>
-                      <p className="text-xs sm:text-sm text-gray-500">게시물</p>
-                      <p className="text-base sm:text-lg font-bold text-cyan-400">{forum.postCount || 0}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">게시물</p>
+                      <p className="text-base sm:text-lg font-bold text-primary">{forum.postCount || 0}</p>
                     </div>
                   </div>
                 </div>
@@ -1085,12 +1085,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
                   <button
                     onClick={handleLoadMoreForums}
                     disabled={isLoadingMoreForums}
-                    className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-2.5 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="살롱 더 보기"
                   >
                     {isLoadingMoreForums ? (
                       <span className="flex items-center justify-center gap-2">
-                        <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                        <svg className="animate-spin h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
@@ -1104,14 +1104,14 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
               )}
             </>
           ) : (
-            <div className="text-center py-8 sm:py-10 px-4 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
-              <p className="text-sm sm:text-base text-gray-700">
+            <div className="text-center py-8 sm:py-10 px-4 border-2 border-dashed border-border rounded-xl bg-muted">
+              <p className="text-sm sm:text-base text-surface-foreground">
                 {Object.keys(filterOptions).length > 0
                   ? '필터 조건에 맞는 살롱이 없습니다.'
                   : '아직 만들어진 살롱이 없습니다.'
                 }
               </p>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {Object.keys(filterOptions).length > 0
                   ? '다른 필터 조건을 시도해보세요.'
                   : 'ISBN 또는 책 제목으로 검색하여 첫 번째 살롱을 만들어보세요.'
