@@ -1,5 +1,111 @@
 @import "tailwindcss";
 
+/* ================================================================
+   북살롱 디자인 시스템 v1.0.0
+   참조: shadcn/ui + Radix Colors + Josh Comeau + Open Props
+   색상 공간: OKLCH (Tailwind v4 네이티브)
+   ================================================================ */
+
+@theme {
+  /* ===== 폰트 ===== */
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI",
+    "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic",
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+
+  /* ===== 시맨틱 색상 (OKLCH) ===== */
+  /* 배경/표면 */
+  --color-background: oklch(0.985 0.002 80);
+  --color-foreground: oklch(0.145 0.015 60);
+  --color-surface: oklch(1.0 0 0);
+  --color-surface-foreground: oklch(0.205 0.015 60);
+
+  /* 뮤트 (비활성, 보조) */
+  --color-muted: oklch(0.965 0.002 80);
+  --color-muted-foreground: oklch(0.556 0.01 60);
+
+  /* 프라이머리 (CTA, 강조) */
+  --color-primary: oklch(0.600 0.135 200);
+  --color-primary-foreground: oklch(1.0 0 0);
+
+  /* 세컨더리 (보조 버튼) */
+  --color-secondary: oklch(0.960 0.005 80);
+  --color-secondary-foreground: oklch(0.205 0.015 60);
+
+  /* 액센트 (호버 하이라이트) */
+  --color-accent: oklch(0.950 0.015 80);
+  --color-accent-foreground: oklch(0.205 0.015 60);
+
+  /* 상태 색상 */
+  --color-destructive: oklch(0.577 0.245 27);
+  --color-destructive-foreground: oklch(1.0 0 0);
+  --color-success: oklch(0.627 0.194 149);
+  --color-success-foreground: oklch(1.0 0 0);
+  --color-warning: oklch(0.769 0.188 70);
+  --color-warning-foreground: oklch(0.205 0.015 60);
+
+  /* UI 요소 */
+  --color-border: oklch(0.902 0.005 80);
+  --color-input: oklch(0.902 0.005 80);
+  --color-ring: oklch(0.600 0.135 200);
+
+  /* 프라이머리 스케일 */
+  --color-primary-50: oklch(0.970 0.020 200);
+  --color-primary-100: oklch(0.940 0.045 200);
+  --color-primary-200: oklch(0.880 0.080 200);
+  --color-primary-300: oklch(0.790 0.110 200);
+  --color-primary-500: oklch(0.655 0.150 200);
+  --color-primary-600: oklch(0.600 0.135 200);
+  --color-primary-700: oklch(0.520 0.120 200);
+
+  /* ===== 타이포그래피 (한글 최적 line-height) ===== */
+  --text-xs--line-height: 1.5;
+  --text-sm--line-height: 1.6;
+  --text-base--line-height: 1.7;
+  --text-lg--line-height: 1.7;
+  --text-xl--line-height: 1.6;
+  --text-2xl--line-height: 1.5;
+  --text-3xl--line-height: 1.4;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0em;
+
+  /* ===== 시맨틱 간격 ===== */
+  --spacing-page-x: 1rem;
+  --spacing-section: 2rem;
+  --spacing-card: 1.5rem;
+  --spacing-card-sm: 1rem;
+
+  /* ===== 그림자 (레이어드) ===== */
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-sm: 0 1px 3px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.06), 0 2px 4px -2px oklch(0 0 0 / 0.04);
+  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.06), 0 4px 6px -4px oklch(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.06), 0 8px 10px -6px oklch(0 0 0 / 0.04);
+
+  /* ===== 모서리 ===== */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+/* ===== 기본 레이어 ===== */
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
 /* 가로 스크롤 스크롤바 숨김 */
 .scrollbar-hide {
   -ms-overflow-style: none;
