@@ -167,7 +167,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
   const isOwner = currentUser && currentUser.uid === comment.author.uid;
 
   return (
-    <div className="bg-muted border border-border rounded-lg p-4 mb-3">
+    <div className="bg-muted border border-border rounded-lg p-3 sm:p-4">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
           <button
@@ -183,7 +183,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
           <span className="text-xs text-muted-foreground">{formatDate(comment.createdAt)}</span>
         </div>
         {isOwner && (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             {!isEditing && (
               <>
                 <button
@@ -212,7 +212,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
             className="w-full p-2 bg-surface border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary resize-none"
             rows={3}
           />
-          <div className="flex space-x-2">
+          <div className="flex gap-2">
             <button
               onClick={handleEditComment}
               className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 font-medium"

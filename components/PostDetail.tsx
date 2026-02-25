@@ -430,7 +430,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             </div>
 
             <div className="px-3 sm:px-6 lg:px-8 pb-20">
-                <div className="bg-surface border border-border rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-surface border border-border rounded-xl p-4 sm:p-6 mb-6 shadow-sm">
                     <div className="flex items-start justify-between mb-4">
                         {isEditing ? (
                             <input
@@ -443,7 +443,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                             <h1 className="text-2xl font-bold text-foreground">{post.title}</h1>
                         )}
                         {currentUser && currentUser.uid === post.author.uid && (
-                            <div className="flex space-x-2">
+                            <div className="flex gap-2">
                                 {isEditing ? (
                                     <>
                                         <button
@@ -542,7 +542,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                 </div>
 
                 {/* 댓글 섹션 */}
-                <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+                <div className="bg-surface border border-border rounded-xl p-4 sm:p-6 shadow-sm">
                     <h3 className="text-lg font-semibold text-foreground mb-4">댓글 ({comments.length})</h3>
 
                     {comments.length > 0 ? (
@@ -563,7 +563,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
                     {currentUser ? (
                         <div className="relative">
-                            <form onSubmit={handleAddComment} className="flex space-x-2">
+                            <form onSubmit={handleAddComment} className="flex gap-2">
                                 <div className="flex-1 relative">
                                     <input
                                         type="text"

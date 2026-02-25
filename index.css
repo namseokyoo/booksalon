@@ -70,10 +70,18 @@
   --tracking-normal: 0em;
 
   /* ===== 시맨틱 간격 ===== */
-  --spacing-page-x: 1rem;
-  --spacing-section: 2rem;
-  --spacing-card: 1.5rem;
-  --spacing-card-sm: 1rem;
+  --spacing-page-x: 0.75rem;
+  --spacing-page-x-sm: 1.5rem;
+  --spacing-page-x-lg: 2rem;
+  --spacing-section-gap: 1.5rem;
+  --spacing-card-padding: 0.75rem;
+  --spacing-card-padding-sm: 1rem;
+  --spacing-card-gap: 0.75rem;
+  --spacing-card-gap-sm: 1rem;
+  --spacing-modal-padding: 1rem;
+  --spacing-modal-padding-sm: 1.5rem;
+  --spacing-element-gap: 0.5rem;
+  --spacing-inline-gap: 0.5rem;
 
   /* ===== 그림자 (레이어드) ===== */
   --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.04);

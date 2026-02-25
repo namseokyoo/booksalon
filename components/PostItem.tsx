@@ -234,7 +234,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
     <div className="bg-surface rounded-lg shadow-md overflow-hidden">
       <div className="p-3 sm:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <h3 className="font-semibold text-base sm:text-lg text-foreground">{post.title}</h3>
-        <div className="flex items-center space-x-2 sm:space-x-4 text-xs text-muted-foreground mt-2">
+        <div className="flex items-center space-x-3 sm:space-x-4 text-xs text-muted-foreground mt-2">
           <span className="font-medium text-primary truncate">{post.author.email}</span>
           <span className="hidden sm:inline">{formatDate(post.createdAt)}</span>
           <div className="flex items-center space-x-1">
@@ -302,7 +302,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
           </div>
         )}
         {!isExpanded && (
-          <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3 line-clamp-2 whitespace-pre-wrap">{post.content}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4 line-clamp-2 whitespace-pre-wrap">{post.content}</p>
         )}
       </div>
 
@@ -317,7 +317,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
           )}
           <div className="border-t border-border pt-2">
             <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground mb-2">댓글</h4>
-            <div className="space-y-2 divide-y divide-border/50">
+            <div className="space-y-3 sm:space-y-4 divide-y divide-border/50">
               {comments.length > 0 ? (
                 comments.map(comment => <CommentItem key={comment.id} comment={comment} />)
               ) : (

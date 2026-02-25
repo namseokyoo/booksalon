@@ -100,7 +100,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
           <p className="text-sm sm:text-md text-muted-foreground mt-1">
             {book.authors.join(', ')}
           </p>
-          <p className="text-xs sm:text-sm text-muted-foreground">{book.publisher}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">{book.publisher}</p>
 
           {/* 평점 요약 (클릭하면 분포 토글) */}
           {totalRatings > 0 && (

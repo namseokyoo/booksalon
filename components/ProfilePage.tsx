@@ -194,7 +194,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
 
     if (!profile) {
         return (
-            <div className="min-h-screen bg-background p-4">
+            <div className="min-h-screen bg-background p-3 sm:p-6 lg:p-8">
                 <div className="max-w-4xl mx-auto">
                     <button
                         onClick={onBack}
@@ -211,7 +211,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
     }
 
     return (
-        <div className="min-h-screen bg-background p-4">
+        <div className="min-h-screen bg-background p-3 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
                 {/* 헤더 */}
                 <div className="flex items-center justify-between mb-6">
@@ -231,7 +231,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                 </div>
 
                 {/* 프로필 정보 */}
-                <div className="bg-surface border border-border rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-surface border border-border rounded-xl p-4 sm:p-6 mb-6 shadow-sm">
                     <div className="flex items-start space-x-4">
                         {/* 아바타 */}
                         <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden shadow-md border-4 border-surface">
@@ -367,7 +367,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                     </div>
 
                                     {/* 저장 버튼 */}
-                                    <div className="flex space-x-2">
+                                    <div className="flex gap-2">
                                         <button
                                             onClick={handleSaveProfile}
                                             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors font-medium"
@@ -416,7 +416,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                 </div>
 
                 {/* 탭 네비게이션 */}
-                <div className="flex space-x-1 mb-6 border-b border-border">
+                <div className="flex gap-1 mb-6 border-b border-border">
                     <button
                         onClick={() => setActiveTab('stats')}
                         className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'stats'
@@ -474,7 +474,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                 </div>
 
                 {/* 탭 콘텐츠 */}
-                <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+                <div className="bg-surface border border-border rounded-xl p-4 sm:p-6 shadow-sm">
                     {activeTab === 'stats' && (
                         <div>
                             <h2 className="text-xl font-bold text-foreground mb-4">활동 통계</h2>
@@ -589,7 +589,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                             </div>
 
                             {/* 필터 */}
-                            <div className="flex space-x-2 mb-4">
+                            <div className="flex gap-2 mb-4">
                                 {([
                                     { value: 'all' as const, label: '전체' },
                                     { value: 'reading' as const, label: '\uD83D\uDCD6 읽는 중' },

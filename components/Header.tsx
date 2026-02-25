@@ -114,7 +114,7 @@ const Header: React.FC<HeaderProps> = ({
                     </button>
 
                     {/* 검색 버튼 및 사용자 메뉴 */}
-                    <div className="flex items-center space-x-1 sm:space-x-2">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
                         {/* 테마 토글 */}
                         <ThemeToggle />
                         {/* 통합 검색 버튼 */}
@@ -278,7 +278,7 @@ const Header: React.FC<HeaderProps> = ({
                                 )}
                             </div>
                         ) : (
-                            <div className="flex space-x-2">
+                            <div className="flex gap-2">
                                 <button
                                     onClick={onSignUpClick}
                                     className="px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-accent rounded-md transition-colors duration-200"
