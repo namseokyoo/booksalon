@@ -231,11 +231,11 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg shadow-md overflow-hidden">
+    <div className="bg-surface rounded-lg shadow-md overflow-hidden">
       <div className="p-3 sm:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-        <h3 className="font-semibold text-base sm:text-lg text-white">{post.title}</h3>
-        <div className="flex items-center space-x-2 sm:space-x-4 text-xs text-gray-500 mt-2">
-          <span className="font-medium text-cyan-400 truncate">{post.author.email}</span>
+        <h3 className="font-semibold text-base sm:text-lg text-foreground">{post.title}</h3>
+        <div className="flex items-center space-x-2 sm:space-x-4 text-xs text-muted-foreground mt-2">
+          <span className="font-medium text-primary truncate">{post.author.email}</span>
           <span className="hidden sm:inline">{formatDate(post.createdAt)}</span>
           <div className="flex items-center space-x-1">
             <ChatBubbleIcon className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -265,7 +265,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
             <span>{post.viewCount || 0}</span>
           </div>
         </div>
-        <div className="sm:hidden text-xs text-gray-500 mt-1">
+        <div className="sm:hidden text-xs text-muted-foreground mt-1">
           {formatDate(post.createdAt)}
         </div>
         {/* 태그 표시 */}
@@ -285,7 +285,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
               {post.images.slice(0, 3).map((image, idx) => (
                 <div
                   key={image.id}
-                  className="w-12 h-12 rounded-md overflow-hidden border-2 border-gray-700 bg-gray-600"
+                  className="w-12 h-12 rounded-md overflow-hidden border-2 border-border bg-muted"
                 >
                   <img
                     src={image.url}
@@ -296,32 +296,32 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
                 </div>
               ))}
             </div>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {post.images.length === 1 ? '이미지 1장' : `이미지 ${post.images.length}장`}
             </span>
           </div>
         )}
         {!isExpanded && (
-          <p className="text-xs sm:text-sm text-gray-300 mt-2 sm:mt-3 line-clamp-2 whitespace-pre-wrap">{post.content}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3 line-clamp-2 whitespace-pre-wrap">{post.content}</p>
         )}
       </div>
 
       {isExpanded && (
         <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-          <p className="text-xs sm:text-sm text-gray-200 mt-1 mb-3 sm:mb-4 whitespace-pre-wrap">{post.content}</p>
+          <p className="text-xs sm:text-sm text-surface-foreground mt-1 mb-3 sm:mb-4 whitespace-pre-wrap">{post.content}</p>
           {/* 이미지 갤러리 (펼친 상태) */}
           {post.images && post.images.length > 0 && (
             <div className="mb-4" onClick={(e) => e.stopPropagation()}>
               <ImageGallery images={post.images} />
             </div>
           )}
-          <div className="border-t border-gray-700 pt-2">
-            <h4 className="text-xs sm:text-sm font-semibold text-gray-300 mb-2">댓글</h4>
-            <div className="space-y-2 divide-y divide-gray-700/50">
+          <div className="border-t border-border pt-2">
+            <h4 className="text-xs sm:text-sm font-semibold text-muted-foreground mb-2">댓글</h4>
+            <div className="space-y-2 divide-y divide-border/50">
               {comments.length > 0 ? (
                 comments.map(comment => <CommentItem key={comment.id} comment={comment} />)
               ) : (
-                <p className="text-xs sm:text-sm text-gray-500 py-2 sm:py-3">아직 댓글이 없습니다.</p>
+                <p className="text-xs sm:text-sm text-muted-foreground py-2 sm:py-3">아직 댓글이 없습니다.</p>
               )}
             </div>
             <form onSubmit={handleAddComment} className="mt-3 sm:mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -330,13 +330,13 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder={currentUser ? "댓글을 입력하세요..." : "로그인 후 댓글을 작성할 수 있습니다."}
-                className="flex-grow bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-xs sm:text-sm text-gray-200 focus:ring-cyan-500 focus:border-cyan-500"
+                className="flex-grow bg-muted border border-border rounded-md px-3 py-2 text-xs sm:text-sm text-foreground focus:ring-ring focus:border-primary"
                 disabled={!currentUser}
                 aria-label="댓글 입력"
               />
               <button
                 type="submit"
-                className="bg-cyan-600 text-white px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-cyan-500 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors duration-200"
+                className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:bg-muted disabled:cursor-not-allowed transition-colors duration-200"
                 disabled={!currentUser}
                 aria-label="댓글 등록"
               >

@@ -422,25 +422,25 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     return (
         <div className="max-w-4xl mx-auto">
-            <div className="p-3 sm:p-6 lg:p-8 sticky top-[65px] bg-white border-b border-gray-200 z-10 shadow-sm">
-                <button onClick={onBack} className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-600 hover:text-gray-900 mb-3 sm:mb-4 transition-colors duration-200">
+            <div className="p-3 sm:p-6 lg:p-8 sticky top-[65px] bg-surface border-b border-border z-10 shadow-sm">
+                <button onClick={onBack} className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200">
                     <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>목록으로 돌아가기</span>
                 </button>
             </div>
 
             <div className="px-3 sm:px-6 lg:px-8 pb-20">
-                <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm">
+                <div className="bg-surface border border-border rounded-xl p-6 mb-6 shadow-sm">
                     <div className="flex items-start justify-between mb-4">
                         {isEditing ? (
                             <input
                                 type="text"
                                 value={editTitle}
                                 onChange={(e) => setEditTitle(e.target.value)}
-                                className="text-2xl font-bold text-gray-900 bg-transparent border-b border-gray-300 focus:border-cyan-500 focus:outline-none w-full"
+                                className="text-2xl font-bold text-foreground bg-transparent border-b border-border focus:border-primary focus:outline-none w-full"
                             />
                         ) : (
-                            <h1 className="text-2xl font-bold text-gray-900">{post.title}</h1>
+                            <h1 className="text-2xl font-bold text-foreground">{post.title}</h1>
                         )}
                         {currentUser && currentUser.uid === post.author.uid && (
                             <div className="flex space-x-2">
@@ -448,7 +448,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                     <>
                                         <button
                                             onClick={handleEditPost}
-                                            className="text-green-600 hover:text-green-700 text-sm font-medium"
+                                            className="text-success hover:text-success text-sm font-medium"
                                         >
                                             저장
                                         </button>
@@ -458,7 +458,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                                 setEditTitle(post.title);
                                                 setEditContent(post.content);
                                             }}
-                                            className="text-gray-600 hover:text-gray-900 text-sm"
+                                            className="text-muted-foreground hover:text-foreground text-sm"
                                         >
                                             취소
                                         </button>
@@ -467,13 +467,13 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                     <>
                                         <button
                                             onClick={() => setIsEditing(true)}
-                                            className="text-cyan-600 hover:text-cyan-700 text-sm font-medium"
+                                            className="text-primary hover:text-primary-700 text-sm font-medium"
                                         >
                                             수정
                                         </button>
                                         <button
                                             onClick={handleDeletePost}
-                                            className="text-red-600 hover:text-red-700 text-sm font-medium"
+                                            className="text-destructive hover:text-destructive text-sm font-medium"
                                         >
                                             삭제
                                         </button>
@@ -483,34 +483,34 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                         )}
                     </div>
 
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-4">
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
                         <button
                             onClick={() => {
                                 if (authorProfile) {
                                     handleUserClick(authorProfile);
                                 }
                             }}
-                            className="hover:text-cyan-600 transition-colors font-medium"
+                            className="hover:text-primary transition-colors font-medium"
                         >
                             {getDisplayName()}
                         </button>
-                        <span className="text-gray-500">{formatTime(post.createdAt)}</span>
+                        <span className="text-muted-foreground">{formatTime(post.createdAt)}</span>
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={handleToggleLike}
-                                className={`flex items-center space-x-1 transition-colors ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+                                className={`flex items-center space-x-1 transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
                                     }`}
                             >
                                 <LikeIcon className="w-4 h-4" />
                                 <span>{likeCount}</span>
                             </button>
-                            <span className="flex items-center space-x-1 text-gray-500">
+                            <span className="flex items-center space-x-1 text-muted-foreground">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                 </svg>
                                 <span>{comments.length}</span>
                             </span>
-                            <span className="flex items-center space-x-1 text-gray-500">
+                            <span className="flex items-center space-x-1 text-muted-foreground">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -525,11 +525,11 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                             <textarea
                                 value={editContent}
                                 onChange={(e) => setEditContent(e.target.value)}
-                                className="w-full h-64 p-3 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none"
+                                className="w-full h-64 p-3 bg-surface border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary resize-none"
                                 placeholder="내용을 입력하세요..."
                             />
                         ) : (
-                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{post.content}</p>
+                            <p className="text-surface-foreground whitespace-pre-wrap leading-relaxed">{post.content}</p>
                         )}
                     </div>
 
@@ -542,8 +542,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                 </div>
 
                 {/* 댓글 섹션 */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">댓글 ({comments.length})</h3>
+                <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold text-foreground mb-4">댓글 ({comments.length})</h3>
 
                     {comments.length > 0 ? (
                         <div className="space-y-4 mb-6">
@@ -558,7 +558,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-500 text-sm mb-6">아직 댓글이 없습니다.</p>
+                        <p className="text-muted-foreground text-sm mb-6">아직 댓글이 없습니다.</p>
                     )}
 
                     {currentUser ? (
@@ -570,10 +570,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                         value={newComment}
                                         onChange={handleCommentChange}
                                         placeholder="댓글을 입력하세요... (멘션: @닉네임)"
-                                        className="w-full p-3 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-gray-900"
+                                        className="w-full p-3 rounded-lg bg-surface border border-border focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary text-foreground"
                                     />
                                     {showMentionList && getMentionUsers().length > 0 && (
-                                        <div className="absolute bottom-full mb-2 left-0 right-0 bg-white rounded-lg shadow-lg border border-gray-200 max-h-60 overflow-y-auto z-10">
+                                        <div className="absolute bottom-full mb-2 left-0 right-0 bg-surface rounded-lg shadow-lg border border-border max-h-60 overflow-y-auto z-10">
                                             {getMentionUsers().map((user) => (
                                                 <button
                                                     key={user.uid}
@@ -588,7 +588,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                                             setShowMentionList(false);
                                                         }
                                                     }}
-                                                    className="w-full text-left px-4 py-2 hover:bg-gray-50 text-gray-700 text-sm"
+                                                    className="w-full text-left px-4 py-2 hover:bg-muted text-surface-foreground text-sm"
                                                 >
                                                     @{user.email?.split('@')[0]}
                                                 </button>
@@ -598,14 +598,14 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 </div>
                                 <button
                                     type="submit"
-                                    className="px-4 py-3 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors font-medium"
+                                    className="px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors font-medium"
                                 >
                                     등록
                                 </button>
                             </form>
                         </div>
                     ) : (
-                        <p className="text-gray-500 text-sm">로그인 후 댓글을 작성할 수 있습니다.</p>
+                        <p className="text-muted-foreground text-sm">로그인 후 댓글을 작성할 수 있습니다.</p>
                     )}
                 </div>
             </div>
