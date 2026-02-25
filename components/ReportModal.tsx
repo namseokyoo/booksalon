@@ -150,7 +150,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                             <select
                                 value={reportType}
                                 onChange={(e) => setReportType(e.target.value as Report['type'])}
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none"
+                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-ring focus:border-primary focus:outline-none"
                             >
                                 {getTypeReasonOptions().map((option) => (
                                     <option key={option.value} value={option.value}>
@@ -169,7 +169,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
                                 placeholder="신고 사유를 간단히 입력하세요"
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none"
+                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-ring focus:border-primary focus:outline-none"
                                 required
                             />
                         </div>
@@ -183,7 +183,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="신고 내용을 자세히 설명해주세요"
                                 rows={4}
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none resize-none"
+                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-ring focus:border-primary focus:outline-none resize-none"
                                 required
                             />
                         </div>

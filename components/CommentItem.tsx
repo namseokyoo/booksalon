@@ -167,7 +167,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
   const isOwner = currentUser && currentUser.uid === comment.author.uid;
 
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-3">
+    <div className="bg-muted border border-border rounded-lg p-4 mb-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
           <button
@@ -176,11 +176,11 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
                 onUserClick(authorProfile);
               }
             }}
-            className="text-xs sm:text-sm font-semibold text-cyan-600 hover:text-cyan-700 transition-colors"
+            className="text-xs sm:text-sm font-semibold text-primary hover:text-primary-700 transition-colors"
           >
             {getDisplayName()}
           </button>
-          <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatDate(comment.createdAt)}</span>
         </div>
         {isOwner && (
           <div className="flex items-center space-x-2">
@@ -188,13 +188,13 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
               <>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="text-xs text-cyan-600 hover:text-cyan-700 font-medium"
+                  className="text-xs text-primary hover:text-primary-700 font-medium"
                 >
                   수정
                 </button>
                 <button
                   onClick={handleDeleteComment}
-                  className="text-xs text-red-600 hover:text-red-700 font-medium"
+                  className="text-xs text-destructive hover:text-red-700 font-medium"
                 >
                   삭제
                 </button>
@@ -209,7 +209,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
           <textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
-            className="w-full p-2 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 resize-none"
+            className="w-full p-2 bg-surface border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary resize-none"
             rows={3}
           />
           <div className="flex space-x-2">
@@ -224,20 +224,20 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
                 setIsEditing(false);
                 setEditContent(comment.content);
               }}
-              className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 font-medium"
+              className="px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-gray-300 font-medium"
             >
               취소
             </button>
           </div>
         </div>
       ) : (
-        <p className="text-sm text-gray-700 whitespace-pre-wrap mb-2 leading-relaxed">{comment.content}</p>
+        <p className="text-sm text-surface-foreground whitespace-pre-wrap mb-2 leading-relaxed">{comment.content}</p>
       )}
 
       <div className="flex items-center space-x-3 mt-2">
         <button
           onClick={handleToggleLike}
-          className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+          className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
             }`}
         >
           <LikeIcon className="w-3 h-3" filled={isLiked} />

@@ -86,7 +86,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-3 sm:p-4 shadow-sm">
+    <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 shadow-sm">
       <div className="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4">
         <img
           src={book.thumbnail || 'https://picsum.photos/120/174'}
@@ -94,20 +94,20 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
           className="w-20 h-auto sm:w-24 sm:h-auto lg:w-32 lg:h-auto rounded-lg shadow-md flex-shrink-0 mx-auto sm:mx-0"
         />
         <div className="flex-grow text-center sm:text-left w-full">
-          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
             {book.title}
           </h2>
-          <p className="text-sm sm:text-md text-gray-600 mt-1">
+          <p className="text-sm sm:text-md text-muted-foreground mt-1">
             {book.authors.join(', ')}
           </p>
-          <p className="text-xs sm:text-sm text-gray-500">{book.publisher}</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">{book.publisher}</p>
 
           {/* 평점 요약 (클릭하면 분포 토글) */}
           {totalRatings > 0 && (
             <button
               type="button"
               onClick={() => setShowDistribution(!showDistribution)}
-              className="mt-2 flex items-center gap-2 text-sm text-gray-700 hover:text-cyan-600 transition-colors mx-auto sm:mx-0"
+              className="mt-2 flex items-center gap-2 text-sm text-surface-foreground hover:text-primary transition-colors mx-auto sm:mx-0"
             >
               <StarRating
                 value={averageRating}
@@ -118,9 +118,9 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
               <span className="font-semibold">
                 {averageRating.toFixed(1)}
               </span>
-              <span className="text-gray-500">({totalRatings}명 평가)</span>
+              <span className="text-muted-foreground">({totalRatings}명 평가)</span>
               <svg
-                className={`w-4 h-4 text-gray-400 transition-transform ${
+                className={`w-4 h-4 text-muted-foreground transition-transform ${
                   showDistribution ? 'rotate-180' : ''
                 }`}
                 fill="none"
@@ -148,7 +148,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
             </div>
           )}
 
-          <p className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-3 line-clamp-2 sm:line-clamp-3">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3 line-clamp-2 sm:line-clamp-3">
             {book.contents}
           </p>
         </div>
@@ -156,18 +156,18 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
 
       {/* 내 평점 섹션 */}
       {currentUser && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-border">
           {myRating ? (
             // 이미 평점을 준 경우
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div>
-                  <span className="text-sm text-gray-700 font-medium">
+                  <span className="text-sm text-surface-foreground font-medium">
                     내 평점
                   </span>
                   <div className="flex items-center gap-2 mt-1">
                     <StarRating value={myRating} readonly size="sm" />
-                    <span className="text-2xl font-bold text-gray-900">
+                    <span className="text-2xl font-bold text-foreground">
                       {myRating}.0
                     </span>
                   </div>
@@ -176,7 +176,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
               <button
                 type="button"
                 onClick={() => setShowRatingModal(true)}
-                className="px-3 py-1.5 text-sm text-cyan-600 hover:text-cyan-700 border border-cyan-300 rounded-lg hover:bg-cyan-50 transition-colors"
+                className="px-3 py-1.5 text-sm text-primary hover:text-primary-700 border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors"
               >
                 수정
               </button>
@@ -184,13 +184,13 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
           ) : (
             // 아직 평점을 주지 않은 경우
             <div className="text-center sm:text-left">
-              <p className="text-sm text-gray-700 mb-3">
+              <p className="text-sm text-surface-foreground mb-3">
                 이 책은 어떠셨나요?
               </p>
               <button
                 type="button"
                 onClick={() => setShowRatingModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors"
               >
                 <svg
                   className="w-5 h-5"
@@ -208,8 +208,8 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
 
       {/* 비로그인 사용자 */}
       {!currentUser && (
-        <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="mt-4 pt-4 border-t border-border text-center">
+          <p className="text-sm text-muted-foreground">
             로그인하면 평점을 남길 수 있습니다.
           </p>
         </div>

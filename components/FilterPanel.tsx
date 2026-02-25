@@ -66,7 +66,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                     )}
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="px-3 py-1 text-xs text-cyan-400 hover:text-cyan-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors duration-200"
+                        className="px-3 py-1 text-xs text-primary hover:text-primary-700 bg-gray-700 hover:bg-gray-600 rounded transition-colors duration-200"
                     >
                         {isExpanded ? '접기' : '펼치기'}
                     </button>
@@ -79,7 +79,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                 <input
                     type="text"
                     placeholder="제목, 저자, 출판사, 태그로 검색..."
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 text-sm focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 text-sm focus:ring-ring focus:border-primary focus:outline-none"
                     value={currentOptions.searchTerm || ''}
                     onChange={(e) => handleSearchChange(e.target.value)}
                 />
@@ -99,7 +99,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                             key={value}
                             onClick={() => handleSortChange(value as FilterOptions['sortBy'])}
                             className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.sortBy === value
-                                    ? 'bg-cyan-600 text-white'
+                                    ? 'bg-primary text-primary-foreground'
                                     : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                 }`}
                         >
@@ -118,7 +118,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                             <button
                                 onClick={() => handleCategoryChange('전체')}
                                 className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${!currentOptions.category
-                                        ? 'bg-cyan-600 text-white'
+                                        ? 'bg-primary text-primary-foreground'
                                         : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                     }`}
                             >
@@ -129,7 +129,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                     key={category}
                                     onClick={() => handleCategoryChange(category)}
                                     className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.category === category
-                                            ? 'bg-cyan-600 text-white'
+                                            ? 'bg-primary text-primary-foreground'
                                             : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                         }`}
                                 >

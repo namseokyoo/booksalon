@@ -21,8 +21,8 @@ const BadgeList: React.FC<BadgeListProps> = ({ stats }) => {
     return (
         <div>
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">배지</h2>
-                <span className="text-sm text-gray-500">
+                <h2 className="text-xl font-bold text-foreground">배지</h2>
+                <span className="text-sm text-muted-foreground">
                     {earnedBadges.length} / {BADGES.length} 달성
                 </span>
             </div>
@@ -33,7 +33,7 @@ const BadgeList: React.FC<BadgeListProps> = ({ stats }) => {
 
                 return (
                     <div key={category} className="mb-6">
-                        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                             {categoryLabels[category]}
                         </h3>
                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
@@ -47,8 +47,8 @@ const BadgeList: React.FC<BadgeListProps> = ({ stats }) => {
                                         key={badge.id}
                                         className={`relative flex flex-col items-center p-3 rounded-xl border transition-all ${
                                             earned
-                                                ? 'bg-white border-cyan-200 shadow-sm'
-                                                : 'bg-gray-50 border-gray-200 opacity-60'
+                                                ? 'bg-surface border-primary-200 shadow-sm'
+                                                : 'bg-muted border-border opacity-60'
                                         }`}
                                         title={earned ? `${badge.name} - ${badge.description}` : `${badge.description} (${current}/${goal})`}
                                     >
@@ -59,7 +59,7 @@ const BadgeList: React.FC<BadgeListProps> = ({ stats }) => {
 
                                         {/* 배지 이름 */}
                                         <span className={`text-xs font-medium text-center leading-tight ${
-                                            earned ? 'text-gray-900' : 'text-gray-500'
+                                            earned ? 'text-foreground' : 'text-muted-foreground'
                                         }`}>
                                             {badge.name}
                                         </span>
@@ -67,13 +67,13 @@ const BadgeList: React.FC<BadgeListProps> = ({ stats }) => {
                                         {/* 진행률 바 (미달성 시) */}
                                         {!earned && (
                                             <div className="w-full mt-2">
-                                                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                                <div className="w-full bg-muted rounded-full h-1.5">
                                                     <div
-                                                        className="bg-cyan-500 h-1.5 rounded-full transition-all"
+                                                        className="bg-primary h-1.5 rounded-full transition-all"
                                                         style={{ width: `${progress}%` }}
                                                     />
                                                 </div>
-                                                <span className="text-[10px] text-gray-400 mt-0.5 block text-center">
+                                                <span className="text-[10px] text-muted-foreground mt-0.5 block text-center">
                                                     {current}/{goal}
                                                 </span>
                                             </div>

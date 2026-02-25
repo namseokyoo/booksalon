@@ -103,7 +103,7 @@ const NotificationComponent: React.FC = () => {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -117,7 +117,7 @@ const NotificationComponent: React.FC = () => {
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllAsRead}
-                                className="px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors text-sm"
+                                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors text-sm"
                             >
                                 모두 읽음 처리
                             </button>
@@ -141,7 +141,7 @@ const NotificationComponent: React.FC = () => {
                         {notifications.map((notification) => (
                             <div
                                 key={notification.id}
-                                className={`bg-gray-800 p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-cyan-400' : ''
+                                className={`bg-gray-800 p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''
                                     }`}
                             >
                                 <div className="flex items-start space-x-3">
@@ -161,7 +161,7 @@ const NotificationComponent: React.FC = () => {
                                                 {!notification.isRead && (
                                                     <button
                                                         onClick={() => handleMarkAsRead(notification.id)}
-                                                        className="text-cyan-400 hover:text-cyan-300 text-sm"
+                                                        className="text-primary hover:text-primary-700 text-sm"
                                                     >
                                                         읽음
                                                     </button>

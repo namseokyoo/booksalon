@@ -459,8 +459,8 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="p-3 sm:p-6 lg:p-8 sticky top-[65px] bg-white border-b border-gray-200 z-10 shadow-sm">
-        <button onClick={onBack} className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-600 hover:text-gray-900 mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
+      <div className="p-3 sm:p-6 lg:p-8 sticky top-[65px] bg-surface border-b border-border z-10 shadow-sm">
+        <button onClick={onBack} className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
           <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>목록으로 돌아가기</span>
         </button>
@@ -485,7 +485,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
             <button
               onClick={handleLoadMorePosts}
               disabled={isLoadingMorePosts}
-              className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="게시물 더 보기"
             >
               {isLoadingMorePosts ? (
@@ -506,7 +506,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
 
       <button
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-cyan-600 text-white rounded-full p-3 sm:p-4 shadow-lg hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-cyan-500 z-30 transition-colors duration-200"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-primary text-primary-foreground rounded-full p-3 sm:p-4 shadow-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-ring z-30 transition-colors duration-200"
         aria-label="새로운 글 작성"
         disabled={!currentUser}
         title={!currentUser ? "로그인이 필요합니다" : "새로운 글 작성"}

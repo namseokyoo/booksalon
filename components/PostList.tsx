@@ -58,24 +58,24 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
 
     if (isLoading) {
         return (
-            <div className="bg-white border border-gray-200 p-4 rounded-xl animate-pulse shadow-sm">
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+            <div className="bg-surface border border-border p-4 rounded-xl animate-pulse shadow-sm">
+                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-1/2"></div>
             </div>
         );
     }
 
     return (
         <div
-            className="bg-white border border-gray-200 p-4 rounded-xl hover:shadow-md hover:border-cyan-300 cursor-pointer transition-all duration-200 shadow-sm"
+            className="bg-surface border border-border p-4 rounded-xl hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 shadow-sm"
             onClick={() => onPostClick(post)}
         >
             <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-gray-900 truncate mb-2">
+                    <h3 className="text-lg font-semibold text-foreground truncate mb-2">
                         {post.title}
                     </h3>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <div className="relative">
                             <button
                                 onClick={(e) => {
@@ -84,12 +84,12 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
                                         onUserClick(authorProfile);
                                     }
                                 }}
-                                className="hover:text-cyan-600 transition-colors font-medium"
+                                className="hover:text-primary transition-colors font-medium"
                             >
                                 {getDisplayName()}
                             </button>
                         </div>
-                        <span className="text-gray-500">{formatTime(post.createdAt)}</span>
+                        <span className="text-muted-foreground">{formatTime(post.createdAt)}</span>
                         <div className="flex items-center space-x-3">
                             <span className="flex items-center space-x-1">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,9 +114,9 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
 const PostList: React.FC<PostListProps> = ({ posts, onPostClick, onUserClick }) => {
     if (posts.length === 0) {
         return (
-            <div className="text-center py-8 px-4 border-2 border-dashed border-gray-700 rounded-lg">
-                <p className="text-sm text-gray-500">아직 게시물이 없습니다.</p>
-                <p className="text-xs text-gray-500 mt-1">첫 번째 글을 작성해보세요.</p>
+            <div className="text-center py-8 px-4 border-2 border-dashed border-border rounded-lg">
+                <p className="text-sm text-muted-foreground">아직 게시물이 없습니다.</p>
+                <p className="text-xs text-muted-foreground mt-1">첫 번째 글을 작성해보세요.</p>
             </div>
         );
     }

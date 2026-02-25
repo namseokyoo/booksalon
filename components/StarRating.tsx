@@ -95,7 +95,7 @@ const StarRating: React.FC<StarRatingProps> = ({
         {[0, 1, 2, 3, 4].map(renderStar)}
       </div>
       {countText && (
-        <span className="ml-2 text-sm text-gray-600">{countText}</span>
+        <span className="ml-2 text-sm text-muted-foreground">{countText}</span>
       )}
     </div>
   );

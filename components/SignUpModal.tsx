@@ -129,9 +129,9 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title" ref={modalRef}>
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
+      <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
         <div className="p-4 sm:p-6">
-          <h3 id="signup-modal-title" className="text-base sm:text-lg font-medium leading-6 text-gray-900 mb-3 sm:mb-4 text-center">회원가입</h3>
+          <h3 id="signup-modal-title" className="text-base sm:text-lg font-medium leading-6 text-foreground mb-3 sm:mb-4 text-center">회원가입</h3>
           {error && <p className="bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm p-2 sm:p-3 rounded-lg mb-3 sm:mb-4">{error}</p>}
           <div className="space-y-3 sm:space-y-4">
             <div>
@@ -140,7 +140,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
                 id="signup-email"
                 type="email"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary text-sm"
                 placeholder="이메일"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -152,7 +152,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
                 id="signup-nickname"
                 type="text"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary text-sm"
                 placeholder="닉네임 (2-20자)"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
@@ -165,7 +165,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
                 id="signup-password"
                 type="password"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary text-sm"
                 placeholder="비밀번호 (6자 이상)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -177,7 +177,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
                 id="signup-password-confirm"
                 type="password"
                 required
-                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm"
+                className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary text-sm"
                 placeholder="비밀번호 확인"
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
@@ -188,10 +188,10 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
           {/* 구분선 */}
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">또는</span>
+              <span className="px-2 bg-surface text-muted-foreground">또는</span>
             </div>
           </div>
 
@@ -201,7 +201,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               type="button"
               onClick={handleGoogleSignUp}
               disabled={socialLoading || loading}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:opacity-50 transition-colors font-medium"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-lg bg-surface text-surface-foreground hover:bg-muted disabled:bg-muted disabled:opacity-50 transition-colors font-medium"
             >
               {socialLoading ? (
                 <span>가입 중...</span>
@@ -239,17 +239,17 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
             */}
           </div>
         </div>
-        <div className="bg-gray-50 px-3 sm:px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-gray-200">
+        <div className="bg-muted px-3 sm:px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-border">
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-cyan-600 text-sm sm:text-base font-medium text-white hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 sm:ml-3 sm:w-auto disabled:bg-gray-400 transition-colors duration-200"
+            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-primary text-sm sm:text-base font-medium text-primary-foreground hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto disabled:bg-gray-400 transition-colors duration-200"
           >
             {loading ? '가입 중...' : '가입하기'}
           </button>
           <button
             type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-3 sm:px-4 py-2 bg-white text-sm sm:text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:w-auto transition-colors duration-200"
+            className="mt-3 w-full inline-flex justify-center rounded-lg border border-border shadow-sm px-3 sm:px-4 py-2 bg-surface text-sm sm:text-base font-medium text-surface-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:mt-0 sm:w-auto transition-colors duration-200"
             onClick={onClose}
           >
             취소

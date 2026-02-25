@@ -116,7 +116,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-medium text-surface-foreground">
         이미지 (최대 {maxImages}장)
       </label>
 
@@ -125,7 +125,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         {images.map((image, index) => (
           <div
             key={image.id}
-            className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
+            className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-lg overflow-hidden border border-border bg-muted"
           >
             <img
               src={image.previewUrl}
@@ -162,7 +162,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             </button>
 
             {/* 순서 표시 */}
-            <div className="absolute bottom-1 left-1 w-5 h-5 bg-cyan-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="absolute bottom-1 left-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">
               {index + 1}
             </div>
           </div>
@@ -180,14 +180,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               flex flex-col items-center justify-center cursor-pointer
               transition-colors
               ${isDragOver
-                ? 'border-cyan-500 bg-cyan-50'
-                : 'border-gray-300 hover:border-cyan-400 hover:bg-gray-50'
+                ? 'border-primary bg-primary-50'
+                : 'border-border hover:border-primary hover:bg-muted'
               }
               ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
             `}
           >
             <svg
-              className={`w-8 h-8 ${isDragOver ? 'text-cyan-500' : 'text-gray-400'}`}
+              className={`w-8 h-8 ${isDragOver ? 'text-primary' : 'text-muted-foreground'}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -199,7 +199,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            <span className={`text-xs mt-1 ${isDragOver ? 'text-cyan-500' : 'text-gray-500'}`}>
+            <span className={`text-xs mt-1 ${isDragOver ? 'text-primary' : 'text-muted-foreground'}`}>
               추가
             </span>
           </div>
@@ -218,7 +218,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       />
 
       {/* 안내 텍스트 */}
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-muted-foreground">
         JPG, PNG, GIF, WebP / 최대 5MB / 드래그 앤 드롭 가능
       </p>
     </div>

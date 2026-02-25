@@ -52,13 +52,13 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
                     value={searchQuery}
                     onChange={handleInputChange}
                     placeholder="사용자 이름으로 검색..."
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none"
+                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:ring-ring focus:border-primary focus:outline-none"
                 />
             </div>
 
             {isSearching && (
                 <div className="flex items-center justify-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-400"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
             )}
 
@@ -72,7 +72,7 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
                             className="bg-gray-800 p-3 rounded-lg hover:bg-gray-700 cursor-pointer transition-colors"
                         >
                             <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                                     <span className="text-white font-semibold text-sm">
                                         {user.nickname?.charAt(0) || user.displayName?.charAt(0) || 'U'}
                                     </span>

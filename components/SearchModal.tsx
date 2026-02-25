@@ -300,13 +300,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="search-modal-title" ref={modalRef}>
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div className="bg-surface rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
                 {/* 헤더 */}
-                <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-                    <h2 id="search-modal-title" className="text-lg sm:text-xl font-semibold text-gray-900">통합 검색</h2>
+                <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
+                    <h2 id="search-modal-title" className="text-lg sm:text-xl font-semibold text-foreground">통합 검색</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-muted-foreground hover:text-muted-foreground transition-colors"
                         aria-label="검색 모달 닫기"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -316,15 +316,15 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                 </div>
 
                 {/* 검색 타입 선택 */}
-                <div className="flex border-b border-gray-200">
+                <div className="flex border-b border-border">
                     <button
                         onClick={() => {
                             setSearchType('book');
                             resetSearch();
                         }}
                         className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${searchType === 'book'
-                            ? 'text-cyan-600 border-b-2 border-cyan-600 bg-cyan-50'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                            ? 'text-primary border-b-2 border-primary bg-primary-50'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
                     >
                         책 검색
@@ -335,8 +335,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                             resetSearch();
                         }}
                         className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${searchType === 'community'
-                            ? 'text-cyan-600 border-b-2 border-cyan-600 bg-cyan-50'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                            ? 'text-primary border-b-2 border-primary bg-primary-50'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
                     >
                         커뮤니티 검색
@@ -344,13 +344,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                 </div>
 
                 {/* 검색 입력 */}
-                <form onSubmit={handleSearch} className="p-4 sm:p-6 border-b border-gray-200">
+                <form onSubmit={handleSearch} className="p-4 sm:p-6 border-b border-border">
                     <div className="relative" ref={suggestionsRef}>
                         <div className="flex gap-2">
                             <input
                                 ref={inputRef}
                                 type="text"
-                                className="flex-1 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                                className="flex-1 bg-surface border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary"
                                 placeholder={searchType === 'book' ? 'ISBN 또는 책 제목을 입력하세요' : '살롱, 게시글, 댓글을 검색하세요'}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -360,7 +360,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-medium hover:bg-cyan-700 focus:ring-2 focus:ring-cyan-500 focus:outline-none disabled:opacity-50"
+                                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-700 focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
                                 disabled={isLoading || !searchTerm.trim()}
                                 aria-label="검색 실행"
                             >
@@ -392,12 +392,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6">
                     {error && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-sm text-red-700">{error}</p>
+                            <p className="text-sm text-destructive">{error}</p>
                         </div>
                     )}
                     {isLoading ? (
                         <div className="flex items-center justify-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         </div>
                     ) : searchType === 'book' ? (
                         // 책 검색 결과
@@ -408,7 +408,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                         <div
                                             key={`${book.isbn}-${index}`}
                                             onClick={() => handleBookClick(book)}
-                                            className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:border-cyan-300 hover:shadow-sm cursor-pointer transition-all"
+                                            className="p-4 border border-border rounded-lg bg-muted hover:border-primary-300 hover:shadow-sm cursor-pointer transition-all"
                                         >
                                             <div className="flex items-start gap-4">
                                                 <img
@@ -418,13 +418,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                                     loading="lazy"
                                                 />
                                                 <div className="flex-1 min-w-0">
-                                                    <h3 className="font-semibold text-gray-900 truncate">
+                                                    <h3 className="font-semibold text-foreground truncate">
                                                         <HighlightText text={book.title} highlight={searchedTerm} />
                                                     </h3>
-                                                    <p className="text-sm text-gray-600 truncate mt-1">
+                                                    <p className="text-sm text-muted-foreground truncate mt-1">
                                                         <HighlightText text={book.authors.join(', ')} highlight={searchedTerm} />
                                                     </p>
-                                                    <p className="text-xs text-gray-500 mt-1">{book.publisher}</p>
+                                                    <p className="text-xs text-muted-foreground mt-1">{book.publisher}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -434,12 +434,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                             <button
                                                 onClick={handleBookLoadMore}
                                                 disabled={isLoadingMore}
-                                                className="px-6 py-2.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="px-6 py-2.5 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                                 aria-label="검색 결과 더보기"
                                             >
                                                 {isLoadingMore ? (
                                                     <span className="flex items-center justify-center gap-2">
-                                                        <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                                                        <svg className="animate-spin h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24">
                                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                                         </svg>
@@ -453,9 +453,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                     )}
                                 </>
                             ) : searchedTerm ? (
-                                <p className="text-center text-gray-500 py-8">검색 결과가 없습니다.</p>
+                                <p className="text-center text-muted-foreground py-8">검색 결과가 없습니다.</p>
                             ) : (
-                                <p className="text-center text-gray-500 py-8">검색어를 입력하세요.</p>
+                                <p className="text-center text-muted-foreground py-8">검색어를 입력하세요.</p>
                             )}
                         </div>
                     ) : (
@@ -463,7 +463,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                         <div className="space-y-6">
                             {communityResults.forums.length > 0 && (
                                 <div>
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                                    <h3 className="text-sm font-semibold text-foreground mb-3">
                                         살롱 ({communityResults.forums.length})
                                     </h3>
                                     <div className="space-y-2">
@@ -474,19 +474,19 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                                     onSelectForum(forum);
                                                     onClose();
                                                 }}
-                                                className="p-3 border border-gray-200 rounded-lg bg-gray-50 hover:border-cyan-300 hover:shadow-sm cursor-pointer transition-all"
+                                                className="p-3 border border-border rounded-lg bg-muted hover:border-primary-300 hover:shadow-sm cursor-pointer transition-all"
                                             >
                                                 <div className="flex items-center justify-between">
-                                                    <p className="text-sm font-semibold text-gray-900 truncate">
+                                                    <p className="text-sm font-semibold text-foreground truncate">
                                                         <HighlightText text={forum.book.title} highlight={searchedTerm} />
                                                     </p>
                                                     {forum.category && (
-                                                        <span className="text-xs text-cyan-700 bg-cyan-50 border border-cyan-200 rounded-full px-2 py-0.5 ml-2">
+                                                        <span className="text-xs text-primary-700 bg-primary-50 border border-primary-200 rounded-full px-2 py-0.5 ml-2">
                                                             {forum.category}
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className="text-xs text-gray-600 truncate mt-1">
+                                                <p className="text-xs text-muted-foreground truncate mt-1">
                                                     <HighlightText text={forum.book.authors.join(', ')} highlight={searchedTerm} />
                                                 </p>
                                                 {forum.tags && forum.tags.length > 0 && (
@@ -494,7 +494,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                                         {forum.tags.slice(0, 3).map((tag, idx) => (
                                                             <span
                                                                 key={idx}
-                                                                className="text-xs text-gray-500 bg-gray-100 rounded px-1.5 py-0.5"
+                                                                className="text-xs text-muted-foreground bg-muted rounded px-1.5 py-0.5"
                                                             >
                                                                 #{tag}
                                                             </span>
@@ -508,23 +508,23 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                             )}
                             {communityResults.posts.length > 0 && (
                                 <div>
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                                    <h3 className="text-sm font-semibold text-foreground mb-3">
                                         게시글 ({communityResults.posts.length})
                                     </h3>
                                     <div className="space-y-2">
                                         {communityResults.posts.map(post => (
                                             <div
                                                 key={post.id}
-                                                className="p-3 border border-gray-200 rounded-lg bg-gray-50"
+                                                className="p-3 border border-border rounded-lg bg-muted"
                                             >
-                                                <p className="text-sm font-semibold text-gray-900 truncate">
+                                                <p className="text-sm font-semibold text-foreground truncate">
                                                     <HighlightText text={post.title} highlight={searchedTerm} />
                                                 </p>
-                                                <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+                                                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
                                                     <HighlightText text={post.content} highlight={searchedTerm} />
                                                 </p>
                                                 {post.forumTitle && (
-                                                    <p className="text-xs text-cyan-600 mt-2">
+                                                    <p className="text-xs text-primary mt-2">
                                                         살롱: {post.forumTitle}
                                                     </p>
                                                 )}
@@ -535,20 +535,20 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                             )}
                             {communityResults.comments.length > 0 && (
                                 <div>
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                                    <h3 className="text-sm font-semibold text-foreground mb-3">
                                         댓글 ({communityResults.comments.length})
                                     </h3>
                                     <div className="space-y-2">
                                         {communityResults.comments.map(comment => (
                                             <div
                                                 key={comment.id}
-                                                className="p-3 border border-gray-200 rounded-lg bg-gray-50"
+                                                className="p-3 border border-border rounded-lg bg-muted"
                                             >
-                                                <p className="text-xs text-gray-600 line-clamp-2">
+                                                <p className="text-xs text-muted-foreground line-clamp-2">
                                                     <HighlightText text={comment.content} highlight={searchedTerm} />
                                                 </p>
                                                 {comment.forumTitle && (
-                                                    <p className="text-xs text-cyan-600 mt-2">
+                                                    <p className="text-xs text-primary mt-2">
                                                         살롱: {comment.forumTitle}
                                                         {comment.postTitle && ` > ${comment.postTitle}`}
                                                     </p>
@@ -562,10 +562,10 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                 communityResults.forums.length === 0 &&
                                 communityResults.posts.length === 0 &&
                                 communityResults.comments.length === 0 && (
-                                    <p className="text-center text-gray-500 py-8">검색 결과가 없습니다.</p>
+                                    <p className="text-center text-muted-foreground py-8">검색 결과가 없습니다.</p>
                                 )}
                             {!searchedTerm && (
-                                <p className="text-center text-gray-500 py-8">검색어를 입력하세요.</p>
+                                <p className="text-center text-muted-foreground py-8">검색어를 입력하세요.</p>
                             )}
                         </div>
                     )}

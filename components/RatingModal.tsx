@@ -66,15 +66,15 @@ const RatingModal: React.FC<RatingModalProps> = ({
 
         {/* 선택한 점수 표시 */}
         <div className="text-center">
-          <span className="text-3xl font-bold text-gray-900">
+          <span className="text-3xl font-bold text-foreground">
             {displayRating > 0 ? displayRating : '-'}
           </span>
-          <span className="text-lg text-gray-500"> / 5</span>
+          <span className="text-lg text-muted-foreground"> / 5</span>
         </div>
 
         {/* 점수별 설명 */}
         {displayRating > 0 && (
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             {displayRating === 1 && '별로예요'}
             {displayRating === 2 && '그저 그래요'}
             {displayRating === 3 && '보통이에요'}
@@ -88,14 +88,14 @@ const RatingModal: React.FC<RatingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      <div className="bg-surface rounded-2xl shadow-xl max-w-md w-full p-6">
         {/* 헤더 */}
         <div className="text-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-foreground">
             {currentRating ? '평점 수정' : '평점 남기기'}
           </h2>
           {bookTitle && (
-            <p className="mt-1 text-sm text-gray-600 truncate">{bookTitle}</p>
+            <p className="mt-1 text-sm text-muted-foreground truncate">{bookTitle}</p>
           )}
         </div>
 
@@ -106,7 +106,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
         <div className="mb-6">
           <label
             htmlFor="rating-comment"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-surface-foreground mb-2"
           >
             한줄 코멘트 (선택)
           </label>
@@ -117,9 +117,9 @@ const RatingModal: React.FC<RatingModalProps> = ({
             onChange={(e) => setComment(e.target.value)}
             placeholder="이 책에 대한 한마디를 남겨주세요"
             maxLength={100}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-primary"
           />
-          <p className="mt-1 text-xs text-gray-500 text-right">
+          <p className="mt-1 text-xs text-muted-foreground text-right">
             {comment.length}/100
           </p>
         </div>
@@ -130,7 +130,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-3 text-surface-foreground bg-muted rounded-lg hover:bg-accent transition-colors disabled:opacity-50"
           >
             취소
           </button>
@@ -138,7 +138,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
             type="button"
             onClick={handleSubmit}
             disabled={isLoading || rating === 0}
-            className="flex-1 px-4 py-3 text-white bg-cyan-600 rounded-lg hover:bg-cyan-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-3 text-primary-foreground bg-primary rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <span className="flex items-center justify-center">

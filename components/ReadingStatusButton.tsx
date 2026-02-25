@@ -117,12 +117,12 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
         disabled={isLoading}
         className={`flex items-center space-x-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors duration-200 ${
           currentStatus
-            ? 'bg-cyan-50 border-cyan-200 text-cyan-700 hover:bg-cyan-100'
-            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+            ? 'bg-primary-50 border-primary-200 text-primary-700 hover:bg-primary-100'
+            : 'bg-surface border-border text-surface-foreground hover:bg-muted'
         } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         {isLoading ? (
-          <svg className="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
@@ -137,21 +137,21 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-20 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-48 bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden">
           {STATUS_OPTIONS.map((option) => (
             <button
               key={option.value}
               onClick={() => handleStatusChange(option.value)}
               className={`w-full text-left px-4 py-2.5 text-sm transition-colors duration-200 flex items-center space-x-2 ${
                 currentStatus === option.value
-                  ? 'bg-cyan-50 text-cyan-700 font-medium'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-primary-50 text-primary-700 font-medium'
+                  : 'text-surface-foreground hover:bg-muted'
               }`}
             >
               <span>{option.icon}</span>
               <span>{option.label}</span>
               {currentStatus === option.value && (
-                <svg className="h-4 w-4 ml-auto text-cyan-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-4 w-4 ml-auto text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -159,10 +159,10 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
           ))}
           {currentStatus && (
             <>
-              <div className="border-t border-gray-100" />
+              <div className="border-t border-border" />
               <button
                 onClick={handleRemoveStatus}
-                className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-red-50 transition-colors duration-200"
               >
                 상태 제거
               </button>

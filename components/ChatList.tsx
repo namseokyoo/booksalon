@@ -49,12 +49,12 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
 
     if (isLoading || !otherUser) {
         return (
-            <div className="bg-white border border-gray-200 p-4 rounded-xl animate-pulse shadow-sm">
+            <div className="bg-surface border border-border p-4 rounded-xl animate-pulse shadow-sm">
                 <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
+                    <div className="w-12 h-12 bg-muted rounded-full"></div>
                     <div className="flex-1">
-                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                        <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-1/2"></div>
                     </div>
                 </div>
             </div>
@@ -64,29 +64,29 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
     return (
         <div
             onClick={() => onSelectChat(chatRoom.id, otherUser)}
-            className="bg-white border border-gray-200 p-4 rounded-xl hover:bg-gray-50 hover:border-cyan-300 cursor-pointer transition-all shadow-sm"
+            className="bg-surface border border-border p-4 rounded-xl hover:bg-muted hover:border-primary-300 cursor-pointer transition-all shadow-sm"
         >
             <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-cyan-600 rounded-full flex items-center justify-center shadow-sm border-2 border-white">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-sm border-2 border-white">
                     <span className="text-white font-semibold">
                         {otherUser.nickname?.charAt(0) || otherUser.displayName?.charAt(0) || 'U'}
                     </span>
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-gray-900 font-semibold truncate">
+                        <h3 className="text-foreground font-semibold truncate">
                             {otherUser.nickname || otherUser.displayName}
                         </h3>
-                        <span className="text-gray-500 text-xs">
+                        <span className="text-muted-foreground text-xs">
                             {formatLastMessageTime(chatRoom.lastMessageAt)}
                         </span>
                     </div>
-                    <p className="text-gray-500 text-sm truncate mt-1">
+                    <p className="text-muted-foreground text-sm truncate mt-1">
                         {chatRoom.lastMessage?.content || '메시지가 없습니다.'}
                     </p>
                     {chatRoom.unreadCount && chatRoom.unreadCount[currentUserId] > 0 && (
                         <div className="flex justify-end mt-1">
-                            <span className="bg-cyan-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                            <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
                                 {chatRoom.unreadCount[currentUserId]}
                             </span>
                         </div>
@@ -142,14 +142,14 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     if (chatRooms.length === 0) {
         return (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-muted-foreground py-8">
                 아직 채팅방이 없습니다.
             </div>
         );

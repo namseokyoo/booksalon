@@ -152,8 +152,8 @@ const App = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -161,7 +161,7 @@ const App = () => {
   // OIDC로 전환: 별도 콜백 페이지 불필요
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header
         onLoginClick={() => setLoginModalOpen(true)}
         onSignUpClick={() => setSignupModalOpen(true)}
@@ -175,7 +175,7 @@ const App = () => {
         onHomeClick={handleHomeClick}
       />
       <main aria-label="메인 콘텐츠">
-        <Suspense fallback={<div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600" /></div>}>
+        <Suspense fallback={<div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
           {currentView === 'list' ? (
             <ForumList onSelectForum={handleSelectForum} />
           ) : currentView === 'profile' ? (
@@ -201,8 +201,8 @@ const App = () => {
             />
           ) : (
             <div className="text-center p-8">
-              <p className="text-gray-900">오류: 해당 살롱을 찾을 수 없습니다.</p>
-              <button onClick={handleBackToList} className="mt-4 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors">
+              <p className="text-foreground">오류: 해당 살롱을 찾을 수 없습니다.</p>
+              <button onClick={handleBackToList} className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors">
                 목록으로 돌아가기
               </button>
             </div>

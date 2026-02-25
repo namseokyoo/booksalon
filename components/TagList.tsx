@@ -37,7 +37,7 @@ const TagList: React.FC<TagListProps> = React.memo(({
                 />
             ))}
             {remainingCount > 0 && (
-                <span className={`inline-flex items-center rounded-full border bg-gray-100 text-gray-500 border-gray-200 ${
+                <span className={`inline-flex items-center rounded-full border bg-muted text-muted-foreground border-border ${
                     size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-sm'
                 }`}>
                     +{remainingCount}

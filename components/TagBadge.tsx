@@ -24,9 +24,9 @@ const TagBadge: React.FC<TagBadgeProps> = React.memo(({
         : 'px-3 py-1 text-sm';
 
     const variantClasses = {
-        default: 'bg-gray-100 text-gray-700 border-gray-200',
-        clickable: 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100 hover:border-cyan-300 cursor-pointer',
-        removable: 'bg-cyan-50 text-cyan-700 border-cyan-200 pr-1'
+        default: 'bg-muted text-surface-foreground border-border',
+        clickable: 'bg-primary-50 text-primary-700 border-primary-200 hover:bg-primary-100 hover:border-primary-300 cursor-pointer',
+        removable: 'bg-primary-50 text-primary-700 border-primary-200 pr-1'
     };
 
     const handleClick = () => {
@@ -54,7 +54,7 @@ const TagBadge: React.FC<TagBadgeProps> = React.memo(({
                 <button
                     type="button"
                     onClick={handleRemove}
-                    className="ml-1 p-0.5 rounded-full hover:bg-cyan-200 transition-colors"
+                    className="ml-1 p-0.5 rounded-full hover:bg-primary-200 transition-colors"
                     aria-label={`${tag} 태그 삭제`}
                 >
                     <svg

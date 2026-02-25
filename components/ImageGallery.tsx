@@ -97,7 +97,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, className = '' }) =
             key={image.id}
             className={`
               relative overflow-hidden rounded-lg cursor-pointer
-              bg-gray-100 transition-transform hover:scale-[1.02]
+              bg-muted transition-transform hover:scale-[1.02]
               ${images.length === 1 ? 'aspect-[4/3] max-h-80' : 'aspect-square'}
             `}
             onClick={() => openLightbox(index)}

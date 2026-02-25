@@ -129,7 +129,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                     <button
                         onClick={() => setActiveTab('following')}
                         className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'following'
-                                ? 'bg-cyan-600 text-white'
+                                ? 'bg-primary text-primary-foreground'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                     >
@@ -138,7 +138,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                     <button
                         onClick={() => setActiveTab('my')}
                         className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'my'
-                                ? 'bg-cyan-600 text-white'
+                                ? 'bg-primary text-primary-foreground'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
                     >
@@ -150,7 +150,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                 <div className="bg-gray-800 rounded-lg p-6">
                     {loading ? (
                         <div className="text-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
                             <p className="text-gray-500 mt-2">활동을 불러오는 중...</p>
                         </div>
                     ) : activities.length === 0 ? (

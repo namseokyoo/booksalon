@@ -42,10 +42,10 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({
           <StarRating value={averageRating} readonly size="sm" allowHalf />
         </div>
         <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold text-gray-900">
+          <span className="text-lg font-bold text-foreground">
             {averageRating.toFixed(1)}
           </span>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             ({totalRatings}명)
           </span>
         </div>
@@ -54,15 +54,15 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({
   }
 
   return (
-    <div className={`bg-gray-50 rounded-xl p-4 ${className}`}>
+    <div className={`bg-muted rounded-xl p-4 ${className}`}>
       <div className="flex flex-col sm:flex-row gap-4">
         {/* 왼쪽: 평균 평점 */}
-        <div className="flex flex-col items-center justify-center sm:pr-4 sm:border-r sm:border-gray-200">
-          <span className="text-4xl font-bold text-gray-900">
+        <div className="flex flex-col items-center justify-center sm:pr-4 sm:border-r sm:border-border">
+          <span className="text-4xl font-bold text-foreground">
             {averageRating.toFixed(1)}
           </span>
           <StarRating value={averageRating} readonly size="sm" allowHalf />
-          <span className="mt-1 text-sm text-gray-500">
+          <span className="mt-1 text-sm text-muted-foreground">
             {totalRatings}명 평가
           </span>
         </div>
@@ -78,13 +78,13 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({
               <div key={rating} className="flex items-center gap-2">
                 {/* 점수 라벨 */}
                 <div className="flex items-center gap-1 w-12 flex-shrink-0">
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-surface-foreground">
                     {rating}점
                   </span>
                 </div>
 
                 {/* 막대 그래프 */}
-                <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
+                <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-amber-400 rounded-full transition-all duration-300"
                     style={{ width: `${barWidth}%` }}
@@ -93,10 +93,10 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({
 
                 {/* 개수/퍼센트 */}
                 <div className="w-16 text-right flex-shrink-0">
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-muted-foreground">
                     {count}명
                   </span>
-                  <span className="text-xs text-gray-500 ml-1">
+                  <span className="text-xs text-muted-foreground ml-1">
                     ({percentage.toFixed(0)}%)
                   </span>
                 </div>
