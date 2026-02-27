@@ -80,7 +80,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose }) => {
           </button>
           <button
             type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-md border border-border shadow-sm px-4 py-2 bg-muted text-base font-medium text-surface-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+            className="mt-3 w-full inline-flex justify-center rounded-md border border-border shadow-sm px-4 py-2 bg-muted text-base font-medium text-surface-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
             onClick={onClose}
           >
             취소

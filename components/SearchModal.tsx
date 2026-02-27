@@ -7,7 +7,7 @@ import {
     SearchHistoryService,
     type CommunitySearchResult,
 } from '../lib/services';
-import { SearchIcon } from './icons';
+import { SearchIcon, BookOpenIcon } from './icons';
 import SearchSuggestions from './SearchSuggestions';
 import HighlightText from './HighlightText';
 
@@ -351,7 +351,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                 ref={inputRef}
                                 type="text"
                                 className="flex-1 bg-surface border border-border rounded-lg px-4 py-2 text-sm text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary"
-                                placeholder={searchType === 'book' ? 'ISBN 또는 책 제목을 입력하세요' : '살롱, 게시글, 댓글을 검색하세요'}
+                                placeholder={searchType === 'book' ? '어떤 책이 궁금하세요?' : '살롱, 게시글, 댓글을 검색하세요'}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onFocus={handleInputFocus}
@@ -360,7 +360,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-700 focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+                                className="px-4 py-2 bg-cta text-cta-foreground rounded-lg text-sm font-medium hover:bg-cta-700 focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
                                 disabled={isLoading || !searchTerm.trim()}
                                 aria-label="검색 실행"
                             >
@@ -453,9 +453,12 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                     )}
                                 </>
                             ) : searchedTerm ? (
-                                <p className="text-center text-muted-foreground py-8">검색 결과가 없습니다.</p>
+                                <div className="flex flex-col items-center py-8">
+                                    <BookOpenIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                                    <p className="text-center text-muted-foreground">아직 이 책에 대한 이야기는 도착하지 않았네요.</p>
+                                </div>
                             ) : (
-                                <p className="text-center text-muted-foreground py-8">검색어를 입력하세요.</p>
+                                <p className="text-center text-muted-foreground py-8">어떤 책이 궁금하세요?</p>
                             )}
                         </div>
                     ) : (
@@ -562,10 +565,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                 communityResults.forums.length === 0 &&
                                 communityResults.posts.length === 0 &&
                                 communityResults.comments.length === 0 && (
-                                    <p className="text-center text-muted-foreground py-8">검색 결과가 없습니다.</p>
+                                    <div className="flex flex-col items-center py-8">
+                                        <SearchIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                                        <p className="text-center text-muted-foreground">아직 이 책에 대한 이야기는 도착하지 않았네요.</p>
+                                    </div>
                                 )}
                             {!searchedTerm && (
-                                <p className="text-center text-muted-foreground py-8">검색어를 입력하세요.</p>
+                                <p className="text-center text-muted-foreground py-8">어떤 책이 궁금하세요?</p>
                             )}
                         </div>
                     )}

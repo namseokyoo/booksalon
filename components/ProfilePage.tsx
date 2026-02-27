@@ -8,6 +8,7 @@ import type { BadgeStats } from '../lib/badges';
 import BadgeList from './BadgeList';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
 
 interface ProfilePageProps {
     onBack: () => void;
@@ -224,7 +225,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                     </button>
                     <button
                         onClick={() => setIsEditing(!isEditing)}
-                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                        className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
                     >
                         {isEditing ? '취소' : '프로필 편집'}
                     </button>
@@ -357,7 +358,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                                     onClick={() => handleGenreToggle(genre)}
                                                     className={`px-3 py-1 text-sm rounded-full transition-colors duration-200 ${editForm.favoriteGenres.includes(genre)
                                                             ? 'bg-primary-50 text-primary-700 border border-primary-200 font-medium'
-                                                            : 'bg-muted text-surface-foreground border border-border hover:bg-accent'
+                                                            : 'bg-muted text-surface-foreground border border-border hover:bg-muted'
                                                         }`}
                                                 >
                                                     {genre}
@@ -370,13 +371,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                     <div className="flex gap-2">
                                         <button
                                             onClick={handleSaveProfile}
-                                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                                            className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
                                         >
                                             저장
                                         </button>
                                         <button
                                             onClick={() => setIsEditing(false)}
-                                            className="px-4 py-2 bg-muted text-surface-foreground rounded-lg hover:bg-accent transition-colors font-medium"
+                                            className="px-4 py-2 bg-muted text-surface-foreground rounded-lg hover:bg-muted transition-colors font-medium"
                                         >
                                             취소
                                         </button>
@@ -499,7 +500,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                         <div>
                             <h2 className="text-xl font-bold text-foreground mb-4">작성한 글</h2>
                             {posts.length === 0 ? (
-                                <p className="text-muted-foreground text-center py-8">작성한 글이 없습니다.</p>
+                                <div className="flex flex-col items-center py-8">
+                                    <FileTextIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                                    <p className="text-muted-foreground text-center">아직 남긴 이야기가 없네요.</p>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
                                     {posts.map((post) => (
@@ -521,7 +525,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                         <div>
                             <h2 className="text-xl font-bold text-foreground mb-4">작성한 댓글</h2>
                             {comments.length === 0 ? (
-                                <p className="text-muted-foreground text-center py-8">작성한 댓글이 없습니다.</p>
+                                <div className="flex flex-col items-center py-8">
+                                    <MessageCircleIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                                    <p className="text-muted-foreground text-center">아직 남긴 생각이 없네요.</p>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
                                     {comments.map((comment) => (
@@ -541,7 +548,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                         <div>
                             <h2 className="text-xl font-bold text-foreground mb-4">북마크한 살롱</h2>
                             {bookmarkedForums.length === 0 ? (
-                                <p className="text-muted-foreground text-center py-8">북마크한 살롱이 없습니다.</p>
+                                <div className="flex flex-col items-center py-8">
+                                    <BookmarkOutlineIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                                    <p className="text-muted-foreground text-center">아직 간직한 살롱이 없네요.</p>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
                                     {bookmarkedForums.map((forum) => (
@@ -602,7 +612,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                         className={`px-3 py-1.5 text-xs rounded-full transition-colors duration-200 ${
                                             readingFilter === filter.value
                                                 ? 'bg-primary text-primary-foreground'
-                                                : 'bg-muted text-muted-foreground hover:bg-accent'
+                                                : 'bg-muted text-muted-foreground hover:bg-muted'
                                         }`}
                                     >
                                         {filter.label}
@@ -612,7 +622,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
 
                             {/* 독서 로그 목록 */}
                             {readingLogs.length === 0 ? (
-                                <p className="text-muted-foreground text-center py-8">독서 로그가 없습니다.</p>
+                                <div className="flex flex-col items-center py-8">
+                                    <BookOpenIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                                    <p className="text-muted-foreground text-center">아직 기록된 독서가 없네요.</p>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
                                     {readingLogs

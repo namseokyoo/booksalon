@@ -39,7 +39,7 @@ const CreateForumModal: React.FC<CreateForumModalProps> = ({ book, onClose, onCr
         <div className="bg-muted px-3 sm:px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-border">
           <button
             type="button"
-            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-primary text-sm sm:text-base font-medium text-primary-foreground hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto transition-colors duration-200"
+            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-cta text-sm sm:text-base font-medium text-cta-foreground hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto transition-colors duration-200"
             onClick={handleCreate}
           >
             만들기

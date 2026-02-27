@@ -50,7 +50,7 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
                     </div>
 
                     <div className="flex items-center space-x-4 mb-6">
-                        <div className="w-16 h-16 rounded-full overflow-hidden bg-accent flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
                             {user.profileImageUrl ? (
                                 <img src={user.profileImageUrl} alt="프로필" className="w-full h-full object-cover" />
                             ) : (
@@ -106,14 +106,14 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
                                     onClose();
                                     onSendMessage();
                                 }}
-                                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors"
+                                className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors"
                             >
                                 메시지 보내기
                             </button>
                         )}
                         <button
                             onClick={onClose}
-                            className="px-4 py-2 bg-accent text-foreground rounded-lg hover:bg-muted transition-colors"
+                            className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
                         >
                             닫기
                         </button>

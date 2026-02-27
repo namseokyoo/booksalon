@@ -3,7 +3,7 @@ import type { Post, Comment, UserProfile } from '../types';
 import CommentItem from './CommentItem';
 import UserProfilePreview from './UserProfilePreview';
 import ImageGallery from './ImageGallery';
-import { ArrowLeftIcon } from './icons';
+import { ArrowLeftIcon, MessageCircleIcon } from './icons';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
@@ -440,7 +440,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 className="text-2xl font-bold text-foreground bg-transparent border-b border-border focus:border-primary focus:outline-none w-full"
                             />
                         ) : (
-                            <h1 className="text-2xl font-bold text-foreground">{post.title}</h1>
+                            <h1 className="text-2xl font-bold font-serif text-foreground">{post.title}</h1>
                         )}
                         {currentUser && currentUser.uid === post.author.uid && (
                             <div className="flex gap-2">
@@ -558,7 +558,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                             ))}
                         </div>
                     ) : (
-                        <p className="text-muted-foreground text-sm mb-6">아직 댓글이 없습니다.</p>
+                        <div className="flex flex-col items-center py-4 mb-6">
+                            <MessageCircleIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                            <p className="text-muted-foreground text-sm text-center">아직 이 글에 대한 이야기가 시작되지 않았네요. 첫 번째 생각을 남겨보는 건 어떨까요.</p>
+                        </div>
                     )}
 
                     {currentUser ? (
@@ -569,7 +572,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                         type="text"
                                         value={newComment}
                                         onChange={handleCommentChange}
-                                        placeholder="댓글을 입력하세요... (멘션: @닉네임)"
+                                        placeholder="떠오른 생각을 남겨보세요"
                                         className="w-full p-3 rounded-lg bg-surface border border-border focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary text-foreground"
                                     />
                                     {showMentionList && getMentionUsers().length > 0 && (
@@ -598,7 +601,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 </div>
                                 <button
                                     type="submit"
-                                    className="px-4 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                                    className="px-4 py-3 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
                                 >
                                     등록
                                 </button>

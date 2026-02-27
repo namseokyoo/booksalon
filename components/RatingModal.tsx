@@ -130,7 +130,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-4 py-3 text-surface-foreground bg-muted rounded-lg hover:bg-accent transition-colors disabled:opacity-50"
+            className="flex-1 px-4 py-3 text-surface-foreground bg-muted rounded-lg hover:bg-muted transition-colors disabled:opacity-50"
           >
             취소
           </button>
@@ -138,7 +138,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
             type="button"
             onClick={handleSubmit}
             disabled={isLoading || rating === 0}
-            className="flex-1 px-4 py-3 text-primary-foreground bg-primary rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-3 text-cta-foreground bg-cta rounded-lg hover:bg-cta-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <span className="flex items-center justify-center">

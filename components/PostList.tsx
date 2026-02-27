@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { UserService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
+import { FileTextIcon } from './icons';
 
 interface PostListProps {
     posts: Post[];
@@ -114,9 +115,10 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
 const PostList: React.FC<PostListProps> = ({ posts, onPostClick, onUserClick }) => {
     if (posts.length === 0) {
         return (
-            <div className="text-center py-8 px-4 border-2 border-dashed border-border rounded-lg">
-                <p className="text-sm text-muted-foreground">아직 게시물이 없습니다.</p>
-                <p className="text-xs text-muted-foreground mt-1">첫 번째 글을 작성해보세요.</p>
+            <div className="flex flex-col items-center text-center py-8 px-4 border-2 border-dashed border-border rounded-lg">
+                <FileTextIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+                <p className="text-sm text-muted-foreground">아직 이 책에 대한 이야기는 시작되지 않았네요.</p>
+                <p className="text-xs text-muted-foreground mt-1">첫 번째 질문을 남겨보는 건 어떨까요.</p>
             </div>
         );
     }

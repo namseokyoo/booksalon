@@ -506,7 +506,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
 
       <button
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-primary text-primary-foreground rounded-full p-3 sm:p-4 shadow-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-ring z-30 transition-colors duration-200"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-cta text-cta-foreground rounded-full p-3 sm:p-4 shadow-lg hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-ring z-30 transition-colors duration-200"
         aria-label="새로운 글 작성"
         disabled={!currentUser}
         title={!currentUser ? "로그인이 필요합니다" : "새로운 글 작성"}

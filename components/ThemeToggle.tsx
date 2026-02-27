@@ -34,7 +34,7 @@ const ThemeToggle: React.FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="text-surface-foreground hover:bg-accent rounded-md p-2 transition-colors"
+      className="text-surface-foreground hover:bg-muted rounded-md p-2 transition-colors"
       aria-label={`현재 ${label}. 클릭하여 테마 변경`}
       title={label}
     >

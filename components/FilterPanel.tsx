@@ -59,14 +59,14 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                     {hasActiveFilters && (
                         <button
                             onClick={clearFilters}
-                            className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground bg-muted hover:bg-accent rounded transition-colors duration-200"
+                            className="px-3 py-1 text-xs text-muted-foreground hover:text-foreground bg-muted hover:bg-muted rounded transition-colors duration-200"
                         >
                             필터 초기화
                         </button>
                     )}
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="px-3 py-1 text-xs text-primary hover:text-primary-700 bg-muted hover:bg-accent rounded transition-colors duration-200"
+                        className="px-3 py-1 text-xs text-primary hover:text-primary-700 bg-muted hover:bg-muted rounded transition-colors duration-200"
                     >
                         {isExpanded ? '접기' : '펼치기'}
                     </button>
@@ -100,7 +100,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                             onClick={() => handleSortChange(value as FilterOptions['sortBy'])}
                             className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.sortBy === value
                                     ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted text-surface-foreground hover:bg-accent'
+                                    : 'bg-muted text-surface-foreground hover:bg-muted'
                                 }`}
                         >
                             {label}
@@ -119,7 +119,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                 onClick={() => handleCategoryChange('전체')}
                                 className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${!currentOptions.category
                                         ? 'bg-primary text-primary-foreground'
-                                        : 'bg-muted text-surface-foreground hover:bg-accent'
+                                        : 'bg-muted text-surface-foreground hover:bg-muted'
                                     }`}
                             >
                                 전체
@@ -130,7 +130,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                     onClick={() => handleCategoryChange(category)}
                                     className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.category === category
                                             ? 'bg-primary text-primary-foreground'
-                                            : 'bg-muted text-surface-foreground hover:bg-accent'
+                                            : 'bg-muted text-surface-foreground hover:bg-muted'
                                         }`}
                                 >
                                     {category}
@@ -149,7 +149,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                     onClick={() => handleTagToggle(tag)}
                                     className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.tags?.includes(tag)
                                             ? 'bg-yellow-600 text-white'
-                                            : 'bg-muted text-surface-foreground hover:bg-accent'
+                                            : 'bg-muted text-surface-foreground hover:bg-muted'
                                         }`}
                                 >
                                     {tag}

@@ -110,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({
                         aria-label="북살롱 홈으로 이동"
                     >
                         <BookOpenIcon className="h-6 w-6 sm:h-8 sm:w-8" />
-                        <h1 className="text-lg sm:text-2xl font-bold tracking-wider">북살롱</h1>
+                        <h1 className="text-lg sm:text-2xl font-bold font-serif tracking-wider">북살롱</h1>
                     </button>
 
                     {/* 검색 버튼 및 사용자 메뉴 */}
@@ -120,7 +120,7 @@ const Header: React.FC<HeaderProps> = ({
                         {/* 통합 검색 버튼 */}
                         <button
                             onClick={onSearchClick}
-                            className="p-2 text-surface-foreground hover:bg-accent rounded-md transition-colors duration-200"
+                            className="p-2 text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                             title="통합 검색"
                             aria-label="통합 검색 열기"
                         >
@@ -133,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({
                                 {/* 사용자 프로필 버튼 */}
                                 <button
                                     onClick={handleUserMenuClick}
-                                    className="flex items-center space-x-2 px-2 sm:px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-accent rounded-md transition-colors duration-200"
+                                    className="flex items-center space-x-2 px-2 sm:px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                                     aria-label="사용자 메뉴 열기"
                                     aria-expanded={isDropdownOpen}
                                     aria-haspopup="true"
@@ -281,14 +281,14 @@ const Header: React.FC<HeaderProps> = ({
                             <div className="flex gap-2">
                                 <button
                                     onClick={onSignUpClick}
-                                    className="px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-accent rounded-md transition-colors duration-200"
+                                    className="px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                                     aria-label="회원가입"
                                 >
                                     회원가입
                                 </button>
                                 <button
                                     onClick={onLoginClick}
-                                    className="px-3 py-1 text-xs sm:text-sm bg-primary text-primary-foreground hover:bg-primary-700 rounded-md transition-colors duration-200 font-medium"
+                                    className="px-3 py-1 text-xs sm:text-sm bg-cta text-cta-foreground hover:bg-cta-700 rounded-md transition-colors duration-200 font-medium"
                                     aria-label="로그인"
                                 >
                                     로그인

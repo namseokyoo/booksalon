@@ -11,7 +11,7 @@ import {
   type FilterOptions,
 } from '../lib/services';
 import CreateForumModal from './CreateForumModal';
-import { SearchIcon } from './icons';
+import { SearchIcon, BookOpenIcon, UsersIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
@@ -33,11 +33,12 @@ interface BestPost {
 
 interface ForumListProps {
   onSelectForum: (forum: Forum) => void;
+  onLoginClick?: () => void;
 }
 
 const FORUMS_PAGE_SIZE = 20;
 
-const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
+const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) => {
   const [forums, setForums] = useState<Forum[]>([]);
   const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -650,6 +651,28 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
 
   return (
     <div className="max-w-4xl mx-auto p-3 sm:p-6 lg:p-8">
+      {/* 히어로 섹션 — 비로그인 사용자에게만 표시 */}
+      {!currentUser && (
+        <section className="mb-6 sm:mb-8 bg-primary-50 rounded-2xl px-6 py-10 sm:px-10 sm:py-14 text-center">
+          <BookOpenIcon className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-4 opacity-70" />
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary leading-snug">
+            당신의 마침표가<br />누군가의 물음표와 만나는 곳
+          </h2>
+          <p className="mt-4 text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+            책을 읽고 떠오른 질문을 남기면,<br />
+            시간을 건너 다른 독자의 생각을 만나게 됩니다.
+          </p>
+          <button
+            type="button"
+            onClick={onLoginClick}
+            className="mt-6 inline-flex items-center gap-2 bg-cta text-cta-foreground font-medium rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200 shadow-sm"
+          >
+            지금 시작하기
+            <span aria-hidden="true">&rarr;</span>
+          </button>
+        </section>
+      )}
+
       <form onSubmit={handleSearch} className="mb-4 sm:mb-6 sticky top-[65px] z-10 bg-surface border-b border-border py-3 sm:py-4 rounded-lg shadow-sm">
         <label htmlFor="isbn-search" className="block text-xs sm:text-sm font-medium text-surface-foreground mb-2">
           ISBN 또는 책 제목으로 검색
@@ -668,7 +691,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
           </div>
           <button
             type="submit"
-            className="-ml-px relative inline-flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 border border-l-0 border-border text-xs sm:text-sm font-medium rounded-r-lg text-primary-foreground bg-primary hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200"
+            className="-ml-px relative inline-flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 border border-l-0 border-border text-xs sm:text-sm font-medium rounded-r-lg text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200"
             disabled={isLoading}
             aria-label="책 검색"
           >
@@ -1104,17 +1127,18 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum }) => {
               )}
             </>
           ) : (
-            <div className="text-center py-8 sm:py-10 px-4 border-2 border-dashed border-border rounded-xl bg-muted">
+            <div className="flex flex-col items-center text-center py-8 sm:py-10 px-4 border-2 border-dashed border-border rounded-xl bg-muted">
+              <UsersIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
               <p className="text-sm sm:text-base text-surface-foreground">
                 {Object.keys(filterOptions).length > 0
                   ? '필터 조건에 맞는 살롱이 없습니다.'
-                  : '아직 만들어진 살롱이 없습니다.'
+                  : '아직 열린 살롱이 없네요.'
                 }
               </p>
               <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {Object.keys(filterOptions).length > 0
                   ? '다른 필터 조건을 시도해보세요.'
-                  : 'ISBN 또는 책 제목으로 검색하여 첫 번째 살롱을 만들어보세요.'
+                  : '첫 번째 살롱을 열어보는 건 어떨까요.'
                 }
               </p>
             </div>

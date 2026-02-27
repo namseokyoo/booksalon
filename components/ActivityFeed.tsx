@@ -130,7 +130,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                         onClick={() => setActiveTab('following')}
                         className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'following'
                                 ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-surface-foreground hover:bg-accent'
+                                : 'bg-muted text-surface-foreground hover:bg-muted'
                             }`}
                     >
                         팔로잉 활동
@@ -139,7 +139,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                         onClick={() => setActiveTab('my')}
                         className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'my'
                                 ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-surface-foreground hover:bg-accent'
+                                : 'bg-muted text-surface-foreground hover:bg-muted'
                             }`}
                     >
                         내 활동

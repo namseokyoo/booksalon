@@ -177,7 +177,7 @@ const App = () => {
       <main aria-label="메인 콘텐츠">
         <Suspense fallback={<div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
           {currentView === 'list' ? (
-            <ForumList onSelectForum={handleSelectForum} />
+            <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} />
           ) : currentView === 'profile' ? (
             <ProfilePage onBack={handleBackToList} />
           ) : currentView === 'activity' ? (
@@ -202,7 +202,7 @@ const App = () => {
           ) : (
             <div className="text-center p-8">
               <p className="text-foreground">오류: 해당 살롱을 찾을 수 없습니다.</p>
-              <button onClick={handleBackToList} className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors">
+              <button onClick={handleBackToList} className="mt-4 px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors">
                 목록으로 돌아가기
               </button>
             </div>

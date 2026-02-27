@@ -89,7 +89,7 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ onClose, onSubmit, is
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full inline-flex justify-center items-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-primary text-sm sm:text-base font-medium text-primary-foreground hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto transition-colors duration-200 disabled:bg-primary-300 disabled:cursor-not-allowed"
+            className="w-full inline-flex justify-center items-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-cta text-sm sm:text-base font-medium text-cta-foreground hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto transition-colors duration-200 disabled:bg-cta-300 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>

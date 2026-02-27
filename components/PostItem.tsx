@@ -233,8 +233,8 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
   return (
     <div className="bg-surface rounded-lg shadow-md overflow-hidden">
       <div className="p-3 sm:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-        <h3 className="font-semibold text-base sm:text-lg text-foreground">{post.title}</h3>
-        <div className="flex items-center space-x-3 sm:space-x-4 text-xs text-muted-foreground mt-2">
+        <h3 className="font-semibold font-serif text-base sm:text-lg text-foreground">{post.title}</h3>
+        <div className="flex items-center space-x-2 sm:space-x-4 text-xs text-muted-foreground mt-2">
           <span className="font-medium text-primary truncate">{post.author.email}</span>
           <span className="hidden sm:inline">{formatDate(post.createdAt)}</span>
           <div className="flex items-center space-x-1">
@@ -321,7 +321,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
               {comments.length > 0 ? (
                 comments.map(comment => <CommentItem key={comment.id} comment={comment} />)
               ) : (
-                <p className="text-xs sm:text-sm text-muted-foreground py-2 sm:py-3">아직 댓글이 없습니다.</p>
+                <p className="text-xs sm:text-sm text-muted-foreground py-2 sm:py-3">아직 이야기가 시작되지 않았네요.</p>
               )}
             </div>
             <form onSubmit={handleAddComment} className="mt-3 sm:mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
@@ -329,14 +329,14 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
                 type="text"
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder={currentUser ? "댓글을 입력하세요..." : "로그인 후 댓글을 작성할 수 있습니다."}
+                placeholder={currentUser ? "떠오른 생각을 남겨보세요" : "로그인 후 댓글을 작성할 수 있습니다."}
                 className="flex-grow bg-muted border border-border rounded-md px-3 py-2 text-xs sm:text-sm text-foreground focus:ring-ring focus:border-primary"
                 disabled={!currentUser}
                 aria-label="댓글 입력"
               />
               <button
                 type="submit"
-                className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:bg-muted disabled:cursor-not-allowed transition-colors duration-200"
+                className="bg-cta text-cta-foreground px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:bg-muted disabled:cursor-not-allowed transition-colors duration-200"
                 disabled={!currentUser}
                 aria-label="댓글 등록"
               >

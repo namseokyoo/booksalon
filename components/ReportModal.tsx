@@ -192,7 +192,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 px-4 py-2 bg-accent text-foreground rounded-lg hover:bg-muted transition-colors"
+                                className="flex-1 px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
                             >
                                 취소
                             </button>

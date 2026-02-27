@@ -1,33 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#f0fdfa;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#ecfeff;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="1200" height="630" fill="url(#bg)" />
-  <rect x="0" y="0" width="1200" height="8" fill="url(#accent)" />
-  <!-- Book icon -->
-  <g transform="translate(460, 140)">
-    <rect x="0" y="0" width="120" height="160" rx="8" fill="#0891b2" opacity="0.15" />
-    <rect x="80" y="10" width="120" height="160" rx="8" fill="#0891b2" opacity="0.25" />
-    <rect x="160" y="20" width="120" height="160" rx="8" fill="#0891b2" opacity="0.4" />
+  <!-- Background: parchment tone -->
+  <rect width="1200" height="630" fill="#F5F0E8"/>
+
+  <!-- Logo: Book + Sticky note -->
+  <g transform="translate(490, 100)">
+    <!-- Book body -->
+    <rect x="0" y="0" width="110" height="150" rx="8" fill="#4A6B5D"/>
+    <!-- Sticky note -->
+    <rect x="90" y="48" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 117, 63)"/>
+    <!-- Question mark -->
+    <text x="127" y="71" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
   </g>
-  <!-- Title -->
-  <text x="600" y="400" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="bold" fill="#0e7490" text-anchor="middle">
-    BOOKSALON
-  </text>
-  <!-- Subtitle -->
-  <text x="600" y="460" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#64748b" text-anchor="middle">
-    Sharing Knowledge Through Books
-  </text>
-  <!-- Korean subtitle -->
-  <text x="600" y="510" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#94a3b8" text-anchor="middle">
-    &#xCC45; &#xC911;&#xC2EC; &#xC9C0;&#xC2DD; &#xACF5;&#xC720; &#xCEE4;&#xBBA4;&#xB2C8;&#xD2F0;
-  </text>
-  <rect x="0" y="622" width="1200" height="8" fill="url(#accent)" />
+
+  <!-- Wordmark -->
+  <text x="600" y="320" font-family="'MaruBuri', Georgia, serif" font-size="48" font-weight="bold" fill="#4A6B5D" text-anchor="middle" letter-spacing="4">북살롱</text>
+
+  <!-- Slogan -->
+  <text x="600" y="400" font-family="'MaruBuri', Georgia, serif" font-size="24" fill="#4A6B5D" text-anchor="middle" opacity="0.85">당신의 마침표가 누군가의 물음표와 만나는 곳</text>
+
+  <!-- URL (muted) -->
+  <text x="600" y="570" font-family="'MaruBuri', Georgia, serif" font-size="18" fill="#4A6B5D" text-anchor="middle" opacity="0.4">booksalon-nine.vercel.app</text>
 </svg>

@@ -94,7 +94,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
           className="w-20 h-auto sm:w-24 sm:h-auto lg:w-32 lg:h-auto rounded-lg shadow-md flex-shrink-0 mx-auto sm:mx-0"
         />
         <div className="flex-grow text-center sm:text-left w-full">
-          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-serif text-foreground">
             {book.title}
           </h2>
           <p className="text-sm sm:text-md text-muted-foreground mt-1">
@@ -190,7 +190,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
               <button
                 type="button"
                 onClick={() => setShowRatingModal(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors"
               >
                 <svg
                   className="w-5 h-5"

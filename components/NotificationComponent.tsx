@@ -117,7 +117,7 @@ const NotificationComponent: React.FC = () => {
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllAsRead}
-                                className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 transition-colors text-sm"
+                                className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors text-sm"
                             >
                                 모두 읽음 처리
                             </button>

@@ -145,7 +145,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                     <button
                         type="submit"
                         disabled={!newMessage.trim()}
-                        className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                        className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
                         전송
                     </button>
