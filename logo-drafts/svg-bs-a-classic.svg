@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Variant A: Classic Serif Monogram — Ex-Libris Style -->
+  <!-- B left, S right, traditional arrangement with hairline base -->
+
+  <defs>
+    <style>
+      .main { fill: #4A6B5D; }
+      .amber { fill: #C4882B; }
+    </style>
+  </defs>
+
+  <!-- B: Serif Capital Letter -->
+  <g class="main">
+    <!-- B vertical stem -->
+    <path d="M 30 30 L 38 30 L 38 170 L 30 170 Z"/>
+    <!-- B top serif -->
+    <path d="M 24 28 L 64 28 L 64 34 L 24 34 Z"/>
+    <!-- B bottom serif (left part) -->
+    <path d="M 24 166 L 52 166 L 52 172 L 24 172 Z"/>
+    <!-- B upper bowl -->
+    <path d="
+      M 38 34 L 60 34
+      C 72 34, 82 38, 88 46
+      C 94 54, 94 62, 90 70
+      C 86 78, 78 84, 66 86
+      L 38 86 Z
+      M 46 42 L 46 78
+      L 58 78
+      C 68 78, 76 74, 80 68
+      C 84 62, 82 54, 78 48
+      C 74 44, 68 42, 58 42 Z
+    " fill-rule="evenodd"/>
+    <!-- B lower bowl -->
+    <path d="
+      M 38 90 L 64 90
+      C 78 90, 90 96, 98 106
+      C 104 114, 104 124, 100 132
+      C 96 142, 86 150, 72 154
+      L 38 154 Z
+      M 46 98 L 46 146
+      L 64 146
+      C 76 144, 84 138, 90 130
+      C 94 124, 94 116, 90 110
+      C 84 102, 76 98, 64 98 Z
+    " fill-rule="evenodd"/>
+  </g>
+
+  <!-- B bottom serif right (AMBER accent) -->
+  <path d="M 52 166 L 72 166 L 72 172 L 52 172 Z" class="amber"/>
+
+  <!-- S: Serif Capital Letter -->
+  <g class="main">
+    <!-- S main body -->
+    <path d="
+      M 142 52
+      C 138 44, 130 38, 120 38
+      C 112 38, 106 42, 104 48
+      C 102 54, 104 60, 110 66
+      C 116 72, 126 76, 134 82
+      C 142 88, 148 96, 148 108
+      C 148 120, 144 130, 136 138
+      C 128 146, 118 150, 108 150
+      C 100 150, 94 148, 90 144
+      L 88 154 L 84 154 L 84 138 L 88 138
+      C 92 144, 100 148, 108 148
+      C 118 148, 126 144, 132 136
+      C 138 128, 140 120, 140 112
+      C 140 100, 134 92, 126 86
+      C 118 80, 110 76, 104 70
+      C 96 62, 94 54, 96 46
+      C 98 40, 104 34, 112 32
+      C 120 30, 130 32, 138 38
+      C 142 42, 146 46, 148 50
+      L 148 34 L 152 34 L 152 54 L 148 54 Z
+    "/>
+    <!-- S top terminal serif -->
+    <path d="M 148 32 L 158 32 L 158 38 L 148 38 Z"/>
+    <!-- S bottom terminal serif -->
+    <path d="M 80 152 L 90 152 L 90 158 L 80 158 Z"/>
+  </g>
+
+  <!-- Hairline base -->
+  <line x1="18" y1="180" x2="164" y2="180" stroke="#4A6B5D" stroke-width="0.75"/>
+</svg>

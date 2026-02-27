@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 280" width="230" height="280">
+  <!-- 변형 1-B: 쪽지 오른쪽 + 더 크고 기울어진 쪽지 -->
+
+  <!-- 책: 단순한 둥근 사각형 하나 (책등 없음) -->
+  <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+
+  <!-- 쪽지: 더 크고(60x35) 기울기 6도 -->
+  <rect x="118" y="82" width="65" height="35" rx="3" fill="#C4882B" transform="rotate(-6, 150, 100)"/>
+
+  <!-- 물음표: 더 크게 (26px) -->
+  <text x="163" y="109" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+
+  <!-- 워드마크 -->
+  <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+</svg>

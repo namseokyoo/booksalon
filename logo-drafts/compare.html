@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>북살롱 로고 시안 비교 (Round 2)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #fff;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: #888;
+    }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Row labels */
+    .row-label {
+      grid-column: 1 / -1;
+      font-size: 14px;
+      font-weight: 600;
+      color: #4A6B5D;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 0 0;
+      border-bottom: 1px solid #e5e5e5;
+      margin-bottom: -8px;
+    }
+
+    /* Card */
+    .card {
+      border: 1px solid #e5e5e5;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-number {
+      font-size: 12px;
+      font-weight: 700;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+
+    .card-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #FAFAF8;
+      border-radius: 8px;
+      padding: 24px 16px;
+      min-height: 200px;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .card-preview svg {
+      max-height: 300px;
+      width: auto;
+      max-width: 100%;
+    }
+
+    .card-preview img {
+      max-height: 300px;
+      max-width: 100%;
+      object-fit: contain;
+    }
+
+    .card-desc {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .card-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #f0f0f0;
+      color: #666;
+    }
+
+    .tag.svg {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .tag.raster {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .tag.model {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+
+    /* Brand context */
+    .brand-context {
+      background: #FAFAF8;
+      border-radius: 12px;
+      padding: 32px;
+      border: 1px solid #e5e5e5;
+    }
+
+    .brand-context h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+
+    .brand-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .brand-item {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .brand-item h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .brand-item p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .color-chips {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-chips + .color-chips {
+      margin-top: 6px;
+    }
+
+    .chip {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+    }
+
+    .chip-label {
+      font-size: 13px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>북살롱 로고 시안 비교 (Round 2)</h1>
+      <p>SVG 3종 + 래스터 이미지 3종</p>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid">
+
+      <!-- Row 1 Label -->
+      <div class="row-label">Round 2 -- SVG 시안</div>
+
+      <!-- Concept 1 -->
+      <div class="card">
+        <div class="card-number">시안 1</div>
+        <div class="card-title">책 속의 물음표</div>
+        <div class="card-preview">
+          <svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+            <style>
+              .wordmark { font-family: "KoPub Batang", "Nanum Myeongjo", serif; font-size: 42px; fill: #4A6B5D; letter-spacing: 2px; }
+            </style>
+            <g id="logo-combination-mark">
+              <g id="symbol" transform="translate(25 28)">
+                <g id="book-shape" stroke-linejoin="round" stroke-linecap="round">
+                  <path fill="#4A6B5D" stroke="#4A6B5D" stroke-width="2" d="M 98 125 V 82 C 98 55 75 35 50 35 C 20 35 10 60 10 85 C 10 115 25 135 55 142 C 75 147 98 138 98 125 Z" />
+                  <path fill="#4A6B5D" stroke="#4A6B5D" stroke-width="2" d="M 102 125 V 88 C 102 50 145 50 140 85 C 135 110 110 112 102 88 M 102 125 C 115 140 140 145 160 142 C 185 135 190 115 190 85 C 190 60 175 35 150 35 C 125 35 102 55 102 82"/>
+                  <path fill="#C4882B" d="M 168,35 L 190,35 L 190,57 Z" />
+                  <line x1="168" y1="35" x2="190" y2="57" stroke="#4A6B5D" stroke-width="2" />
+                  <circle cx="100" cy="132" r="5" fill="#C4882B" />
+                </g>
+              </g>
+              <text class="wordmark" x="235" y="108" dominant-baseline="middle" text-anchor="start">북살롱</text>
+            </g>
+          </svg>
+        </div>
+        <div class="card-desc">위에서 바라본 펼쳐진 책. 네거티브 스페이스에 물음표, 접힌 모서리(dog-ear)에 앰버 포인트</div>
+        <div class="card-tags">
+          <span class="tag svg">SVG</span>
+          <span class="tag model">Claude Opus 4.6</span>
+        </div>
+      </div>
+
+      <!-- Concept 2 -->
+      <div class="card">
+        <div class="card-number">시안 2</div>
+        <div class="card-title">살롱의 문</div>
+        <div class="card-preview">
+          <svg width="300" height="350" viewBox="0 0 300 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
+            <title id="logoTitle">북살롱 로고 (BookSalon Logo)</title>
+            <g id="symbol-door">
+              <path d="M 75,275 V 135 C 75, 80, 225, 80, 225, 135 V 275 Z" fill="#4A6B5D"/>
+              <path d="M 100,255 C 130,240, 170,240, 200,255 V 135 C 200,100, 100,100, 100,135 Z" fill="#C4882B"/>
+              <g fill="#4A6B5D">
+                <circle cx="150" cy="221" r="7"/>
+                <path d="M150,208 C 172,208, 172,183, 150,183" stroke="#4A6B5D" stroke-width="10" fill="none" stroke-linecap="round"/>
+              </g>
+            </g>
+            <text x="150" y="325" font-family="'Nanum Myeongjo', 'KoPub Batang', serif" font-weight="700" font-size="48" text-anchor="middle" fill="#4A6B5D">북살롱</text>
+          </svg>
+        </div>
+        <div class="card-desc">아치형 살롱 입구. 내부에 앰버 빛, 물음표 모티프. 도서관/독립서점의 문</div>
+        <div class="card-tags">
+          <span class="tag svg">SVG</span>
+          <span class="tag model">Claude Opus 4.6</span>
+        </div>
+      </div>
+
+      <!-- Concept 3 -->
+      <div class="card">
+        <div class="card-number">시안 3</div>
+        <div class="card-title">쪽지의 발견</div>
+        <div class="card-preview">
+          <svg width="300" height="350" viewBox="0 0 300 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <rect x="50" y="25" width="200" height="250" rx="12" fill="#4A6B5D"/>
+              <text style="font:bold 100px Georgia, serif" x="208" y="110" text-anchor="middle" fill="#C4882B">?</text>
+              <path d="M 150 25 L 250 125 L 250 25 Z" fill="#6B8B7D"/>
+            </g>
+            <text style="font:bold 42px serif" x="150" y="325" text-anchor="middle" fill="#4A6B5D">북살롱</text>
+          </svg>
+        </div>
+        <div class="card-desc">북마크/페이지 형태. 우상단 접힌 모서리 아래 숨겨진 앰버 물음표</div>
+        <div class="card-tags">
+          <span class="tag svg">SVG</span>
+          <span class="tag model">Claude Opus 4.6</span>
+        </div>
+      </div>
+
+      <!-- Row 2 Label -->
+      <div class="row-label">래스터 이미지 시안</div>
+
+      <!-- Concept 4 -->
+      <div class="card">
+        <div class="card-number">시안 4</div>
+        <div class="card-title">브랜드 심볼 (래스터)</div>
+        <div class="card-preview">
+          <img src="concept4-brand-symbol.png" alt="시안 4: 브랜드 심볼">
+        </div>
+        <div class="card-desc">책+말풍선+물음표 융합 심볼. Gemini 이미지 생성. 가장 로고다운 완성도</div>
+        <div class="card-tags">
+          <span class="tag raster">래스터</span>
+          <span class="tag model">Gemini</span>
+        </div>
+      </div>
+
+      <!-- Concept 5 -->
+      <div class="card">
+        <div class="card-number">시안 5</div>
+        <div class="card-title">조용한 물음표 (이전)</div>
+        <div class="card-preview">
+          <img src="concept-a-quiet-question.png" alt="시안 5: 조용한 물음표">
+        </div>
+        <div class="card-desc">세리프 물음표 심볼 + 앰버 dot. Round 1 시안</div>
+        <div class="card-tags">
+          <span class="tag raster">래스터</span>
+          <span class="tag model">Gemini</span>
+        </div>
+      </div>
+
+      <!-- Concept 6 -->
+      <div class="card">
+        <div class="card-number">시안 6</div>
+        <div class="card-title">쉼표 (이전)</div>
+        <div class="card-preview">
+          <img src="concept-b-comma.png" alt="시안 6: 쉼표">
+        </div>
+        <div class="card-desc">북살롱, -- 타이포그래피 중심. Round 1 시안</div>
+        <div class="card-tags">
+          <span class="tag raster">래스터</span>
+          <span class="tag model">Gemini</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Brand Context -->
+    <div class="brand-context">
+      <h2>브랜드 컨텍스트</h2>
+      <div class="brand-row">
+        <div class="brand-item">
+          <h3>아키타입</h3>
+          <p>다정한 현자 (The Gentle Sage)</p>
+        </div>
+        <div class="brand-item">
+          <h3>브랜드 컬러</h3>
+          <div class="color-chips">
+            <span class="chip" style="background:#4A6B5D;"></span>
+            <span class="chip-label">블루-세이지 #4A6B5D</span>
+          </div>
+          <div class="color-chips">
+            <span class="chip" style="background:#C4882B;"></span>
+            <span class="chip-label">앰버 #C4882B</span>
+          </div>
+        </div>
+        <div class="brand-item">
+          <h3>서체</h3>
+          <p>마루 부리 (본문) + Pretendard (UI)</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

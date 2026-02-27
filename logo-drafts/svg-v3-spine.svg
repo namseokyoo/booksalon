@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280" width="200" height="280">
+  <!-- 변형 2: 책등 곡선 — 부드러운 곡선 path로 약간의 입체감 -->
+
+  <!-- 책 본체: 둥근 사각형 -->
+  <rect x="40" y="50" width="100" height="140" rx="8" ry="8" fill="#4A6B5D"/>
+
+  <!-- 책등: 부드러운 곡선 path (좌측 edge를 곡선으로) -->
+  <path d="M50,50 C36,50 36,120 36,120 C36,120 36,190 50,190 L50,50 Z" fill="#3D5A4E"/>
+  <!-- 책등 상하단 둥근 마감 -->
+  <rect x="40" y="50" width="12" height="4" rx="2" fill="#3D5A4E"/>
+  <rect x="40" y="186" width="12" height="4" rx="2" fill="#3D5A4E"/>
+
+  <!-- 닫힌 페이지 edge: 책 하단에 얇은 라인 암시 -->
+  <line x1="52" y1="187" x2="137" y2="187" stroke="#3D5A4E" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="52" y1="185" x2="137" y2="185" stroke="#3D5A4E" stroke-width="0.5" stroke-opacity="0.3"/>
+
+  <!-- 쪽지: 책 상단 우측에서 위로 돌출, 4도 기울임 -->
+  <rect x="108" y="12" width="24" height="52" rx="3" ry="3" fill="#C4882B" transform="rotate(4, 120, 38)"/>
+
+  <!-- 물음표: 쪽지 중앙에 흰색 -->
+  <text x="120.5" y="46" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+
+  <!-- 워드마크 -->
+  <text x="100" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+</svg>

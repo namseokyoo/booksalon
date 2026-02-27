@@ -1,0 +1,12 @@
+<svg width="300" height="350" viewBox="0 0 300 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
+<title id="logoTitle">북살롱 로고 (BookSalon Logo)</title>
+<g id="symbol">
+<path d="M 75,275 V 135 C 75, 80, 225, 80, 225, 135 V 275 Z" fill="#4A6B5D"/>
+<path d="M 100,255 C 130,240, 170,240, 200,255 V 135 C 200,100, 100,100, 100,135 Z" fill="#C4882B"/>
+<g fill="#4A6B5D">
+<circle cx="150" cy="221" r="7"/>
+<path d="M150,208 C 172,208, 172,183, 150,183" stroke="#4A6B5D" stroke-width="10" fill="none" stroke-linecap="round"/>
+</g>
+</g>
+<text x="150" y="325" font-family="'Nanum Myeongjo', 'KoPub Batang', serif" font-weight="700" font-size="48" text-anchor="middle" fill="#4A6B5D">북살롱</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg width="300" height="350" viewBox="0 0 300 350" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g>
+<rect x="50" y="25" width="200" height="250" rx="12" fill="#4A6B5D"/>
+<text style="font:bold 100px Georgia, serif" x="208" y="110" text-anchor="middle" fill="#C4882B">?</text>
+<path d="M 150 25 L 250 125 L 250 25 Z" fill="#6B8B7D"/>
+</g>
+<text style="font:bold 42px serif" x="150" y="325" text-anchor="middle" fill="#4A6B5D">북살롱</text>
+</svg>

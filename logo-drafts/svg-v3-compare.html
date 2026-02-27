@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>북살롱 로고 SVG v3 — 쪽지 오른쪽 3변형</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #FFFFFF;
+      color: #333;
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      color: #4A6B5D;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 48px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-bottom: 64px;
+    }
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      border: 1px solid #E8E8E8;
+      border-radius: 12px;
+      padding: 32px 24px;
+      text-align: center;
+      background: #FAFAFA;
+    }
+    .card h2 {
+      font-size: 16px;
+      color: #4A6B5D;
+      margin-bottom: 4px;
+    }
+    .card .label {
+      font-size: 12px;
+      color: #AAA;
+      margin-bottom: 24px;
+    }
+    .card svg {
+      width: 180px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    .card p {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* 축소 테스트 섹션 */
+    .size-test {
+      border-top: 1px solid #E8E8E8;
+      padding-top: 40px;
+    }
+    .size-test h2 {
+      text-align: center;
+      font-size: 18px;
+      color: #4A6B5D;
+      margin-bottom: 32px;
+    }
+    .size-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 48px;
+      margin-bottom: 24px;
+    }
+    .size-item {
+      text-align: center;
+    }
+    .size-item svg {
+      display: block;
+      margin: 0 auto 8px;
+    }
+    .size-item .size-label {
+      font-size: 11px;
+      color: #AAA;
+    }
+    .size-group-label {
+      text-align: center;
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .size-group {
+      margin-bottom: 40px;
+      padding: 24px;
+      background: #FAFAFA;
+      border-radius: 8px;
+    }
+    /* 어두운 배경 테스트 */
+    .dark-bg {
+      background: #1a1a1a !important;
+    }
+    .dark-bg .size-label {
+      color: #777 !important;
+    }
+    .dark-bg .size-group-label {
+      color: #777 !important;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>북살롱 로고 SVG v3 — 쪽지 오른쪽 3변형</h1>
+  <p class="subtitle">닫힌 책 + 오른쪽 돌출 쪽지 + 물음표 — 미니멀 플랫 로고</p>
+
+  <div class="grid">
+
+    <!-- 변형 1-A: 기본 -->
+    <div class="card">
+      <h2>1-A: 기본</h2>
+      <p class="label">가장 심플한 형태</p>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280">
+        <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+        <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+        <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+        <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+      </svg>
+      <p>책등 없는 단일 둥근 사각형.<br>쪽지가 오른쪽으로 자연스럽게 돌출.<br>극도의 미니멀.</p>
+    </div>
+
+    <!-- 변형 1-B: 큰 쪽지 -->
+    <div class="card">
+      <h2>1-B: 큰 쪽지</h2>
+      <p class="label">쪽지 강조, 더 기울어진</p>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 280">
+        <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+        <rect x="118" y="82" width="65" height="35" rx="3" fill="#C4882B" transform="rotate(-6, 150, 100)"/>
+        <text x="163" y="109" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+        <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+      </svg>
+      <p>쪽지를 60x35로 키우고 6도 기울임.<br>물음표도 26px로 확대.<br>"발견"의 다이내믹함 강조.</p>
+    </div>
+
+    <!-- 변형 1-C: 책등 힌트 -->
+    <div class="card">
+      <h2>1-C: 책등 힌트</h2>
+      <p class="label">최소한의 책 인지 보조</p>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280">
+        <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+        <line x1="38" y1="48" x2="38" y2="182" stroke="#3D5A4E" stroke-width="2" stroke-linecap="round"/>
+        <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+        <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+        <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+      </svg>
+      <p>1-A 기반 + 좌측 2px 책등 라인.<br>"이것은 책이다" 인지를 살짝 도와줌.<br>미니멀과 가독성의 균형.</p>
+    </div>
+
+  </div>
+
+  <!-- 축소 인지성 테스트 -->
+  <div class="size-test">
+    <h2>축소 인지성 테스트</h2>
+
+    <!-- 1-A -->
+    <div class="size-group">
+      <p class="size-group-label">1-A: 기본</p>
+      <div class="size-row">
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="96" height="122">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">96px</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="48" height="61">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="32" height="41">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1-B -->
+    <div class="size-group">
+      <p class="size-group-label">1-B: 큰 쪽지</p>
+      <div class="size-row">
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 280" width="96" height="117">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="118" y="82" width="65" height="35" rx="3" fill="#C4882B" transform="rotate(-6, 150, 100)"/>
+            <text x="163" y="109" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">96px</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 280" width="48" height="58">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="118" y="82" width="65" height="35" rx="3" fill="#C4882B" transform="rotate(-6, 150, 100)"/>
+            <text x="163" y="109" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 280" width="32" height="39">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="118" y="82" width="65" height="35" rx="3" fill="#C4882B" transform="rotate(-6, 150, 100)"/>
+            <text x="163" y="109" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1-C -->
+    <div class="size-group">
+      <p class="size-group-label">1-C: 책등 힌트</p>
+      <div class="size-row">
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="96" height="122">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <line x1="38" y1="48" x2="38" y2="182" stroke="#3D5A4E" stroke-width="2" stroke-linecap="round"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">96px</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="48" height="61">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <line x1="38" y1="48" x2="38" y2="182" stroke="#3D5A4E" stroke-width="2" stroke-linecap="round"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">48px</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="32" height="41">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <line x1="38" y1="48" x2="38" y2="182" stroke="#3D5A4E" stroke-width="2" stroke-linecap="round"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">32px</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 어두운 배경 테스트 -->
+    <div class="size-group dark-bg">
+      <p class="size-group-label">어두운 배경 테스트 (48px)</p>
+      <div class="size-row">
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="48" height="61">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">1-A 기본</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 280" width="48" height="58">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="118" y="82" width="65" height="35" rx="3" fill="#C4882B" transform="rotate(-6, 150, 100)"/>
+            <text x="163" y="109" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">1-B 큰 쪽지</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="48" height="61">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <line x1="38" y1="48" x2="38" y2="182" stroke="#3D5A4E" stroke-width="2" stroke-linecap="round"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">1-C 책등 힌트</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 어두운 배경 풀사이즈 테스트 -->
+    <div class="size-group dark-bg">
+      <p class="size-group-label">어두운 배경 테스트 (풀사이즈)</p>
+      <div class="size-row">
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="160" height="204">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">1-A</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 280" width="160" height="195">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <rect x="118" y="82" width="65" height="35" rx="3" fill="#C4882B" transform="rotate(-6, 150, 100)"/>
+            <text x="163" y="109" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">1-B</span>
+        </div>
+        <div class="size-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="160" height="204">
+            <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+            <line x1="38" y1="48" x2="38" y2="182" stroke="#3D5A4E" stroke-width="2" stroke-linecap="round"/>
+            <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+            <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+            <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+          </svg>
+          <span class="size-label">1-C</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

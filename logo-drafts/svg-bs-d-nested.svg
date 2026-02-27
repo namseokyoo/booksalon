@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Variant D: Nested — S inside B -->
+  <!-- Large B as container form; S nestled within B's bowls -->
+  <!-- B = book/space, S = salon/conversation -->
+
+  <defs>
+    <style>
+      .main { fill: #4A6B5D; }
+      .amber { fill: #C4882B; }
+    </style>
+  </defs>
+
+  <!-- ===== Large B: Outer Container ===== -->
+  <g class="main">
+    <!-- Thick stem -->
+    <path d="M 20 14 L 34 14 L 34 186 L 20 186 Z"/>
+    <!-- Top serif -->
+    <path d="M 10 10 L 72 10 L 72 18 L 10 18 Z"/>
+    <!-- Bottom serif -->
+    <path d="M 10 182 L 72 182 L 72 190 L 10 190 Z"/>
+
+    <!-- Upper bowl (large) -->
+    <path d="
+      M 34 18 L 72 18
+      C 100 18, 120 28, 132 44
+      C 140 56, 140 68, 134 80
+      C 128 90, 116 96, 100 96
+      L 34 96 Z
+      M 44 28 L 44 86
+      L 72 86
+      C 92 84, 108 76, 118 64
+      C 124 56, 124 46, 118 38
+      C 110 30, 96 26, 72 28 Z
+    " fill-rule="evenodd"/>
+
+    <!-- Lower bowl (larger) -->
+    <path d="
+      M 34 100 L 76 100
+      C 108 100, 132 112, 144 130
+      C 152 144, 150 158, 140 168
+      C 130 180, 112 186, 88 186
+      L 34 186 Z
+      M 44 110 L 44 176
+      L 76 176
+      C 100 174, 118 166, 128 154
+      C 136 144, 136 132, 128 122
+      C 120 114, 104 110, 82 110 Z
+    " fill-rule="evenodd"/>
+  </g>
+
+  <!-- ===== S: Inside the B, white negative space in upper bowl ===== -->
+  <path d="
+    M 94 42
+    C 90 38, 84 36, 78 36
+    C 72 36, 68 40, 68 46
+    C 68 52, 72 56, 80 60
+    L 86 62
+    C 92 64, 96 68, 96 74
+    C 96 80, 90 84, 82 84
+    C 76 84, 72 82, 68 78
+    L 66 84 L 62 84 L 62 76 L 66 76
+    C 70 80, 76 82, 82 82
+    C 88 80, 92 76, 92 72
+    C 92 68, 88 64, 82 62
+    L 76 60
+    C 70 58, 66 54, 66 48
+    C 66 42, 70 36, 80 36
+    C 86 36, 92 38, 96 42
+    L 96 36 L 100 36 L 100 44 L 96 44 Z
+  " fill="white" opacity="0.9"/>
+
+  <!-- ===== S: Inside the B, amber in lower bowl (larger) ===== -->
+  <path d="
+    M 116 130
+    C 112 124, 104 120, 94 120
+    C 84 120, 76 126, 76 134
+    C 76 142, 82 148, 92 152
+    L 100 156
+    C 108 160, 114 166, 114 172
+    C 114 180, 106 184, 96 184
+    C 88 184, 82 180, 78 174
+    L 76 182 L 70 182 L 70 170 L 76 170
+    C 80 178, 88 182, 96 182
+    C 104 180, 110 176, 110 170
+    C 110 164, 104 158, 96 154
+    L 88 150
+    C 80 146, 74 140, 74 134
+    C 74 124, 82 118, 94 118
+    C 104 118, 112 122, 118 128
+    L 118 118 L 122 118 L 122 132 L 118 132 Z
+  " class="amber"/>
+</svg>

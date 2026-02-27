@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 280" width="220" height="280">
+  <!-- 변형 1-A: 쪽지 오른쪽 (기본) — 가장 심플한 책 + 오른쪽 돌출 쪽지 -->
+
+  <!-- 책: 단순한 둥근 사각형 하나 (책등 없음) -->
+  <rect x="30" y="40" width="110" height="150" rx="8" fill="#4A6B5D"/>
+
+  <!-- 쪽지: 책 오른쪽 변에서 옆으로 돌출 -->
+  <!-- 왼쪽 부분(x=120~140)은 책 rect에 가려짐, 오른쪽만 노출 -->
+  <rect x="120" y="88" width="55" height="30" rx="3" fill="#C4882B" transform="rotate(-3, 147, 103)"/>
+
+  <!-- 물음표: 쪽지의 노출된 부분(책 밖) 중앙 -->
+  <text x="157" y="111" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#FFFFFF" text-anchor="middle">?</text>
+
+  <!-- 워드마크 -->
+  <text x="110" y="242" font-family="'MaruBuri', serif" font-size="28" fill="#4A6B5D" text-anchor="middle" letter-spacing="2">북살롱</text>
+</svg>
