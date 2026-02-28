@@ -723,10 +723,10 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   }
 
   return (
-    <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto p-3 sm:p-6 lg:p-8">
+    <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
       {/* 히어로 섹션 — 비로그인 사용자에게만 표시 */}
       {!currentUser && (
-        <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-6 py-12 sm:px-10 sm:py-16 text-center">
+        <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-5 py-8 sm:px-10 sm:py-14 text-center">
           <BookOpenIcon className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-4 opacity-70" />
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary leading-snug">
             당신의 마침표가<br />누군가의 물음표와 만나는 곳
@@ -746,9 +746,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
         </section>
       )}
 
-      <form onSubmit={handleSearch} className="mb-4 sm:mb-6 sticky top-[65px] z-10 bg-surface border-b border-border py-3 sm:py-4 rounded-lg shadow-sm">
+      <form onSubmit={handleSearch} className="mb-4 sm:mb-6 bg-surface border border-border px-4 py-3 sm:py-4 rounded-lg shadow-sm">
         <label htmlFor="isbn-search" className="block text-xs sm:text-sm font-medium text-surface-foreground mb-2">
-          ISBN 또는 책 제목으로 검색
+          책 제목으로 검색
         </label>
         <div className="mt-1 flex rounded-lg shadow-sm">
           <div className="relative flex items-stretch flex-grow focus-within:z-10">
@@ -757,7 +757,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
               name="isbn-search"
               id="isbn-search"
               className="focus:ring-2 focus:ring-ring focus:border-primary block w-full rounded-none rounded-l-lg bg-surface border border-border text-foreground pl-3 sm:pl-4 text-sm sm:text-sm"
-              placeholder="ISBN 번호 또는 책 제목을 입력하세요"
+              placeholder="읽은 책을 검색해보세요"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -826,12 +826,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
 
         {/* 카테고리 칩 (항상 표시) */}
         <div className="border-t border-border p-3 sm:p-4">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {['전체', ...FilterService.CATEGORIES].map(cat => (
               <button
                 key={cat}
                 onClick={() => handleSelectCategory(cat)}
-                className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                className={`flex-shrink-0 px-4 py-2.5 text-sm rounded-full border transition-colors ${
                   (filterOptions.category || '전체') === cat
                     ? 'border-primary bg-primary-50 text-primary-700 font-semibold shadow-sm'
                     : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
@@ -903,9 +903,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <p className="text-xs text-muted-foreground mt-1 truncate">{post.book_title}</p>
                 <p className="text-xs text-muted-foreground mt-1 truncate">{post.author_name}</p>
                 <div className="flex gap-3 mt-2 text-xs text-muted-foreground">
-                  <span>❤️ {post.like_count}</span>
-                  <span>💬 {post.comment_count}</span>
-                  <span>👁 {post.view_count}</span>
+                  <span aria-label={`좋아요 ${post.like_count}개`}>❤️ {post.like_count}</span>
+                  <span aria-label={`댓글 ${post.comment_count}개`}>💬 {post.comment_count}</span>
+                  <span aria-label={`조회 ${post.view_count}회`}>👁 {post.view_count}</span>
                 </div>
               </div>
             ))}
@@ -938,7 +938,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
                   <button
                     onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="p-1 hover:bg-amber-50 rounded transition-colors duration-200 active:scale-90"
+                    className="p-2.5 hover:bg-amber-50 rounded-lg transition-colors duration-200 active:scale-90"
                     title="북마크 해제"
                   >
                     <BookmarkIcon
@@ -946,9 +946,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       filled={true}
                     />
                   </button>
-                  <div>
-                    <p className="text-xs sm:text-sm text-muted-foreground">게시물</p>
-                    <p className="text-base sm:text-lg font-bold text-amber-500">{forum.postCount || 0}</p>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
+                    <span>게시물 {forum.postCount || 0}개</span>
+                    {forum.memberCount && <span>참여 {forum.memberCount}명</span>}
                   </div>
                 </div>
               </div>
@@ -961,7 +961,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       {existingForums.length > 0 && (
         <div className="mb-6">
           <h2 className="font-serif text-lg font-semibold text-foreground mb-4">최근 개설된 살롱</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {existingForums
               .sort((a, b) => {
                 // createdAt 기준으로 정렬 (최신순)
@@ -976,15 +976,17 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                   onClick={() => onSelectForum(forum)}
                   className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
                 >
-                  <img
-                    src={forum.book.thumbnail}
-                    alt={forum.book.title}
-                    className="w-full h-40 object-cover rounded-t-xl"
-                    loading="lazy"
-                  />
+                  <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
+                    <img
+                      src={forum.book.thumbnail}
+                      alt={forum.book.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
                   <button
                     onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="absolute top-3 right-3 z-10 p-1.5 bg-surface/80 backdrop-blur-sm rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                    className="absolute top-2 right-2 z-10 p-2.5 bg-surface/90 rounded-full shadow-sm hover:bg-primary-50 transition-colors duration-200 active:scale-90"
                     title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
                   >
                     <BookmarkIcon
@@ -1020,7 +1022,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       {searchResults.length > 0 && (
         <div className="mb-6">
           <h2 className="font-serif text-lg font-semibold text-foreground mb-4">새로운 도서 검색 결과</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {searchResults.map((book, index) => {
               const existingForum = forums.find(forum => forum.isbn === book.isbn);
               const hasExistingForum = !!existingForum;
@@ -1031,15 +1033,17 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                   onClick={hasExistingForum ? () => onSelectForum(existingForum!) : () => setSearchResult(book)}
                   className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
                 >
-                  <img
-                    src={book.thumbnail}
-                    alt={book.title}
-                    className="w-full h-40 object-cover rounded-t-xl"
-                    loading="lazy"
-                  />
+                  <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
+                    <img
+                      src={book.thumbnail}
+                      alt={book.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
                   <button
                     onClick={(e) => handleToggleBookmark(book.isbn, e)}
-                    className="absolute top-3 right-3 z-10 p-1.5 bg-surface/80 backdrop-blur-sm rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                    className="absolute top-2 right-2 z-10 p-2.5 bg-surface/90 rounded-full shadow-sm hover:bg-primary-50 transition-colors duration-200 active:scale-90"
                     title={bookmarks.has(book.isbn) ? "북마크 해제" : "북마크 추가"}
                   >
                     <BookmarkIcon
@@ -1103,7 +1107,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       {/* 최근 개설된 살롱 */}
       <div className="mb-6">
         <h2 className="font-serif text-lg font-semibold text-foreground mb-4">최근 개설된 살롱</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredForums.length > 0 ? (
             <>
               {filteredForums.map(forum => (
@@ -1112,15 +1116,17 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                   onClick={() => onSelectForum(forum)}
                   className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
                 >
-                  <img
-                    src={forum.book.thumbnail}
-                    alt={forum.book.title}
-                    className="w-full h-40 object-cover rounded-t-xl"
-                    loading="lazy"
-                  />
+                  <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
+                    <img
+                      src={forum.book.thumbnail}
+                      alt={forum.book.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
                   <button
                     onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="absolute top-3 right-3 z-10 p-1.5 bg-surface/80 backdrop-blur-sm rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                    className="absolute top-2 right-2 z-10 p-2.5 bg-surface/90 rounded-full shadow-sm hover:bg-primary-50 transition-colors duration-200 active:scale-90"
                     title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
                   >
                     <BookmarkIcon
@@ -1161,9 +1167,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                         )}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                      <span>게시물</span>
-                      <span className="font-bold text-primary">{forum.postCount || 0}</span>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
+                      <span>게시물 {forum.postCount || 0}개</span>
+                      {forum.memberCount && <span>참여 {forum.memberCount}명</span>}
                     </div>
                   </div>
                 </div>
