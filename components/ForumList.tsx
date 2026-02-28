@@ -253,6 +253,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       const to = FORUMS_PAGE_SIZE - 1;
 
       try {
+        let timeoutId: ReturnType<typeof setTimeout>;
+
         const forumsPromise = supabase
           .from('forums')
           .select(`
@@ -276,14 +278,16 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           .order('created_at', { ascending: false })
           .range(from, to);
 
-        const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('TIMEOUT')), 10000)
-        );
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error('TIMEOUT')), 10000);
+        });
 
         const { data: forumsData, error: queryError } = await Promise.race([
           forumsPromise,
           timeoutPromise,
         ]);
+
+        clearTimeout(timeoutId!);
 
         if (isCancelled) return;
 
@@ -309,6 +313,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           setForums(enrichedWithTags);
         });
       } catch (err) {
+        clearTimeout(timeoutId!);
         if (isCancelled) return;
 
         // 자동 1회 재시도
