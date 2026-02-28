@@ -179,6 +179,15 @@
   }
 }
 
+/* Safe Area Inset for iOS */
+@supports (padding: env(safe-area-inset-top)) {
+  .safe-area-pad {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(0px, env(safe-area-inset-bottom));
+  }
+}
+
 /* 가로 스크롤 스크롤바 숨김 */
 .scrollbar-hide {
   -ms-overflow-style: none;

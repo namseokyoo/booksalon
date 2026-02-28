@@ -723,7 +723,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   }
 
   return (
-    <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+    <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto px-4 py-3 sm:px-6 sm:py-4 lg:px-8 safe-area-pad">
       {/* 히어로 섹션 — 비로그인 사용자에게만 표시 */}
       {!currentUser && (
         <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-5 py-8 sm:px-10 sm:py-14 text-center">
@@ -731,7 +731,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary leading-snug">
             당신의 마침표가<br />누군가의 물음표와 만나는 곳
           </h2>
-          <p className="mt-4 text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+          <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed">
             책을 읽고 떠오른 질문을 남기면,<br />
             시간을 건너 다른 독자의 생각을 만나게 됩니다.
           </p>
@@ -947,7 +947,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                     />
                   </button>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                    <span>게시물 {forum.postCount || 0}개</span>
+                    <span>{forum.postCount ? `게시물 ${forum.postCount}개` : '첫 토론을 시작해보세요'}</span>
                     {forum.memberCount && <span>참여 {forum.memberCount}명</span>}
                   </div>
                 </div>
@@ -1008,8 +1008,14 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       </div>
                     )}
                     <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                      <span>게시물</span>
-                      <span className="font-bold text-primary">{forum.postCount || 0}</span>
+                      {forum.postCount ? (
+                        <>
+                          <span>게시물</span>
+                          <span className="font-bold text-primary">{forum.postCount}</span>
+                        </>
+                      ) : (
+                        <span>첫 토론을 시작해보세요</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1068,7 +1074,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       {hasExistingForum ? (
                         <>
                           <p className="text-xs sm:text-sm text-amber-600 font-medium">기존 살롱 참여</p>
-                          <p className="text-xs text-muted-foreground">게시물 {existingForum!.postCount || 0}개</p>
+                          <p className="text-xs text-muted-foreground">{existingForum!.postCount ? `게시물 ${existingForum!.postCount}개` : '첫 토론을 시작해보세요'}</p>
                         </>
                       ) : (
                         <p className="text-xs sm:text-sm text-primary font-medium">살롱 만들기</p>
@@ -1168,7 +1174,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       </div>
                     )}
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                      <span>게시물 {forum.postCount || 0}개</span>
+                      <span>{forum.postCount ? `게시물 ${forum.postCount}개` : '첫 토론을 시작해보세요'}</span>
                       {forum.memberCount && <span>참여 {forum.memberCount}명</span>}
                     </div>
                   </div>
