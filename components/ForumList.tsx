@@ -16,6 +16,8 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
+import ForumListSkeleton from './ForumListSkeleton';
+import ForumListError from './ForumListError';
 
 // 베스트 게시물 타입
 interface BestPost {
@@ -43,6 +45,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+  const [initialLoadError, setInitialLoadError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [searchResult, setSearchResult] = useState<Book | null>(null);
   const [searchResults, setSearchResults] = useState<Book[]>([]);
@@ -233,50 +238,106 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
     }
   };
 
+  const handleRetryInitialLoad = useCallback(() => {
+    setInitialLoadError(null);
+    setIsLoadingInitial(true);
+    setRetryCount(prev => prev + 1);
+  }, []);
+
   useEffect(() => {
+    let isCancelled = false;
+
     // 초기 데이터 로드 (첫 페이지)
-    const loadForums = async () => {
+    const loadForums = async (attempt = 0) => {
       const from = 0;
       const to = FORUMS_PAGE_SIZE - 1;
 
-      const { data: forumsData, error } = await supabase
-        .from('forums')
-        .select(`
-          isbn,
-          post_count,
-          category,
-          popularity,
-          average_rating,
-          total_ratings,
-          last_activity_at,
-          created_at,
-          books (
+      try {
+        const forumsPromise = supabase
+          .from('forums')
+          .select(`
             isbn,
-            title,
-            authors,
-            publisher,
-            thumbnail,
-            contents
-          )
-        `)
-        .order('created_at', { ascending: false })
-        .range(from, to);
+            post_count,
+            category,
+            popularity,
+            average_rating,
+            total_ratings,
+            last_activity_at,
+            created_at,
+            books (
+              isbn,
+              title,
+              authors,
+              publisher,
+              thumbnail,
+              contents
+            )
+          `)
+          .order('created_at', { ascending: false })
+          .range(from, to);
 
-      if (error) {
-        console.error('포럼 로드 실패:', error);
-        return;
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('TIMEOUT')), 10000)
+        );
+
+        const { data: forumsData, error: queryError } = await Promise.race([
+          forumsPromise,
+          timeoutPromise,
+        ]);
+
+        if (isCancelled) return;
+
+        if (queryError) {
+          throw new Error(queryError.message || '포럼 데이터 로드 실패');
+        }
+
+        // Phase 1: forums + books 먼저 렌더링 (빈 태그 Map)
+        const emptyTags = new Map<string, string[]>();
+        const enrichedForums = enrichForumsData(forumsData || [], emptyTags);
+
+        if (isCancelled) return;
+
+        setForums(enrichedForums);
+        setForumsPage(0);
+        setHasMoreForums((forumsData || []).length >= FORUMS_PAGE_SIZE);
+        setIsLoadingInitial(false);
+
+        // Phase 2: 태그 비동기 후처리
+        fetchForumTags().then((tagsByForum) => {
+          if (isCancelled) return;
+          const enrichedWithTags = enrichForumsData(forumsData || [], tagsByForum);
+          setForums(enrichedWithTags);
+        });
+      } catch (err) {
+        if (isCancelled) return;
+
+        // 자동 1회 재시도
+        if (attempt < 1) {
+          console.warn('포럼 로드 실패, 자동 재시도 중...', err);
+          loadForums(attempt + 1);
+          return;
+        }
+
+        // 자동 재시도도 실패
+        console.error('포럼 로드 최종 실패:', err);
+        const message = err instanceof Error && err.message === 'TIMEOUT'
+          ? '서버 응답이 너무 오래 걸립니다. 네트워크를 확인해주세요.'
+          : '포럼 목록을 불러오는 중 오류가 발생했습니다.';
+        setInitialLoadError(message);
+        setIsLoadingInitial(false);
       }
-
-      const tagsByForum = await fetchForumTags();
-      const enrichedForums = enrichForumsData(forumsData || [], tagsByForum);
-
-      setForums(enrichedForums);
-      setForumsPage(0);
-      setHasMoreForums((forumsData || []).length >= FORUMS_PAGE_SIZE);
     };
 
     loadForums();
 
+    // cleanup
+    return () => {
+      isCancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retryCount]);
+
+  useEffect(() => {
     // Supabase 실시간 구독 — 새 포럼 추가 시 첫 페이지만 리로드
     const subscription = supabase
       .channel('forums_changes')
@@ -649,8 +710,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
     return !!(filterOptions.category || (filterOptions.tags && filterOptions.tags.length > 0) || filterOptions.sortBy);
   };
 
+  if (isLoadingInitial) {
+    return <ForumListSkeleton />;
+  }
+  if (initialLoadError) {
+    return <ForumListError errorMessage={initialLoadError} onRetry={handleRetryInitialLoad} retryCount={retryCount} maxRetries={3} />;
+  }
+
   return (
-    <div className="max-w-4xl mx-auto p-3 sm:p-6 lg:p-8">
+    <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto p-3 sm:p-6 lg:p-8">
       {/* 히어로 섹션 — 비로그인 사용자에게만 표시 */}
       {!currentUser && (
         <section className="mb-6 sm:mb-8 bg-primary-50 rounded-2xl px-6 py-10 sm:px-10 sm:py-14 text-center">
