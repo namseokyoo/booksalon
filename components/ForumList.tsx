@@ -11,7 +11,7 @@ import {
   type FilterOptions,
 } from '../lib/services';
 import CreateForumModal from './CreateForumModal';
-import { SearchIcon, BookOpenIcon, UsersIcon } from './icons';
+import { SearchIcon, BookOpenIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
@@ -726,7 +726,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
     <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto p-3 sm:p-6 lg:p-8">
       {/* 히어로 섹션 — 비로그인 사용자에게만 표시 */}
       {!currentUser && (
-        <section className="mb-6 sm:mb-8 bg-primary-50 rounded-2xl px-6 py-10 sm:px-10 sm:py-14 text-center">
+        <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-6 py-12 sm:px-10 sm:py-16 text-center">
           <BookOpenIcon className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-4 opacity-70" />
           <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary leading-snug">
             당신의 마침표가<br />누군가의 물음표와 만나는 곳
@@ -738,7 +738,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           <button
             type="button"
             onClick={onLoginClick}
-            className="mt-6 inline-flex items-center gap-2 bg-cta text-cta-foreground font-medium rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200 shadow-sm"
+            className="mt-6 inline-flex items-center gap-2 bg-cta text-cta-foreground font-medium rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             지금 시작하기
             <span aria-hidden="true">&rarr;</span>
@@ -824,30 +824,29 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           </div>
         </button>
 
-        {/* 필터 내용 (접기/펼치기) */}
+        {/* 카테고리 칩 (항상 표시) */}
+        <div className="border-t border-border p-3 sm:p-4">
+          <div className="flex flex-wrap gap-2">
+            {['전체', ...FilterService.CATEGORIES].map(cat => (
+              <button
+                key={cat}
+                onClick={() => handleSelectCategory(cat)}
+                className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+                  (filterOptions.category || '전체') === cat
+                    ? 'border-primary bg-primary-50 text-primary-700 font-semibold shadow-sm'
+                    : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
+                }`}
+                type="button"
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 필터 내용 (접기/펼치기) — 태그, 정렬만 */}
         {isFilterExpanded && (
           <div className="border-t border-border p-3 sm:p-4 space-y-4">
-            {/* 카테고리 */}
-            <div>
-              <label className="block text-xs font-medium text-surface-foreground mb-2">카테고리</label>
-              <div className="flex flex-wrap gap-2">
-                {['전체', ...FilterService.CATEGORIES].map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => handleSelectCategory(cat)}
-                    className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-                      (filterOptions.category || '전체') === cat
-                        ? 'border-primary bg-primary-50 text-primary-700 font-semibold'
-                        : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
-                    }`}
-                    type="button"
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* 태그 */}
             <div>
               <label className="block text-xs font-medium text-surface-foreground mb-2">태그</label>
@@ -892,7 +891,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       {/* 인기 게시물 섹션 */}
       {bestPosts.length > 0 && (
         <section className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-3">🔥 인기 게시물</h2>
+          <h2 className="font-serif text-lg font-semibold text-foreground mb-3">인기 게시물</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {bestPosts.map(post => (
               <div
@@ -917,7 +916,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       {/* 북마크한 살롱 표시 */}
       {bookmarkedForums.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">⭐ 북마크한 살롱</h2>
+          <h2 className="font-serif text-lg font-semibold text-foreground mb-4">북마크한 살롱</h2>
           <div className="space-y-3 sm:space-y-4">
             {bookmarkedForums.map((forum) => (
               <div
@@ -939,7 +938,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
                   <button
                     onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="p-1 hover:bg-amber-50 rounded transition-colors duration-200"
+                    className="p-1 hover:bg-amber-50 rounded transition-colors duration-200 active:scale-90"
                     title="북마크 해제"
                   >
                     <BookmarkIcon
@@ -961,8 +960,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       {/* 기존 살롱 검색 결과 표시 */}
       {existingForums.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">📚 최근 개설된 살롱</h2>
-          <div className="space-y-3 sm:space-y-4">
+          <h2 className="font-serif text-lg font-semibold text-foreground mb-4">최근 개설된 살롱</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {existingForums
               .sort((a, b) => {
                 // createdAt 기준으로 정렬 (최신순)
@@ -975,15 +974,25 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 border-l-4 border-l-primary"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <img
                     src={forum.book.thumbnail}
                     alt={forum.book.title}
-                    className="w-10 h-auto sm:w-12 sm:h-auto rounded flex-shrink-0"
+                    className="w-full h-40 object-cover rounded-t-xl"
                     loading="lazy"
                   />
-                  <div className="flex-grow min-w-0">
+                  <button
+                    onClick={(e) => handleToggleBookmark(forum.isbn, e)}
+                    className="absolute top-3 right-3 z-10 p-1.5 bg-surface/80 backdrop-blur-sm rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                    title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
+                  >
+                    <BookmarkIcon
+                      className="h-4 w-4"
+                      filled={bookmarks.has(forum.isbn)}
+                    />
+                  </button>
+                  <div className="p-3 sm:p-4">
                     <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{forum.book.authors.join(', ')}</p>
                     <p className="text-xs text-muted-foreground mt-1">{forum.book.publisher}</p>
@@ -996,21 +1005,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                         )}
                       </div>
                     )}
-                  </div>
-                  <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
-                    <button
-                      onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                      className="p-1 hover:bg-primary-50 rounded transition-colors duration-200"
-                      title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
-                    >
-                      <BookmarkIcon
-                        className="h-4 w-4"
-                        filled={bookmarks.has(forum.isbn)}
-                      />
-                    </button>
-                    <div>
-                      <p className="text-xs sm:text-sm text-muted-foreground">게시물</p>
-                      <p className="text-base sm:text-lg font-bold text-primary">{forum.postCount || 0}</p>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                      <span>게시물</span>
+                      <span className="font-bold text-primary">{forum.postCount || 0}</span>
                     </div>
                   </div>
                 </div>
@@ -1022,8 +1019,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       {/* 새로운 도서 검색 결과 표시 */}
       {searchResults.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-foreground mb-4">📚 새로운 도서 검색 결과</h2>
-          <div className="space-y-3 sm:space-y-4">
+          <h2 className="font-serif text-lg font-semibold text-foreground mb-4">새로운 도서 검색 결과</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {searchResults.map((book, index) => {
               const existingForum = forums.find(forum => forum.isbn === book.isbn);
               const hasExistingForum = !!existingForum;
@@ -1032,16 +1029,25 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={`${book.isbn}-${index}`}
                   onClick={hasExistingForum ? () => onSelectForum(existingForum!) : () => setSearchResult(book)}
-                  className={`bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 ${hasExistingForum ? 'border-l-4 border-l-amber-400' : 'border-l-4 border-l-primary'
-                    }`}
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <img
                     src={book.thumbnail}
                     alt={book.title}
-                    className="w-10 h-auto sm:w-12 sm:h-auto rounded flex-shrink-0"
+                    className="w-full h-40 object-cover rounded-t-xl"
                     loading="lazy"
                   />
-                  <div className="flex-grow min-w-0">
+                  <button
+                    onClick={(e) => handleToggleBookmark(book.isbn, e)}
+                    className="absolute top-3 right-3 z-10 p-1.5 bg-surface/80 backdrop-blur-sm rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                    title={bookmarks.has(book.isbn) ? "북마크 해제" : "북마크 추가"}
+                  >
+                    <BookmarkIcon
+                      className="h-4 w-4"
+                      filled={bookmarks.has(book.isbn)}
+                    />
+                  </button>
+                  <div className="p-3 sm:p-4">
                     <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{book.title}</h3>
                     <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{book.authors.join(', ')}</p>
                     <p className="text-xs text-muted-foreground mt-1">{book.publisher}</p>
@@ -1054,19 +1060,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                         )}
                       </div>
                     )}
-                  </div>
-                  <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
-                    <button
-                      onClick={(e) => handleToggleBookmark(book.isbn, e)}
-                      className="p-1 hover:bg-primary-50 rounded transition-colors duration-200"
-                      title={bookmarks.has(book.isbn) ? "북마크 해제" : "북마크 추가"}
-                    >
-                      <BookmarkIcon
-                        className="h-4 w-4"
-                        filled={bookmarks.has(book.isbn)}
-                      />
-                    </button>
-                    <div>
+                    <div className="mt-2">
                       {hasExistingForum ? (
                         <>
                           <p className="text-xs sm:text-sm text-amber-600 font-medium">기존 살롱 참여</p>
@@ -1081,7 +1075,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
               );
             })}
             {!searchIsEnd && (
-              <div className="text-center pt-4">
+              <div className="text-center pt-4 col-span-full">
                 <button
                   onClick={handleLoadMore}
                   disabled={isLoadingMore}
@@ -1108,23 +1102,33 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
 
       {/* 최근 개설된 살롱 */}
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-foreground mb-4">📚 최근 개설된 살롱</h2>
-        <div className="space-y-3 sm:space-y-4">
+        <h2 className="font-serif text-lg font-semibold text-foreground mb-4">최근 개설된 살롱</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredForums.length > 0 ? (
             <>
               {filteredForums.map(forum => (
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <img
                     src={forum.book.thumbnail}
                     alt={forum.book.title}
-                    className="w-10 h-auto sm:w-12 sm:h-auto rounded flex-shrink-0"
+                    className="w-full h-40 object-cover rounded-t-xl"
                     loading="lazy"
                   />
-                  <div className="flex-grow min-w-0">
+                  <button
+                    onClick={(e) => handleToggleBookmark(forum.isbn, e)}
+                    className="absolute top-3 right-3 z-10 p-1.5 bg-surface/80 backdrop-blur-sm rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                    title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
+                  >
+                    <BookmarkIcon
+                      className={`h-4 w-4 ${bookmarks.has(forum.isbn) ? 'text-amber-500' : 'text-muted-foreground'} hover:text-amber-500`}
+                      filled={bookmarks.has(forum.isbn)}
+                    />
+                  </button>
+                  <div className="p-3 sm:p-4">
                     <div className="flex items-center space-x-2 mb-1">
                       <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
                       {forum.category && (
@@ -1157,27 +1161,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                         )}
                       </div>
                     )}
-                  </div>
-                  <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
-                    <button
-                      onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                      className="p-1 hover:bg-primary-50 rounded transition-colors duration-200"
-                      title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
-                    >
-                      <BookmarkIcon
-                        className={`h-4 w-4 ${bookmarks.has(forum.isbn) ? 'text-amber-500' : 'text-muted-foreground'} hover:text-amber-500`}
-                        filled={bookmarks.has(forum.isbn)}
-                      />
-                    </button>
-                    <div>
-                      <p className="text-xs sm:text-sm text-muted-foreground">게시물</p>
-                      <p className="text-base sm:text-lg font-bold text-primary">{forum.postCount || 0}</p>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                      <span>게시물</span>
+                      <span className="font-bold text-primary">{forum.postCount || 0}</span>
                     </div>
                   </div>
                 </div>
               ))}
               {hasMoreForums && (
-                <div className="text-center pt-4">
+                <div className="text-center pt-4 col-span-full">
                   <button
                     onClick={handleLoadMoreForums}
                     disabled={isLoadingMoreForums}
@@ -1200,8 +1192,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
               )}
             </>
           ) : (
-            <div className="flex flex-col items-center text-center py-8 sm:py-10 px-4 border-2 border-dashed border-border rounded-xl bg-muted">
-              <UsersIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
+            <div className="col-span-full flex flex-col items-center text-center py-8 sm:py-10 px-4 border-2 border-dashed border-border rounded-xl bg-muted">
+              <BookOpenIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
               <p className="text-sm sm:text-base text-surface-foreground">
                 {Object.keys(filterOptions).length > 0
                   ? '필터 조건에 맞는 살롱이 없습니다.'
