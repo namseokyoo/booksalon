@@ -42,3 +42,8 @@ qa-*.png
 sc*.png
 network-logs.txt
 .omx/
+
+# QA test files
+tests/
+test-results/
+playwright-report/
