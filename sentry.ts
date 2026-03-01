@@ -6,7 +6,7 @@ Sentry.init({
     Sentry.browserTracingIntegration(),
     Sentry.replayIntegration(),
   ],
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 0.3,  // 30% 샘플링 (기존 1.0 → 쿼터 절약)
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1.0,
   enabled: import.meta.env.PROD,

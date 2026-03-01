@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/update-sitemap.cjs",
     "preview": "vite preview",
     "lint": "eslint ./*.{ts,tsx} components/ contexts/ hooks/ lib/",
     "type-check": "tsc --noEmit"
