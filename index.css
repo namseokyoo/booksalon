@@ -135,12 +135,12 @@
     --color-muted-foreground: oklch(0.65 0.01 80);
 
     /* 프라이머리 — M3 반전: 밝은 민트-세이지 */
-    --color-primary: oklch(0.75 0.05 155);
+    --color-primary: oklch(0.75 0.08 155);
     --color-primary-foreground: oklch(0.15 0.01 155);
-    --color-primary-light: oklch(0.65 0.04 155);
+    --color-primary-light: oklch(0.65 0.06 155);
 
     /* CTA — 다크에서 Primary와 동일 */
-    --color-cta: oklch(0.75 0.05 155);
+    --color-cta: oklch(0.75 0.08 155);
     --color-cta-foreground: oklch(0.15 0.01 155);
 
     /* 세컨더리 / 액센트 */
@@ -160,16 +160,16 @@
     /* UI 요소 */
     --color-border: oklch(0.30 0.01 155);
     --color-input: oklch(0.30 0.01 155);
-    --color-ring: oklch(0.75 0.05 155);
+    --color-ring: oklch(0.75 0.08 155);
 
     /* 프라이머리 스케일 (다크 반전 — Hue 155) */
-    --color-primary-50: oklch(0.20 0.01 155);
-    --color-primary-100: oklch(0.25 0.02 155);
-    --color-primary-200: oklch(0.32 0.03 155);
-    --color-primary-300: oklch(0.42 0.04 155);
-    --color-primary-500: oklch(0.60 0.05 155);
-    --color-primary-600: oklch(0.75 0.05 155);
-    --color-primary-700: oklch(0.82 0.04 155);
+    --color-primary-50: oklch(0.20 0.02 155);
+    --color-primary-100: oklch(0.25 0.03 155);
+    --color-primary-200: oklch(0.32 0.04 155);
+    --color-primary-300: oklch(0.42 0.06 155);
+    --color-primary-500: oklch(0.60 0.07 155);
+    --color-primary-600: oklch(0.75 0.08 155);
+    --color-primary-700: oklch(0.82 0.06 155);
 
     /* 그림자 - 다크에서 강화 */
     --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.15);
