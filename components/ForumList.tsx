@@ -741,14 +741,14 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 type="text"
                 name="isbn-search"
                 id="isbn-search-hero"
-                className="focus:ring-2 focus:ring-ring focus:border-primary block w-full rounded-none border-0 bg-transparent text-foreground pl-4 sm:pl-5 text-sm sm:text-sm py-2.5"
+                className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 rounded-none border-0 bg-transparent text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
                 placeholder="읽은 책을 검색해보세요"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <button
                 type="submit"
-                className="inline-flex items-center px-4 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
+                className="inline-flex items-center flex-shrink-0 px-3 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
                 disabled={isLoading}
                 aria-label="책 검색"
               >
@@ -778,14 +778,14 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
               type="text"
               name="isbn-search"
               id="isbn-search"
-              className="focus:ring-2 focus:ring-ring focus:border-primary block w-full border-0 bg-transparent rounded-none text-foreground pl-4 sm:pl-5 text-sm sm:text-sm py-2.5"
+              className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
               placeholder="읽은 책을 검색해보세요"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button
               type="submit"
-              className="inline-flex items-center gap-1 sm:gap-2 px-4 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
+              className="inline-flex items-center flex-shrink-0 gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
               disabled={isLoading}
               aria-label="책 검색"
             >
@@ -942,7 +942,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 cursor-pointer transition-all duration-300 flex flex-col"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
                     <img
@@ -979,15 +979,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       </div>
                     )}
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                      <span className="inline-flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span className="inline-flex items-center gap-1" aria-label="게시물 수">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         {forum.postCount ? `${forum.postCount}` : '0'}
                       </span>
                       {forum.memberCount && (
-                        <span className="inline-flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span className="inline-flex items-center gap-1" aria-label="참여자 수">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                           </svg>
                           {forum.memberCount}
@@ -1017,7 +1017,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={`${book.isbn}-${index}`}
                   onClick={hasExistingForum ? () => onSelectForum(existingForum!) : () => setSearchResult(book)}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 cursor-pointer transition-all duration-300 flex flex-col"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
                     <img
@@ -1058,15 +1058,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                         <>
                           <p className="text-xs sm:text-sm text-amber-600 font-medium">기존 살롱 참여</p>
                           <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                            <span className="inline-flex items-center gap-1">
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span className="inline-flex items-center gap-1" aria-label="게시물 수">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                               </svg>
                               {existingForum!.postCount ? `${existingForum!.postCount}` : '0'}
                             </span>
                             {existingForum!.memberCount && (
-                              <span className="inline-flex items-center gap-1">
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <span className="inline-flex items-center gap-1" aria-label="참여자 수">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                                 {existingForum!.memberCount}
@@ -1133,7 +1133,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 cursor-pointer transition-all duration-300 flex flex-col"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
                     <img
@@ -1190,15 +1190,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       </div>
                     )}
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                      <span className="inline-flex items-center gap-1">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <span className="inline-flex items-center gap-1" aria-label="게시물 수">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                         {forum.postCount ? `${forum.postCount}` : '0'}
                       </span>
                       {forum.memberCount && (
-                        <span className="inline-flex items-center gap-1">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span className="inline-flex items-center gap-1" aria-label="참여자 수">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                           </svg>
                           {forum.memberCount}
