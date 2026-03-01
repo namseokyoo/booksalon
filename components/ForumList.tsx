@@ -942,7 +942,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
                     <img
@@ -978,14 +978,23 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                         )}
                       </div>
                     )}
-                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                      {forum.postCount ? (
-                        <>
-                          <span>게시물</span>
-                          <span className="font-bold text-primary">{forum.postCount}</span>
-                        </>
-                      ) : (
-                        <span>첫 토론을 시작해보세요</span>
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
+                      <span className="inline-flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        {forum.postCount ? `${forum.postCount}` : '0'}
+                      </span>
+                      {forum.memberCount && (
+                        <span className="inline-flex items-center gap-1">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          {forum.memberCount}
+                        </span>
+                      )}
+                      {forum.postCount === 0 && (
+                        <span className="text-primary-600 font-medium">첫 토론을 시작해보세요</span>
                       )}
                     </div>
                   </div>
@@ -1008,7 +1017,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={`${book.isbn}-${index}`}
                   onClick={hasExistingForum ? () => onSelectForum(existingForum!) : () => setSearchResult(book)}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
                     <img
@@ -1048,7 +1057,25 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       {hasExistingForum ? (
                         <>
                           <p className="text-xs sm:text-sm text-amber-600 font-medium">기존 살롱 참여</p>
-                          <p className="text-xs text-muted-foreground">{existingForum!.postCount ? `게시물 ${existingForum!.postCount}개` : '첫 토론을 시작해보세요'}</p>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                            <span className="inline-flex items-center gap-1">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                              </svg>
+                              {existingForum!.postCount ? `${existingForum!.postCount}` : '0'}
+                            </span>
+                            {existingForum!.memberCount && (
+                              <span className="inline-flex items-center gap-1">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                {existingForum!.memberCount}
+                              </span>
+                            )}
+                            {existingForum!.postCount === 0 && (
+                              <span className="text-primary-600 font-medium">첫 토론을 시작해보세요</span>
+                            )}
+                          </div>
                         </>
                       ) : (
                         <p className="text-xs sm:text-sm text-primary font-medium">살롱 만들기</p>
@@ -1106,7 +1133,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 cursor-pointer transition-all duration-300 flex flex-col"
+                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-primary-300 cursor-pointer transition-all duration-300 flex flex-col"
                 >
                   <div className="aspect-[3/2] overflow-hidden rounded-t-xl bg-muted/30">
                     <img
@@ -1163,8 +1190,23 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       </div>
                     )}
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                      <span>{forum.postCount ? `게시물 ${forum.postCount}개` : '첫 토론을 시작해보세요'}</span>
-                      {forum.memberCount && <span>참여 {forum.memberCount}명</span>}
+                      <span className="inline-flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        {forum.postCount ? `${forum.postCount}` : '0'}
+                      </span>
+                      {forum.memberCount && (
+                        <span className="inline-flex items-center gap-1">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                          </svg>
+                          {forum.memberCount}
+                        </span>
+                      )}
+                      {forum.postCount === 0 && (
+                        <span className="text-primary-600 font-medium">첫 토론을 시작해보세요</span>
+                      )}
                     </div>
                   </div>
                 </div>
