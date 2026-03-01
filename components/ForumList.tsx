@@ -56,7 +56,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
   const [filteredForums, setFilteredForums] = useState<Forum[]>([]);
-  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const [searchPage, setSearchPage] = useState(1);
   const [searchIsEnd, setSearchIsEnd] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -724,172 +723,116 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
 
   return (
     <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto px-4 py-3 sm:px-6 sm:py-4 lg:px-8 safe-area-pad">
-      {/* 히어로 섹션 — 비로그인 사용자에게만 표시 */}
-      {!currentUser && (
-        <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-5 py-8 sm:px-10 sm:py-14 text-center">
-          <BookOpenIcon className="h-8 w-8 sm:h-10 sm:w-10 text-primary mx-auto mb-4 opacity-70" />
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-primary leading-snug">
+      {/* 비로그인: 통합 히어로+검색 */}
+      {!currentUser ? (
+        <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-5 py-6 sm:px-10 sm:py-10 text-center">
+          <BookOpenIcon className="h-7 w-7 sm:h-9 sm:w-9 text-primary mx-auto mb-3 opacity-70" />
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-primary leading-snug">
             당신의 마침표가<br />누군가의 물음표와 만나는 곳
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed">
+          <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
             책을 읽고 떠오른 질문을 남기면,<br />
             시간을 건너 다른 독자의 생각을 만나게 됩니다.
           </p>
+          {/* 통합 검색바 */}
+          <form onSubmit={handleSearch} className="mt-5 max-w-lg mx-auto">
+            <div className="flex rounded-full shadow-sm bg-surface/80 backdrop-blur-sm border border-border/40 overflow-hidden">
+              <input
+                type="text"
+                name="isbn-search"
+                id="isbn-search-hero"
+                className="focus:ring-2 focus:ring-ring focus:border-primary block w-full rounded-none border-0 bg-transparent text-foreground pl-4 sm:pl-5 text-sm sm:text-sm py-2.5"
+                placeholder="읽은 책을 검색해보세요"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="inline-flex items-center px-4 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
+                disabled={isLoading}
+                aria-label="책 검색"
+              >
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                )}
+              </button>
+            </div>
+            {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+          </form>
           <button
             type="button"
             onClick={onLoginClick}
-            className="mt-6 inline-flex items-center gap-2 bg-cta text-cta-foreground font-medium rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200 shadow-md hover:shadow-lg"
+            className="mt-5 inline-flex items-center gap-2 bg-cta text-cta-foreground font-medium rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200 shadow-md hover:shadow-lg"
           >
             지금 시작하기
             <span aria-hidden="true">&rarr;</span>
           </button>
         </section>
-      )}
-
-      <form onSubmit={handleSearch} className="mb-4 sm:mb-6 bg-surface border border-border px-4 py-3 sm:py-4 rounded-lg shadow-sm">
-        <label htmlFor="isbn-search" className="block text-xs sm:text-sm font-medium text-surface-foreground mb-2">
-          책 제목으로 검색
-        </label>
-        <div className="mt-1 flex rounded-lg shadow-sm">
-          <div className="relative flex items-stretch flex-grow focus-within:z-10">
+      ) : (
+        /* 로그인 사용자: 검색바만 */
+        <form onSubmit={handleSearch} className="mb-4 sm:mb-6">
+          <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden">
             <input
               type="text"
               name="isbn-search"
               id="isbn-search"
-              className="focus:ring-2 focus:ring-ring focus:border-primary block w-full rounded-none rounded-l-lg bg-surface border border-border text-foreground pl-3 sm:pl-4 text-sm sm:text-sm"
+              className="focus:ring-2 focus:ring-ring focus:border-primary block w-full border-0 bg-transparent rounded-none text-foreground pl-4 sm:pl-5 text-sm sm:text-sm py-2.5"
               placeholder="읽은 책을 검색해보세요"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </div>
-          <button
-            type="submit"
-            className="-ml-px relative inline-flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 border border-l-0 border-border text-xs sm:text-sm font-medium rounded-r-lg text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200"
-            disabled={isLoading}
-            aria-label="책 검색"
-          >
-            {isLoading ? (
-              <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
-            ) : (
-              <>
-                <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                <span className="hidden sm:inline">검색</span>
-              </>
-            )}
-          </button>
-        </div>
-        {error && <p className="mt-2 text-xs sm:text-sm text-destructive">{error}</p>}
-      </form>
-
-      {/* 컴팩트 필터 바 */}
-      <div className="bg-surface border border-border rounded-lg shadow-sm mb-6">
-        {/* 필터 헤더 (항상 표시) */}
-        <button
-          onClick={() => setIsFilterExpanded(!isFilterExpanded)}
-          className="w-full flex items-center justify-between p-3 sm:p-4 hover:bg-muted transition-colors"
-          aria-label="필터 패널 열기/닫기"
-          aria-expanded={isFilterExpanded}
-        >
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            <span className="text-sm font-medium text-foreground">필터</span>
-            {hasActiveFilters() && (
-              <span className="px-2 py-0.5 text-xs bg-primary-100 text-primary-700 rounded-full font-medium">
-                활성
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-3">
-            {hasActiveFilters() && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleResetFilters();
-                }}
-                className="text-xs text-muted-foreground hover:text-foreground underline"
-              >
-                초기화
-              </button>
-            )}
-            <svg
-              className={`w-5 h-5 text-muted-foreground transition-transform ${isFilterExpanded ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <button
+              type="submit"
+              className="inline-flex items-center gap-1 sm:gap-2 px-4 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
+              disabled={isLoading}
+              aria-label="책 검색"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+              {isLoading ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              ) : (
+                <>
+                  <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                  <span className="hidden sm:inline">검색</span>
+                </>
+              )}
+            </button>
           </div>
-        </button>
+          {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+        </form>
+      )}
 
-        {/* 카테고리 칩 (항상 표시) */}
-        <div className="border-t border-border p-3 sm:p-4">
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {['전체', ...FilterService.CATEGORIES].map(cat => (
-              <button
-                key={cat}
-                onClick={() => handleSelectCategory(cat)}
-                className={`flex-shrink-0 px-4 py-2.5 text-sm rounded-full border transition-colors ${
-                  (filterOptions.category || '전체') === cat
-                    ? 'border-primary bg-primary-50 text-primary-700 font-semibold shadow-sm'
-                    : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
-                }`}
-                type="button"
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+      {/* 카테고리 필터 칩 */}
+      <div className="mb-5">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {['전체', ...FilterService.CATEGORIES].map(cat => (
+            <button
+              key={cat}
+              onClick={() => handleSelectCategory(cat)}
+              className={`flex-shrink-0 px-4 py-2.5 text-sm rounded-full border transition-colors ${
+                (filterOptions.category || '전체') === cat
+                  ? 'border-primary bg-primary-50 text-primary-700 font-semibold shadow-sm'
+                  : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
+              }`}
+              type="button"
+            >
+              {cat}
+            </button>
+          ))}
         </div>
-
-        {/* 필터 내용 (접기/펼치기) — 태그, 정렬만 */}
-        {isFilterExpanded && (
-          <div className="border-t border-border p-3 sm:p-4 space-y-4">
-            {/* 태그 */}
-            <div>
-              <label className="block text-xs font-medium text-surface-foreground mb-2">태그</label>
-              <div className="flex flex-wrap gap-2">
-                {FilterService.POPULAR_TAGS.map(tag => {
-                  const active = (filterOptions.tags || []).includes(tag);
-                  return (
-                    <button
-                      key={tag}
-                      onClick={() => handleToggleTag(tag)}
-                      type="button"
-                      className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-                        active
-                          ? 'border-primary bg-primary-50 text-primary-700 font-semibold'
-                          : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
-                      }`}
-                    >
-                      #{tag}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 정렬 */}
-            <div>
-              <label className="block text-xs font-medium text-surface-foreground mb-2">정렬</label>
-              <select
-                value={filterOptions.sortBy || 'recent'}
-                onChange={(e) => handleSortChange(e.target.value as FilterOptions['sortBy'])}
-                className="text-sm border border-border rounded-lg px-3 py-2 bg-surface focus:ring-2 focus:ring-ring focus:border-primary"
-              >
-                {sortOptions.map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+        {hasActiveFilters() && (
+          <button
+            onClick={handleResetFilters}
+            className="mt-2 text-xs text-muted-foreground hover:text-foreground underline"
+          >
+            필터 초기화
+          </button>
         )}
       </div>
 
-      {/* 인기 게시물 섹션 */}
-      {bestPosts.length > 0 && (
+      {/* 인기 게시물 섹션 — 검색 중이 아닐 때만 표시 */}
+      {bestPosts.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
         <section className="mb-6">
           <h2 className="font-serif text-lg font-semibold text-foreground mb-3">인기 게시물</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
@@ -913,8 +856,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
         </section>
       )}
 
-      {/* 북마크한 살롱 표시 */}
-      {bookmarkedForums.length > 0 && (
+      {/* 북마크한 살롱 표시 — 검색 중이 아닐 때만 표시 */}
+      {bookmarkedForums.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
         <div className="mb-6">
           <h2 className="font-serif text-lg font-semibold text-foreground mb-4">북마크한 살롱</h2>
           <div className="space-y-3 sm:space-y-4">
@@ -954,6 +897,28 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* 검색 결과 돌아가기 버튼 */}
+      {(searchResults.length > 0 || existingForums.length > 0) && (
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">&ldquo;{lastSearchTerm}&rdquo;</span> 검색 결과
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchResults([]);
+              setExistingForums([]);
+              setSearchTerm('');
+              setLastSearchTerm('');
+              setError(null);
+            }}
+            className="text-sm text-primary hover:text-primary-700 font-medium underline underline-offset-2"
+          >
+            전체 목록으로 돌아가기
+          </button>
         </div>
       )}
 
@@ -1111,8 +1076,20 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       )}
 
       {/* 최근 개설된 살롱 */}
+      {!(searchResults.length > 0 || existingForums.length > 0) && (
       <div className="mb-6">
-        <h2 className="font-serif text-lg font-semibold text-foreground mb-4">최근 개설된 살롱</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-serif text-lg font-semibold text-foreground">최근 개설된 살롱</h2>
+          <select
+            value={filterOptions.sortBy || 'recent'}
+            onChange={(e) => handleSortChange(e.target.value as FilterOptions['sortBy'])}
+            className="text-xs sm:text-sm border border-border rounded-lg px-2 py-1.5 bg-surface text-foreground focus:ring-2 focus:ring-ring focus:border-primary cursor-pointer"
+          >
+            {sortOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredForums.length > 0 ? (
             <>
@@ -1222,6 +1199,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           )}
         </div>
       </div>
+      )}
 
       {searchResult && (
         <CreateForumModal book={searchResult} onClose={() => setSearchResult(null)} onCreate={handleCreateForum} />
