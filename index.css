@@ -117,6 +117,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    overscroll-behavior-y: contain;
   }
 
   /* ===== 다크 테마 오버라이드 ===== */
@@ -192,6 +193,7 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

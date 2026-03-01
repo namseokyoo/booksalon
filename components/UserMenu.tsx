@@ -48,7 +48,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onClose, onShowProfile }) => 
                 <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 rounded-full overflow-hidden bg-muted flex items-center justify-center">
                         {user.profileImageUrl ? (
-                            <img src={user.profileImageUrl} alt="프로필" className="w-full h-full object-cover" />
+                            <img src={user.profileImageUrl} alt="프로필" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                         ) : (
                             <span className="text-foreground font-semibold">
                                 {getDisplayName().charAt(0).toUpperCase()}

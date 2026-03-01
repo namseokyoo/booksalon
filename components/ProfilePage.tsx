@@ -237,7 +237,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                         {/* 아바타 */}
                         <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold overflow-hidden shadow-md border-4 border-surface">
                             {profile.profileImageUrl ? (
-                                <img src={profile.profileImageUrl} alt="프로필" className="w-full h-full object-cover" />
+                                <img src={profile.profileImageUrl} alt="프로필" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                             ) : (
                                 (profile.nickname || profile.displayName || profile.email).charAt(0).toUpperCase()
                             )}
@@ -257,12 +257,14 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                                         src={URL.createObjectURL(editForm.profileImageFile)}
                                                         alt="프로필 미리보기"
                                                         className="w-full h-full object-cover"
+                                                        decoding="async"
                                                     />
                                                 ) : profile?.profileImageUrl ? (
                                                     <img
                                                         src={profile.profileImageUrl}
                                                         alt="프로필"
                                                         className="w-full h-full object-cover"
+                                                        decoding="async"
                                                     />
                                                 ) : (
                                                     <span className="text-muted-foreground text-xl font-semibold">
@@ -561,6 +563,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                                     src={forum.book.thumbnail}
                                                     alt={forum.book.title}
                                                     className="w-16 h-auto rounded-lg flex-shrink-0 shadow-sm"
+                                                    loading="lazy"
+                                                    decoding="async"
                                                 />
                                                 <div className="flex-grow min-w-0">
                                                     <h3 className="font-semibold text-foreground text-lg mb-2">{forum.book.title}</h3>
@@ -649,6 +653,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                                                                 src={book.thumbnail}
                                                                 alt={book?.title || '책 표지'}
                                                                 className="w-14 h-auto rounded-lg flex-shrink-0 shadow-sm"
+                                                                loading="lazy"
+                                                                decoding="async"
                                                             />
                                                         )}
                                                         <div className="flex-grow min-w-0">

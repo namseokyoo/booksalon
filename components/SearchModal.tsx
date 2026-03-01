@@ -416,6 +416,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                                     alt={`${book.title} 표지`}
                                                     className="w-16 h-auto rounded flex-shrink-0"
                                                     loading="lazy"
+                                                    decoding="async"
                                                 />
                                                 <div className="flex-1 min-w-0">
                                                     <h3 className="font-semibold text-foreground truncate">

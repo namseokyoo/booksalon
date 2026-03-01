@@ -52,7 +52,7 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
                     <div className="flex items-center space-x-4 mb-6">
                         <div className="w-16 h-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
                             {user.profileImageUrl ? (
-                                <img src={user.profileImageUrl} alt="프로필" className="w-full h-full object-cover" />
+                                <img src={user.profileImageUrl} alt="프로필" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                             ) : (
                                 <span className="text-foreground text-xl font-semibold">
                                     {getDisplayName().charAt(0).toUpperCase()}

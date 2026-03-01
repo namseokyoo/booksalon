@@ -872,6 +872,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                   alt={forum.book.title}
                   className="w-10 h-auto sm:w-12 sm:h-auto rounded-lg flex-shrink-0 shadow-sm"
                   loading="lazy"
+                  decoding="async"
+                  width={48}
+                  height={72}
                 />
                 <div className="flex-grow min-w-0">
                   <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
@@ -947,6 +950,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       alt={forum.book.title}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      decoding="async"
+                      width={300}
+                      height={200}
                     />
                   </div>
                   <button
@@ -1010,6 +1016,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       alt={book.title}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      decoding="async"
+                      width={300}
+                      height={200}
                     />
                   </div>
                   <button
@@ -1105,6 +1114,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                       alt={forum.book.title}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      decoding="async"
+                      width={300}
+                      height={200}
                     />
                   </div>
                   <button

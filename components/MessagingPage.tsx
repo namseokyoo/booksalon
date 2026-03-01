@@ -77,7 +77,7 @@ const MessagingPage: React.FC<MessagingPageProps> = ({ targetUserId }) => {
                     <p className="text-muted-foreground">다른 사용자와 실시간으로 소통하세요</p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100dvh-200px)]">
                     {/* 사이드바 */}
                     <div className="lg:col-span-1 bg-surface border border-border rounded-xl p-4 shadow-sm">
                         {/* 채팅 목록만 표시 */}

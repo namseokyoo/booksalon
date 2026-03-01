@@ -107,6 +107,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, className = '' }) =
               alt={`Image ${index + 1}`}
               className="w-full h-full object-cover"
               loading="lazy"
+              decoding="async"
             />
           </div>
         ))}
@@ -176,6 +177,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, className = '' }) =
               alt={`Image ${selectedIndex + 1}`}
               className={`max-w-full max-h-[85vh] object-contain ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity`}
               onLoad={() => setIsLoading(false)}
+              decoding="async"
             />
           </div>
 

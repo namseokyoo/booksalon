@@ -292,6 +292,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
                     alt={`Preview ${idx + 1}`}
                     className="w-full h-full object-cover"
                     loading="lazy"
+                    decoding="async"
                   />
                 </div>
               ))}
