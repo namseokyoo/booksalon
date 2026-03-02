@@ -4,6 +4,57 @@ import Header from './components/Header';
 import type { Forum, Book } from './types';
 import { useSupabaseAuth } from './contexts/SupabaseAuthContext';
 
+// 청크 로드 실패 시 자동 새로고침 처리 (새 Vercel 배포 후 구 청크 404 방지)
+interface ChunkErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ChunkErrorBoundaryState {
+  hasError: boolean;
+}
+
+class ChunkErrorBoundary extends React.Component<ChunkErrorBoundaryProps, ChunkErrorBoundaryState> {
+  declare state: ChunkErrorBoundaryState;
+  declare props: ChunkErrorBoundaryProps & { children?: React.ReactNode };
+
+  constructor(props: ChunkErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): ChunkErrorBoundaryState {
+    const isChunkError =
+      error.message.includes('Failed to fetch dynamically imported module') ||
+      error.message.includes('Loading chunk');
+
+    if (isChunkError && !sessionStorage.getItem('chunk_reload')) {
+      sessionStorage.setItem('chunk_reload', '1');
+      window.location.reload();
+      return { hasError: false };
+    }
+
+    sessionStorage.removeItem('chunk_reload');
+    return { hasError: true };
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-background p-8">
+          <p className="text-foreground text-lg mb-4">페이지를 불러오는 중 오류가 발생했습니다.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors"
+          >
+            새로고침
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // React.lazy: 페이지 레벨 코드 스플리팅
 const ForumList = React.lazy(() => import('./components/ForumList'));
 const ForumView = React.lazy(() => import('./components/ForumView'));
@@ -175,6 +226,7 @@ const App = () => {
         onHomeClick={handleHomeClick}
       />
       <main aria-label="메인 콘텐츠">
+        <ChunkErrorBoundary>
         <Suspense fallback={<div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
           {currentView === 'list' ? (
             <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} />
@@ -208,6 +260,7 @@ const App = () => {
             </div>
           )}
         </Suspense>
+        </ChunkErrorBoundary>
       </main>
 
       <Suspense fallback={null}>

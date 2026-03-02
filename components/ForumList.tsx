@@ -251,9 +251,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       const from = 0;
       const to = FORUMS_PAGE_SIZE - 1;
 
-      try {
-        let timeoutId: ReturnType<typeof setTimeout>;
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
+      try {
         const forumsPromise = supabase
           .from('forums')
           .select(`
@@ -286,7 +286,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           timeoutPromise,
         ]);
 
-        clearTimeout(timeoutId!);
+        clearTimeout(timeoutId);
 
         if (isCancelled) return;
 
@@ -312,7 +312,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           setForums(enrichedWithTags);
         });
       } catch (err) {
-        clearTimeout(timeoutId!);
+        clearTimeout(timeoutId);
         if (isCancelled) return;
 
         // 자동 1회 재시도
