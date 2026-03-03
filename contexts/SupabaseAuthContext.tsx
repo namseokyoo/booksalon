@@ -247,10 +247,8 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         const timeoutMs = isOAuthCallback ? 20000 : 15000
 
         const sessionPromise = supabase.auth.getSession()
-        let timedOut = false
         const timeoutPromise = new Promise<{ data: { session: null } }>((resolve) =>
           setTimeout(() => {
-            timedOut = true
             console.warn(`Auth 초기화 타임아웃 (${timeoutMs / 1000}초). 미인증 상태로 진행합니다.`)
             resolve({ data: { session: null } })
           }, timeoutMs)
@@ -261,20 +259,6 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           setCurrentUser(toCompatibleUser(session.user))
           await loadOrCreateProfile(session.user)
-        }
-
-        // [BUG FIX] Navigator Lock 교착 방지
-        // timeout이 이긴 경우, 원래 getSession()이 아직 SDK Navigator Lock을 점유 중.
-        // loading=false 전에 lock이 해제될 때까지 대기해야
-        // ForumList 등 하위 컴포넌트의 Supabase 쿼리가 교착에 빠지지 않음.
-        if (timedOut) {
-          console.warn('SDK lock 해제 대기 중...')
-          try {
-            await sessionPromise
-          } catch {
-            // lock 해제만 보장하면 되므로 에러는 무시
-          }
-          console.warn('SDK lock 해제 완료')
         }
       } catch (error) {
         console.error('초기 인증 확인 실패:', error)
