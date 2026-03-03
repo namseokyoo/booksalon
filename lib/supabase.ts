@@ -67,6 +67,22 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 })
 
 /**
+ * 공개 데이터 전용 클라이언트 (Auth 초기화 없음)
+ *
+ * @description
+ * Auth initializePromise의 token refresh hang으로 인한 쿼리 블로킹을 방지하기 위해
+ * 공개 데이터(forums, books, posts 목록 등) 조회에 사용합니다.
+ * Auth가 필요한 쓰기 작업이나 사용자별 데이터는 기존 supabase 클라이언트를 사용하세요.
+ */
+export const supabaseAnon = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
+  },
+})
+
+/**
  * 현재 인증된 사용자 ID 가져오기 (auth.uid())
  *
  * @returns 인증된 사용자의 UUID 또는 null

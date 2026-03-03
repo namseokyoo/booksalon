@@ -12,7 +12,7 @@ import {
 } from '../lib/services';
 import CreateForumModal from './CreateForumModal';
 import { SearchIcon, BookOpenIcon } from './icons';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseAnon } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
@@ -122,7 +122,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   };
 
   const fetchForumTags = async (): Promise<Map<string, string[]>> => {
-    const { data: forumTags } = await supabase
+    const { data: forumTags } = await supabaseAnon
       .from('forum_tags')
       .select('forum_isbn, tag_name');
 
@@ -142,7 +142,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-        const { data, error: postsError } = await supabase
+        const { data, error: postsError } = await supabaseAnon
           .from('posts')
           .select('id, title, author_id, forum_isbn, like_count, comment_count, view_count, created_at')
           .gte('created_at', thirtyDaysAgo.toISOString())
@@ -168,7 +168,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
 
         // 작성자 이름 조회
         const authorIds = [...new Set(scored.map(p => p.author_id))];
-        const { data: usersData } = await supabase
+        const { data: usersData } = await supabaseAnon
           .from('users')
           .select('id, display_name, nickname')
           .in('id', authorIds);
@@ -180,7 +180,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
 
         // 책 제목 조회
         const forumIsbns = [...new Set(scored.map(p => p.forum_isbn))];
-        const { data: booksData } = await supabase
+        const { data: booksData } = await supabaseAnon
           .from('books')
           .select('isbn, title')
           .in('isbn', forumIsbns);
@@ -256,7 +256,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
       try {
-        const forumsPromise = supabase
+        const forumsPromise = supabaseAnon
           .from('forums')
           .select(`
             isbn,
@@ -392,7 +392,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'forums' }, async () => {
         // UPDATE 시 현재 로드된 범위만 리로드
         const currentTo = ((forumsPage + 1) * FORUMS_PAGE_SIZE) - 1;
-        const { data: forumsData } = await supabase
+        const { data: forumsData } = await supabaseAnon
           .from('forums')
           .select(`
             isbn,
@@ -441,7 +441,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       const from = nextPage * FORUMS_PAGE_SIZE;
       const to = from + FORUMS_PAGE_SIZE - 1;
 
-      const { data: forumsData, error } = await supabase
+      const { data: forumsData, error } = await supabaseAnon
         .from('forums')
         .select(`
           isbn,
