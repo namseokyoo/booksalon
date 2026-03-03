@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { BookOpenIcon } from './icons';
 import { useAuth } from '../contexts/AuthContext';
-import type { UserProfile } from '../types';
 import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {
@@ -29,31 +28,9 @@ const Header: React.FC<HeaderProps> = ({
     onAdminClick,
     onHomeClick
 }) => {
-    const { currentUser, logout } = useAuth();
-    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const { currentUser, userProfile, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-
-    // 사용자 프로필 로드
-    useEffect(() => {
-        if (currentUser) {
-            loadUserProfile();
-        } else {
-            setUserProfile(null);
-        }
-    }, [currentUser]);
-
-    const loadUserProfile = async () => {
-        if (!currentUser) return;
-
-        try {
-            const { UserService } = await import('../lib/services');
-            const profile = await UserService.getUserProfileByAuthId(currentUser.uid);
-            setUserProfile(profile);
-        } catch (error) {
-            console.error('사용자 프로필 로드 실패:', error);
-        }
-    };
 
     // 드롭다운 외부 클릭 시 닫기
     useEffect(() => {
