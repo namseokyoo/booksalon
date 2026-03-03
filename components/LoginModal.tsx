@@ -12,7 +12,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState(false);
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, loginWithKakao } = useAuth();
   const modalRef = useRef<HTMLDivElement>(null);
 
   // ESC 키로 닫기 + 포커스 트래핑
@@ -79,20 +79,19 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
     setSocialLoading(false);
   };
 
-  // [KAKAO_DISABLED] 카카오 비즈니스 인증 완료 전까지 비활성화
-  // const handleKakaoLogin = async () => {
-  //   try {
-  //     setError('');
-  //     setSocialLoading(true);
-  //     await loginWithKakao();
-  //     onClose();
-  //   } catch (err: unknown) {
-  //     const errorMessage = err instanceof Error ? err.message : '카카오 로그인에 실패했습니다.';
-  //     setError(errorMessage);
-  //     console.error(err);
-  //   }
-  //   setSocialLoading(false);
-  // };
+  const handleKakaoLogin = async () => {
+    try {
+      setError('');
+      setSocialLoading(true);
+      await loginWithKakao();
+      onClose();
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '카카오 로그인에 실패했습니다.';
+      setError(errorMessage);
+      console.error(err);
+    }
+    setSocialLoading(false);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4" role="dialog" aria-modal="true" aria-labelledby="login-modal-title" ref={modalRef}>
@@ -160,7 +159,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
               )}
             </button>
 
-            {/* [KAKAO_DISABLED] 카카오 비즈니스 인증 완료 전까지 비활성화
             <button
               type="button"
               onClick={handleKakaoLogin}
@@ -178,7 +176,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
                 </>
               )}
             </button>
-            */}
           </div>
         </div>
         <div className="bg-muted px-3 sm:px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-border">
