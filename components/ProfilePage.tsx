@@ -12,9 +12,10 @@ import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } fr
 
 interface ProfilePageProps {
     onBack: () => void;
+    onDeleteClick?: () => void;
 }
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
+const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
     const { currentUser, userProfile: authUserProfile } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
@@ -708,6 +709,20 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack }) => {
                     )}
 
                 </div>
+
+                {/* 위험 구역 */}
+                {onDeleteClick && (
+                    <div className="mt-8 border-t border-border pt-6">
+                        <h2 className="text-sm font-semibold text-destructive mb-3 uppercase tracking-wide">위험 구역</h2>
+                        <button
+                            onClick={onDeleteClick}
+                            className="px-4 py-2 text-sm text-destructive border border-destructive rounded-lg hover:bg-red-50 transition-colors font-medium"
+                        >
+                            계정 삭제
+                        </button>
+                        <p className="mt-2 text-xs text-muted-foreground">계정을 삭제하면 모든 데이터가 영구적으로 삭제됩니다.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

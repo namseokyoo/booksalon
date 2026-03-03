@@ -231,7 +231,7 @@ const App = () => {
           {currentView === 'list' ? (
             <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} />
           ) : currentView === 'profile' ? (
-            <ProfilePage onBack={handleBackToList} />
+            <ProfilePage onBack={handleBackToList} onDeleteClick={() => setDeleteModalOpen(true)} />
           ) : currentView === 'activity' ? (
             <ActivityFeed onBack={handleBackToList} />
           ) : currentView === 'search' ? (

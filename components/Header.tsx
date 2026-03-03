@@ -178,19 +178,6 @@ const Header: React.FC<HeaderProps> = ({
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
-                                                onSearchClick();
-                                            }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
-                                        >
-                                            <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                            </svg>
-                                            사용자 검색
-                                        </button>
-
-                                        <button
-                                            onClick={() => {
-                                                setIsDropdownOpen(false);
                                                 onMessagingClick();
                                             }}
                                             className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
@@ -214,6 +201,7 @@ const Header: React.FC<HeaderProps> = ({
                                             알림
                                         </button>
 
+                                        {/* 관리자 메뉴: 향후 isAdmin 로직 추가 예정. 현재 전체 숨김 처리.
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
@@ -226,21 +214,9 @@ const Header: React.FC<HeaderProps> = ({
                                             </svg>
                                             관리자
                                         </button>
+                                        */}
 
                                         <hr className="my-1 border-border" />
-
-                                        <button
-                                            onClick={() => {
-                                                setIsDropdownOpen(false);
-                                                onDeleteClick();
-                                            }}
-                                            className="flex items-center w-full px-4 py-2 text-sm text-destructive hover:bg-red-50 transition-colors duration-200"
-                                        >
-                                            <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                            계정 삭제
-                                        </button>
 
                                         <button
                                             onClick={handleLogout}
