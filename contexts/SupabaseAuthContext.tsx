@@ -238,15 +238,20 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
    * 인증 상태 변경 구독
    */
   useEffect(() => {
-    // 초기 세션 확인 (5초 타임아웃 포함)
+    // 초기 세션 확인 (OAuth 콜백 감지 후 타임아웃 조정)
     const initializeAuth = async () => {
       try {
+        // OAuth 콜백 처리 중인지 감지 (네트워크 왕복이 추가되므로 더 긴 타임아웃 필요)
+        const isOAuthCallback = window.location.hash.includes('access_token') ||
+                                window.location.search.includes('code=')
+        const timeoutMs = isOAuthCallback ? 20000 : 15000
+
         const sessionPromise = supabase.auth.getSession()
         const timeoutPromise = new Promise<{ data: { session: null } }>((resolve) =>
           setTimeout(() => {
-            console.warn('Auth 초기화 타임아웃 (5초). 미인증 상태로 진행합니다.')
+            console.warn(`Auth 초기화 타임아웃 (${timeoutMs / 1000}초). 미인증 상태로 진행합니다.`)
             resolve({ data: { session: null } })
-          }, 5000)
+          }, timeoutMs)
         )
 
         const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise])

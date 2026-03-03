@@ -278,7 +278,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           .range(from, to);
 
         const timeoutPromise = new Promise<never>((_, reject) => {
-          timeoutId = setTimeout(() => reject(new Error('TIMEOUT')), 10000);
+          timeoutId = setTimeout(() => reject(new Error('TIMEOUT')), 20000);
         });
 
         const { data: forumsData, error: queryError } = await Promise.race([
@@ -315,10 +315,11 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
         clearTimeout(timeoutId);
         if (isCancelled) return;
 
-        // 자동 1회 재시도
-        if (attempt < 1) {
-          console.warn('포럼 로드 실패, 자동 재시도 중...', err);
-          loadForums(attempt + 1);
+        // 자동 최대 2회 재시도 (재시도 간 1초 대기)
+        if (attempt < 2) {
+          console.warn(`포럼 로드 실패, 자동 재시도 중... (${attempt + 1}/2)`, err);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          if (!isCancelled) loadForums(attempt + 1);
           return;
         }
 
