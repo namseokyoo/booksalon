@@ -239,6 +239,7 @@ export class NotificationService {
    */
   static async createLikeNotification(
     receiverId: string,
+    senderId: string,
     senderName: string,
     postTitle: string,
     postId: string,
@@ -249,7 +250,7 @@ export class NotificationService {
       'like',
       '좋아요',
       `${senderName}님이 "${postTitle}" 게시물에 좋아요를 눌렀습니다.`,
-      { senderId: receiverId, postId, forumId }
+      { senderId: senderId, postId, forumId }
     )
   }
 
@@ -258,6 +259,7 @@ export class NotificationService {
    */
   static async createCommentNotification(
     receiverId: string,
+    senderId: string,
     senderName: string,
     postTitle: string,
     commentId: string,
@@ -269,7 +271,7 @@ export class NotificationService {
       'comment',
       '새 댓글',
       `${senderName}님이 "${postTitle}" 게시물에 댓글을 남겼습니다.`,
-      { senderId: receiverId, commentId, postId, forumId }
+      { senderId: senderId, commentId, postId, forumId }
     )
   }
 

@@ -9,6 +9,7 @@ import { ko } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService, PostImageService, SocialService, ViewCountService } from '../lib/services';
+import { NotificationService } from '../lib/services/notificationService';
 import { LikeIcon } from './icons/LikeIcon';
 
 interface PostDetailProps {
@@ -274,14 +275,16 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             const typedUserData = userData as { id: string };
 
             // 댓글 생성
-            const { error: commentError } = await supabase
+            const { data: insertedComment, error: commentError } = await supabase
                 .from('comments')
                 .insert({
                     content: newComment,
                     author_id: typedUserData.id,
                     post_id: post.id,
                     like_count: 0,
-                });
+                })
+                .select('id')
+                .single();
 
             if (commentError) {
                 throw commentError;
@@ -301,6 +304,22 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
             // 사용자 통계 업데이트
             await UserService.incrementStat(currentUser.uid, 'comment_count');
+
+            // 댓글 알림 트리거 (자기 자신 제외)
+            if (authorProfile?.id && authorProfile.id !== typedUserData.id && insertedComment) {
+                const senderProfile = await UserService.getUserProfileById(typedUserData.id);
+                const senderName = senderProfile?.nickname || senderProfile?.displayName || senderProfile?.email?.split('@')[0] || '누군가';
+                const insertedCommentId = (insertedComment as { id: string }).id;
+                NotificationService.createCommentNotification(
+                    authorProfile.id,
+                    typedUserData.id,
+                    senderName,
+                    post.title,
+                    insertedCommentId,
+                    post.id,
+                    isbn
+                ).catch(console.error);
+            }
 
             // 로컬 댓글 목록 즉시 갱신 (Realtime 의존하지 않음)
             const newCommentObj: Comment = {

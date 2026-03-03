@@ -11,6 +11,7 @@
 import { supabase } from '../supabase'
 import type { Database } from '../database.types'
 import { UserService, type UserProfile } from './userService'
+import { NotificationService } from './notificationService'
 
 // 테이블 타입 직접 정의 (타입 추론 문제 해결)
 type FollowRow = Database['public']['Tables']['follows']['Row']
@@ -301,16 +302,26 @@ export class SocialService {
       // 좋아요 수 증가
       const { data: post } = await supabase
         .from('posts')
-        .select('like_count')
+        .select('like_count, author_id, title, forum_isbn')
         .eq('id', postId)
         .single()
 
-      const postData = post as Pick<PostRow, 'like_count'> | null
+      const postData = post as Pick<PostRow, 'like_count' | 'author_id' | 'title' | 'forum_isbn'> | null
       if (postData) {
         await supabase
           .from('posts')
           .update({ like_count: (postData.like_count || 0) + 1 } )
           .eq('id', postId)
+
+        // 알림 트리거 (자기 자신 제외)
+        const postAuthorId = postData.author_id
+        if (postAuthorId && postAuthorId !== currentUserId) {
+          const senderProfile = await UserService.getUserProfileById(currentUserId)
+          const senderName = senderProfile?.nickname || senderProfile?.displayName || senderProfile?.email?.split('@')[0] || '누군가'
+          const postTitle = postData.title || ''
+          const forumId = postData.forum_isbn || ''
+          NotificationService.createLikeNotification(postAuthorId, currentUserId, senderName, postTitle, postId, forumId).catch(console.error)
+        }
       }
 
       return true
@@ -361,19 +372,36 @@ export class SocialService {
 
       if (error) throw new Error(`좋아요 추가 실패: ${error.message}`)
 
-      // 좋아요 수 증가
+      // 좋아요 수 증가 및 알림 트리거
       const { data: comment } = await supabase
         .from('comments')
-        .select('like_count')
+        .select('like_count, author_id, post_id')
         .eq('id', commentId)
         .single()
 
-      const commentData = comment as Pick<CommentRow, 'like_count'> | null
+      const commentData = comment as Pick<CommentRow, 'like_count' | 'author_id' | 'post_id'> | null
       if (commentData) {
         await supabase
           .from('comments')
           .update({ like_count: (commentData.like_count || 0) + 1 } )
           .eq('id', commentId)
+
+        // 알림 트리거 (자기 자신 제외)
+        const commentAuthorId = commentData.author_id
+        if (commentAuthorId && commentAuthorId !== currentUserId) {
+          const postId = commentData.post_id
+          const { data: postInfo } = await supabase
+            .from('posts')
+            .select('title, forum_isbn')
+            .eq('id', postId)
+            .single()
+          const postInfoData = postInfo as Pick<PostRow, 'title' | 'forum_isbn'> | null
+          const senderProfile = await UserService.getUserProfileById(currentUserId)
+          const senderName = senderProfile?.nickname || senderProfile?.displayName || senderProfile?.email?.split('@')[0] || '누군가'
+          const postTitle = postInfoData?.title || ''
+          const forumIsbn = postInfoData?.forum_isbn || ''
+          NotificationService.createLikeNotification(commentAuthorId, currentUserId, senderName, postTitle, postId, forumIsbn).catch(console.error)
+        }
       }
 
       return true
