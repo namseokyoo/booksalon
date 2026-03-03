@@ -63,7 +63,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   const [forumsPage, setForumsPage] = useState(0);
   const [hasMoreForums, setHasMoreForums] = useState(true);
   const [isLoadingMoreForums, setIsLoadingMoreForums] = useState(false);
-  const { currentUser, userProfile } = useAuth();
+  const { currentUser, userProfile, loading: authLoading } = useAuth();
 
   const sortOptions = [
     { value: 'recent', label: '최신순' },
@@ -244,6 +244,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   }, []);
 
   useEffect(() => {
+    if (authLoading) return; // Auth 초기화 중이면 대기
+
     let isCancelled = false;
 
     // 초기 데이터 로드 (첫 페이지)
@@ -340,9 +342,11 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       isCancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [retryCount]);
+  }, [retryCount, authLoading]);
 
   useEffect(() => {
+    if (authLoading) return; // Auth 초기화 중이면 대기
+
     // Supabase 실시간 구독 — 새 포럼 추가 시 첫 페이지만 리로드
     const subscription = supabase
       .channel('forums_changes')
@@ -426,7 +430,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [authLoading]);
 
   const handleLoadMoreForums = async () => {
     if (!hasMoreForums || isLoadingMoreForums) return;
