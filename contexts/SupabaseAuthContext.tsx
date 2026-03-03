@@ -236,44 +236,24 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
 
   /**
    * 인증 상태 변경 구독
+   *
+   * 단일 초기화 경로: onAuthStateChange의 INITIAL_SESSION 이벤트만 사용.
+   * 기존 이중 경로(initializeAuth + INITIAL_SESSION)에서 발생하던
+   * race condition 제거.
    */
   useEffect(() => {
-    // 초기 세션 확인 (OAuth 콜백 감지 후 타임아웃 조정)
-    const initializeAuth = async () => {
-      try {
-        // OAuth 콜백 처리 중인지 감지 (네트워크 왕복이 추가되므로 더 긴 타임아웃 필요)
-        const isOAuthCallback = window.location.hash.includes('access_token') ||
-                                window.location.search.includes('code=')
-        const timeoutMs = isOAuthCallback ? 20000 : 15000
+    // Safety timeout: INITIAL_SESSION이 발화하지 않는 극단적 경우 대비 (30초)
+    const safetyTimeout = setTimeout(() => {
+      console.warn('Auth 초기화 safety timeout (30초). 미인증 상태로 진행합니다.')
+      setLoading(false)
+    }, 30000)
 
-        const sessionPromise = supabase.auth.getSession()
-        const timeoutPromise = new Promise<{ data: { session: null } }>((resolve) =>
-          setTimeout(() => {
-            console.warn(`Auth 초기화 타임아웃 (${timeoutMs / 1000}초). 미인증 상태로 진행합니다.`)
-            resolve({ data: { session: null } })
-          }, timeoutMs)
-        )
-
-        const { data: { session } } = await Promise.race([sessionPromise, timeoutPromise])
-
-        if (session?.user) {
-          setCurrentUser(toCompatibleUser(session.user))
-          await loadOrCreateProfile(session.user)
-        }
-      } catch (error) {
-        console.error('초기 인증 확인 실패:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    initializeAuth()
-
-    // 인증 상태 변경 리스너
+    // 단일 경로: onAuthStateChange의 INITIAL_SESSION만으로 초기화
     const { data: { subscription } } = onAuthStateChange(async (event, session) => {
       try {
         if (event === 'INITIAL_SESSION') {
-          // Supabase v2: 등록 즉시 발생하는 초기 세션 이벤트
+          // Supabase v2: 등록 즉시 발생하는 초기 세션 이벤트 — 여기서만 setLoading(false) 호출
+          clearTimeout(safetyTimeout)
           if (session?.user) {
             setCurrentUser(toCompatibleUser(session.user))
             await loadOrCreateProfile(session.user)
@@ -281,6 +261,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
             setCurrentUser(null)
             setUserProfile(null)
           }
+          setLoading(false)
         } else if (event === 'SIGNED_IN' && session?.user) {
           setCurrentUser(toCompatibleUser(session.user))
           await loadOrCreateProfile(session.user)
@@ -295,13 +276,16 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.error('인증 상태 변경 처리 실패:', error)
-      } finally {
-        setLoading(false)
+        if (event === 'INITIAL_SESSION') {
+          clearTimeout(safetyTimeout)
+          setLoading(false)
+        }
       }
     })
 
     // 클린업
     return () => {
+      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [loadOrCreateProfile])
