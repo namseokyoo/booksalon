@@ -234,8 +234,8 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
 
   return (
     <div className="bg-surface rounded-lg shadow-md overflow-hidden">
-      <div className="p-3 sm:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-        <h3 className="font-semibold font-serif text-base sm:text-lg text-foreground">{post.title}</h3>
+      <div className="p-3 sm:p-3.5 md:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+        <h3 className="font-semibold font-serif text-base sm:text-base md:text-lg text-foreground">{post.title}</h3>
         <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
           <span className="font-medium text-primary truncate">{post.author.email?.split('@')[0]}</span>
           <span>{formatDate(post.createdAt)}</span>

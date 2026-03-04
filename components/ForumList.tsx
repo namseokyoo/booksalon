@@ -884,7 +884,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               <div
                 key={post.id}
                 onClick={() => handleBestPostClick(post)}
-                className="min-w-[250px] max-w-[280px] bg-surface rounded-xl shadow-sm border border-border p-4 flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
+                className="min-w-[250px] md:min-w-[300px] max-w-[280px] md:max-w-[320px] bg-surface rounded-xl shadow-sm border border-border p-4 flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
               >
                 <h3 className="font-medium text-foreground text-sm line-clamp-2">{post.title}</h3>
                 <p className="text-xs text-muted-foreground mt-1 truncate">{post.book_title}</p>
@@ -909,7 +909,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               <div
                 key={forum.isbn}
                 onClick={() => onSelectForum(forum)}
-                className="bg-surface border border-border p-3 sm:p-4 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 border-l-4 border-l-amber-400"
+                className="bg-surface border border-border p-3 sm:p-4 md:p-5 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 md:space-x-5 border-l-4 border-l-amber-400"
               >
                 <img
                   src={forum.book.thumbnail}
