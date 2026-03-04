@@ -242,7 +242,7 @@ const App = () => {
           ) : currentView === 'terms' ? (
             <TermsPage onBack={handleBackToList} />
           ) : currentView === 'list' ? (
-            <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} />
+            <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} onSearchClick={handleShowSearch} />
           ) : currentView === 'profile' ? (
             <ProfilePage onBack={handleBackToList} onDeleteClick={() => setDeleteModalOpen(true)} />
           ) : currentView === 'activity' ? (
@@ -252,7 +252,12 @@ const App = () => {
           ) : currentView === 'messaging' ? (
             <MessagingPage targetUserId={messagingTargetUserId || undefined} />
           ) : currentView === 'notifications' ? (
-            <NotificationComponent />
+            <NotificationComponent
+              onNavigate={(_targetType, _targetId) => {
+                // 알림 클릭 시 홈으로 이동 (향후 targetType/targetId 기반 상세 이동 확장 가능)
+                setCurrentView('list');
+              }}
+            />
           ) : currentView === 'admin' ? (
             <AdminDashboard />
           ) : selectedForum ? (

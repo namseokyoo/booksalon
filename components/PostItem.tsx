@@ -51,7 +51,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
 
   const handleToggleLike = async () => {
     if (!currentUser) {
-      setLikeError('좋아요하려면 로그인이 필요합니다.');
+      setLikeError('login-required');
       return;
     }
 
@@ -304,8 +304,13 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
             </span>
           </div>
         )}
-        {likeError && (
-          <p className="text-red-500 text-xs mt-1">{likeError}</p>
+        {likeError === 'login-required' && (
+          <p className="text-xs mt-1 text-muted-foreground">
+            좋아요를 누르려면 로그인이 필요합니다.
+          </p>
+        )}
+        {likeError && likeError !== 'login-required' && (
+          <p className="text-xs mt-1 text-destructive">{likeError}</p>
         )}
         {!isExpanded && (
           <p className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4 line-clamp-2 whitespace-pre-wrap">{post.content}</p>

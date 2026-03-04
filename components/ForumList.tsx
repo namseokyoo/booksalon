@@ -36,11 +36,12 @@ interface BestPost {
 interface ForumListProps {
   onSelectForum: (forum: Forum) => void;
   onLoginClick?: () => void;
+  onSearchClick?: () => void;
 }
 
 const FORUMS_PAGE_SIZE = 20;
 
-const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) => {
+const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSearchClick }) => {
   const [forums, setForums] = useState<Forum[]>([]);
   const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -772,6 +773,22 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
             </div>
             {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
           </form>
+          {/* 통합 검색 (SearchModal) 진입 */}
+          {onSearchClick && (
+            <div className="mt-3 max-w-lg mx-auto">
+              <button
+                type="button"
+                onClick={onSearchClick}
+                className="w-full flex items-center gap-2 px-5 py-3 rounded-full bg-surface/60 backdrop-blur-sm border border-border/40 text-muted-foreground text-sm hover:bg-surface/80 hover:text-foreground transition-colors duration-200 shadow-sm"
+                aria-label="책 제목, 저자, ISBN으로 통합 검색"
+              >
+                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>책 제목, 저자, ISBN으로 검색...</span>
+              </button>
+            </div>
+          )}
           <button
             type="button"
             onClick={onLoginClick}
@@ -782,36 +799,52 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
           </button>
         </section>
       ) : (
-        /* 로그인 사용자: 검색바만 */
-        <form onSubmit={handleSearch} className="mb-4 sm:mb-6">
-          <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden">
-            <input
-              type="text"
-              name="isbn-search"
-              id="isbn-search"
-              className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
-              placeholder="읽은 책을 검색해보세요"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        /* 로그인 사용자: 검색바 + 통합 검색 진입 */
+        <div className="mb-4 sm:mb-6">
+          <form onSubmit={handleSearch}>
+            <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden">
+              <input
+                type="text"
+                name="isbn-search"
+                id="isbn-search"
+                className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
+                placeholder="읽은 책을 검색해보세요"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button
+                type="submit"
+                className="inline-flex items-center flex-shrink-0 gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
+                disabled={isLoading}
+                aria-label="책 검색"
+              >
+                {isLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                ) : (
+                  <>
+                    <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                    <span className="hidden sm:inline">검색</span>
+                  </>
+                )}
+              </button>
+            </div>
+            {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+          </form>
+          {/* 통합 검색 (SearchModal) 진입 */}
+          {onSearchClick && (
             <button
-              type="submit"
-              className="inline-flex items-center flex-shrink-0 gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
-              disabled={isLoading}
-              aria-label="책 검색"
+              type="button"
+              onClick={onSearchClick}
+              className="mt-2 w-full flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-muted-foreground text-sm hover:bg-surface hover:text-foreground transition-colors duration-200"
+              aria-label="책 제목, 저자, ISBN으로 통합 검색"
             >
-              {isLoading ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              ) : (
-                <>
-                  <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  <span className="hidden sm:inline">검색</span>
-                </>
-              )}
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span>책 제목, 저자, ISBN으로 검색...</span>
             </button>
-          </div>
-          {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
-        </form>
+          )}
+        </div>
       )}
 
       {/* 카테고리 필터 칩 */}
@@ -1158,10 +1191,10 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-sm text-foreground truncate">{forum.book.title}</h3>
+                    <div className="flex items-start md:items-center gap-1.5 md:gap-2 flex-wrap md:flex-nowrap">
+                      <h3 className="font-semibold text-sm text-foreground truncate min-w-0">{forum.book.title}</h3>
                       {forum.category && (
-                        <span className="flex-shrink-0 px-1.5 py-0.5 text-xs bg-primary-50 text-primary-700 border border-primary-200 rounded-full font-medium">
+                        <span className="flex-shrink-0 px-1.5 py-0.5 text-xs bg-primary-50 text-primary-700 border border-primary-200 rounded-full font-medium whitespace-nowrap">
                           {forum.category}
                         </span>
                       )}

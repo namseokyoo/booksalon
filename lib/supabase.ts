@@ -30,7 +30,12 @@ if (!supabaseAnonKey) {
 }
 
 /**
- * Supabase 클라이언트 인스턴스
+ * Supabase 클라이언트 인스턴스 (싱글톤)
+ *
+ * @description
+ * 모듈 수준 싱글톤으로 GoTrueClient 다중 인스턴스 경고를 방지합니다.
+ * storageKey를 명시적으로 구분하여 supabase/supabaseAnon이 독립된
+ * GoTrueClient를 공유하지 않도록 합니다.
  *
  * @example
  * ```typescript
@@ -46,41 +51,61 @@ if (!supabaseAnonKey) {
  * })
  * ```
  */
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    // 자동 토큰 갱신
-    autoRefreshToken: true,
-    // 세션 유지
-    persistSession: true,
-    // 브라우저 탭 간 세션 동기화
-    detectSessionInUrl: true,
-    // Navigator Lock 비활성화: 단일 사용자 앱이므로 multi-tab lock 불필요
-    // token refresh fetch hang 시 auth 초기화 영구 블로킹 방지
-    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn(),
-  },
-  // 실시간 구독 설정
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
+let _supabase: ReturnType<typeof createClient<Database>> | null = null
+
+function getSupabaseClient(): ReturnType<typeof createClient<Database>> {
+  if (_supabase) return _supabase
+  _supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      // storageKey를 명시적으로 지정하여 GoTrueClient 인스턴스 식별
+      storageKey: 'booksalon-auth',
+      // 자동 토큰 갱신
+      autoRefreshToken: true,
+      // 세션 유지
+      persistSession: true,
+      // 브라우저 탭 간 세션 동기화
+      detectSessionInUrl: true,
+      // Navigator Lock 비활성화: 단일 사용자 앱이므로 multi-tab lock 불필요
+      // token refresh fetch hang 시 auth 초기화 영구 블로킹 방지
+      lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn(),
     },
-  },
-})
+    // 실시간 구독 설정
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
+  })
+  return _supabase
+}
+
+export const supabase = getSupabaseClient()
 
 /**
- * 공개 데이터 전용 클라이언트 (Auth 초기화 없음)
+ * 공개 데이터 전용 클라이언트 (Auth 초기화 없음, 싱글톤)
  *
  * @description
  * Auth initializePromise의 token refresh hang으로 인한 쿼리 블로킹을 방지하기 위해
  * 공개 데이터(forums, books, posts 목록 등) 조회에 사용합니다.
  * Auth가 필요한 쓰기 작업이나 사용자별 데이터는 기존 supabase 클라이언트를 사용하세요.
+ * storageKey를 다르게 지정하여 GoTrueClient 다중 인스턴스 경고를 방지합니다.
  */
-export const supabaseAnon = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false,
-  },
-})
+let _supabaseAnon: ReturnType<typeof createClient<Database>> | null = null
+
+function getSupabaseAnonClient(): ReturnType<typeof createClient<Database>> {
+  if (_supabaseAnon) return _supabaseAnon
+  _supabaseAnon = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      storageKey: 'booksalon-anon',
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+  })
+  return _supabaseAnon
+}
+
+export const supabaseAnon = getSupabaseAnonClient()
 
 /**
  * 현재 인증된 사용자 ID 가져오기 (auth.uid())

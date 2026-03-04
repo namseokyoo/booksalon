@@ -179,7 +179,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     const handleToggleLike = async () => {
         if (!currentUser) {
-            setLikeError('좋아요하려면 로그인이 필요합니다.');
+            setLikeError('login-required');
             return;
         }
         setLikeError(null);
@@ -550,8 +550,13 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 <LikeIcon className="w-4 h-4" />
                                 <span>{likeCount}</span>
                             </button>
-                            {likeError && (
-                                <p className="text-red-500 text-xs mt-1">{likeError}</p>
+                            {likeError === 'login-required' && (
+                                <p className="text-xs mt-1 text-muted-foreground">
+                                    좋아요를 누르려면 로그인이 필요합니다.
+                                </p>
+                            )}
+                            {likeError && likeError !== 'login-required' && (
+                                <p className="text-xs mt-1 text-destructive">{likeError}</p>
                             )}
                             </div>
                             <span className="flex items-center space-x-1 text-muted-foreground">

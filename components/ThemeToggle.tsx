@@ -25,18 +25,26 @@ const themeLabels = {
   system: '시스템 설정',
 } as const;
 
+// 다음 테마로 전환 시 적용될 레이블 (light → dark → system → light)
+const nextThemeAriaLabels = {
+  light: '다크 모드로 전환',
+  dark: '시스템 설정으로 전환',
+  system: '라이트 모드로 전환',
+} as const;
+
 const ThemeToggle: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
 
   const Icon = theme === 'light' ? SunIcon : theme === 'dark' ? MoonIcon : MonitorIcon;
   const label = themeLabels[theme];
+  const nextLabel = nextThemeAriaLabels[theme];
 
   return (
     <button
       onClick={toggleTheme}
       className="text-surface-foreground hover:bg-muted rounded-md p-2 transition-colors"
-      aria-label={`현재 ${label}. 클릭하여 테마 변경`}
-      title={label}
+      aria-label={nextLabel}
+      title={`현재: ${label}`}
     >
       <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
     </button>
