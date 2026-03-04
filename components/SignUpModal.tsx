@@ -77,7 +77,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
       if (result?.user) {
         const { UserService } = await import('../lib/services');
         await UserService.createOrUpdateProfile(
-          result.user.uid,
+          result.user.id,
           email,
           email.split('@')[0], // displayName
           nickname, // nickname
