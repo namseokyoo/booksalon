@@ -23,6 +23,7 @@ interface PostDetailProps {
 const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick, onSendMessage }) => {
     const [newComment, setNewComment] = useState('');
     const [comments, setComments] = useState<Comment[]>([]);
+    const [confirmDeletePost, setConfirmDeletePost] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likeCount || 0);
     const [authorProfile, setAuthorProfile] = useState<UserProfile | null>(null);
@@ -30,6 +31,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(post.title);
     const [editContent, setEditContent] = useState(post.content);
+    const [editError, setEditError] = useState<string | null>(null);
+    const [likeError, setLikeError] = useState<string | null>(null);
     const [viewCount, setViewCount] = useState(post.viewCount || 0);
     const [showMentionList, setShowMentionList] = useState(false);
     const [mentionSearch, setMentionSearch] = useState('');
@@ -176,9 +179,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     const handleToggleLike = async () => {
         if (!currentUser) {
-            alert('좋아요하려면 로그인이 필요합니다.');
+            setLikeError('좋아요하려면 로그인이 필요합니다.');
             return;
         }
+        setLikeError(null);
 
         try {
             // 사용자 ID 조회
@@ -344,14 +348,16 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     const handleEditPost = async () => {
         if (!currentUser || currentUser.uid !== post.author.uid) {
-            alert('본인의 게시물만 수정할 수 있습니다.');
+            setEditError('본인의 게시물만 수정할 수 있습니다.');
             return;
         }
 
         if (editTitle.trim() === '' || editContent.trim() === '') {
-            alert('제목과 내용을 입력해주세요.');
+            setEditError('제목과 내용을 입력해주세요.');
             return;
         }
+
+        setEditError(null);
 
         try {
             const { error } = await supabase
@@ -375,47 +381,45 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     const handleDeletePost = async () => {
         if (!currentUser || currentUser.uid !== post.author.uid) {
-            alert('본인의 게시물만 삭제할 수 있습니다.');
+            setEditError('본인의 게시물만 삭제할 수 있습니다.');
             return;
         }
 
-        if (window.confirm('정말로 이 게시물을 삭제하시겠습니까?')) {
-            try {
-                // 이미지가 있으면 먼저 삭제
-                if (post.images && post.images.length > 0) {
-                    const imageUrls = post.images.map(img => img.url);
-                    await PostImageService.deleteImages(imageUrls);
-                }
-
-                // 게시물 삭제
-                const { error: deleteError } = await supabase
-                    .from('posts')
-                    .delete()
-                    .eq('id', post.id);
-
-                if (deleteError) {
-                    throw deleteError;
-                }
-
-                // 포럼의 게시물 수 업데이트
-                const { data: forumData } = await supabase
-                    .from('forums')
-                    .select('post_count')
-                    .eq('isbn', isbn)
-                    .single();
-
-                await supabase
-                    .from('forums')
-                    .update({ post_count: Math.max(0, ((forumData as { post_count: number } | null)?.post_count || 1) - 1) })
-                    .eq('isbn', isbn);
-
-                // 사용자 통계 업데이트
-                await UserService.decrementStat(currentUser.uid, 'post_count');
-
-                onBack();
-            } catch (error) {
-                console.error('게시물 삭제 실패:', error);
+        try {
+            // 이미지가 있으면 먼저 삭제
+            if (post.images && post.images.length > 0) {
+                const imageUrls = post.images.map(img => img.url);
+                await PostImageService.deleteImages(imageUrls);
             }
+
+            // 게시물 삭제
+            const { error: deleteError } = await supabase
+                .from('posts')
+                .delete()
+                .eq('id', post.id);
+
+            if (deleteError) {
+                throw deleteError;
+            }
+
+            // 포럼의 게시물 수 업데이트
+            const { data: forumData } = await supabase
+                .from('forums')
+                .select('post_count')
+                .eq('isbn', isbn)
+                .single();
+
+            await supabase
+                .from('forums')
+                .update({ post_count: Math.max(0, ((forumData as { post_count: number } | null)?.post_count || 1) - 1) })
+                .eq('isbn', isbn);
+
+            // 사용자 통계 업데이트
+            await UserService.decrementStat(currentUser.uid, 'post_count');
+
+            onBack();
+        } catch (error) {
+            console.error('게시물 삭제 실패:', error);
         }
     };
 
@@ -486,21 +490,43 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                     <>
                                         <button
                                             onClick={() => setIsEditing(true)}
-                                            className="text-primary hover:text-primary-700 text-sm font-medium"
+                                            className="min-h-[40px] px-3 rounded-md text-primary hover:text-primary-700 text-sm font-medium"
                                         >
                                             수정
                                         </button>
-                                        <button
-                                            onClick={handleDeletePost}
-                                            className="text-destructive hover:text-destructive text-sm font-medium"
-                                        >
-                                            삭제
-                                        </button>
+                                        {confirmDeletePost ? (
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-xs text-destructive">정말 삭제하시겠습니까?</span>
+                                                <button
+                                                    onClick={handleDeletePost}
+                                                    className="min-h-[40px] px-3 rounded-md text-destructive hover:text-red-700 text-sm font-medium"
+                                                >
+                                                    확인
+                                                </button>
+                                                <button
+                                                    onClick={() => setConfirmDeletePost(false)}
+                                                    className="min-h-[40px] px-3 rounded-md text-muted-foreground hover:text-foreground text-sm"
+                                                >
+                                                    취소
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={() => setConfirmDeletePost(true)}
+                                                className="min-h-[40px] px-3 rounded-md text-destructive hover:text-destructive text-sm font-medium"
+                                            >
+                                                삭제
+                                            </button>
+                                        )}
                                     </>
                                 )}
                             </div>
                         )}
                     </div>
+
+                    {editError && (
+                        <p className="text-red-500 text-sm mb-2">{editError}</p>
+                    )}
 
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
                         <button
@@ -515,6 +541,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                         </button>
                         <span className="text-muted-foreground">{formatTime(post.createdAt)}</span>
                         <div className="flex items-center space-x-4">
+                            <div>
                             <button
                                 onClick={handleToggleLike}
                                 className={`flex items-center space-x-1 p-2 -m-2 transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
@@ -523,6 +550,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 <LikeIcon className="w-4 h-4" />
                                 <span>{likeCount}</span>
                             </button>
+                            {likeError && (
+                                <p className="text-red-500 text-xs mt-1">{likeError}</p>
+                            )}
+                            </div>
                             <span className="flex items-center space-x-1 text-muted-foreground">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -584,7 +615,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     )}
 
                     {currentUser ? (
-                        <div className="relative">
+                        <div className="relative sticky bottom-0 bg-surface border-t border-border z-10 pt-3">
                             <form onSubmit={handleAddComment} className="flex gap-2">
                                 <div className="flex-1 relative">
                                     <input

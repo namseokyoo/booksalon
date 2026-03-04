@@ -23,6 +23,8 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [commentCount, setCommentCount] = useState(post.commentCount || 0);
+  const [likeError, setLikeError] = useState<string | null>(null);
+  const [commentError, setCommentError] = useState<string | null>(null);
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -49,10 +51,11 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
 
   const handleToggleLike = async () => {
     if (!currentUser) {
-      alert('좋아요하려면 로그인이 필요합니다.');
+      setLikeError('좋아요하려면 로그인이 필요합니다.');
       return;
     }
 
+    setLikeError(null);
     try {
       const { data: userData } = await supabase
         .from('users')
@@ -74,7 +77,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
       setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
     } catch (error) {
       console.error('좋아요 토글 실패:', error);
-      alert('좋아요 처리 중 오류가 발생했습니다.');
+      setLikeError('좋아요 처리 중 오류가 발생했습니다.');
     }
   };
 
@@ -211,7 +214,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
         console.error('댓글 작성 실패:', error);
       }
     } else if (!currentUser) {
-      alert("댓글을 작성하려면 로그인이 필요합니다.")
+      setCommentError('댓글을 작성하려면 로그인이 필요합니다.');
     }
   };
 
@@ -234,9 +237,11 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
     <div className="bg-surface rounded-lg shadow-md overflow-hidden">
       <div className="p-3 sm:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <h3 className="font-semibold font-serif text-base sm:text-lg text-foreground">{post.title}</h3>
-        <div className="flex items-center space-x-2 sm:space-x-4 text-xs text-muted-foreground mt-2">
-          <span className="font-medium text-primary truncate">{post.author.email}</span>
-          <span className="hidden sm:inline">{formatDate(post.createdAt)}</span>
+        <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
+          <span className="font-medium text-primary truncate">{post.author.email?.split('@')[0]}</span>
+          <span>{formatDate(post.createdAt)}</span>
+        </div>
+        <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
           <div className="flex items-center space-x-1">
             <ChatBubbleIcon className="h-3 w-3 sm:h-4 sm:w-4" />
             <span>{commentCount}</span>
@@ -264,9 +269,6 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
             </svg>
             <span>{post.viewCount || 0}</span>
           </div>
-        </div>
-        <div className="sm:hidden text-xs text-muted-foreground mt-1">
-          {formatDate(post.createdAt)}
         </div>
         {/* 태그 표시 */}
         {post.tags && post.tags.length > 0 && (
@@ -302,6 +304,9 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
             </span>
           </div>
         )}
+        {likeError && (
+          <p className="text-red-500 text-xs mt-1">{likeError}</p>
+        )}
         {!isExpanded && (
           <p className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4 line-clamp-2 whitespace-pre-wrap">{post.content}</p>
         )}
@@ -329,7 +334,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
               <input
                 type="text"
                 value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                onChange={(e) => { setNewComment(e.target.value); setCommentError(null); }}
                 placeholder={currentUser ? "떠오른 생각을 남겨보세요" : "로그인 후 댓글을 작성할 수 있습니다."}
                 className="flex-grow bg-muted border border-border rounded-md px-3 py-2 text-xs sm:text-sm text-foreground focus:ring-ring focus:border-primary"
                 disabled={!currentUser}
@@ -344,6 +349,9 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
                 등록
               </button>
             </form>
+            {commentError && (
+              <p className="text-red-500 text-xs mt-1">{commentError}</p>
+            )}
           </div>
         </div>
       )}
