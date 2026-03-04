@@ -446,7 +446,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     return (
         <div className="max-w-4xl mx-auto">
             <div className="p-3 sm:p-6 lg:p-8 sticky top-[65px] bg-surface border-b border-border z-10 shadow-sm">
-                <button onClick={onBack} className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200">
+                <button onClick={onBack} className="md:hidden flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200">
                     <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>목록으로 돌아가기</span>
                 </button>

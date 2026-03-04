@@ -497,7 +497,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onN
   return (
     <div className="max-w-4xl mx-auto">
       <div className="p-3 sm:p-6 lg:p-8">
-        <button onClick={onBack} className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
+        <button onClick={onBack} className="md:hidden flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
           <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>목록으로 돌아가기</span>
         </button>

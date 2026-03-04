@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabaseAnon } from '../lib/supabase';
 import { ArrowLeftIcon } from './icons';
+import { FilterService } from '../lib/services';
 
 interface BestPost {
   id: string;
@@ -52,9 +53,10 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortType>('popular');
+  const [selectedCategory, setSelectedCategory] = useState<string>('전체');
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const loadPage = useCallback(async (pageIndex: number, currentSortBy: SortType) => {
+  const loadPage = useCallback(async (pageIndex: number, currentSortBy: SortType, currentCategory: string) => {
     if (pageIndex === 0) {
       setIsLoading(true);
     } else {
@@ -77,6 +79,22 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
       } else {
         // popular, likes 모두 like_count 기준
         query = query.order('like_count', { ascending: false });
+      }
+
+      // 카테고리 필터: forum_isbn 기준으로 forums.category JOIN하여 필터링
+      if (currentCategory !== '전체') {
+        const { data: forumsData } = await supabaseAnon
+          .from('forums')
+          .select('isbn')
+          .eq('category', currentCategory);
+        const filteredIsbns = forumsData?.map((f: { isbn: string }) => f.isbn) ?? [];
+        if (filteredIsbns.length === 0) {
+          setPosts(prev => pageIndex === 0 ? [] : prev);
+          setHasMore(false);
+          if (pageIndex === 0) setIsLoading(false); else setIsLoadingMore(false);
+          return;
+        }
+        query = query.in('forum_isbn', filteredIsbns);
       }
 
       const { data, error: postsError } = await query;
@@ -150,18 +168,18 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
     }
   }, []);
 
-  // sortBy 변경 시 리셋
+  // sortBy 또는 selectedCategory 변경 시 리셋
   useEffect(() => {
     setPosts([]);
     setPage(0);
     setHasMore(true);
     setError(null);
-  }, [sortBy]);
+  }, [sortBy, selectedCategory]);
 
   // 페이지 변경 시 fetch
   useEffect(() => {
-    loadPage(page, sortBy);
-  }, [page, sortBy, loadPage]);
+    loadPage(page, sortBy, selectedCategory);
+  }, [page, sortBy, selectedCategory, loadPage]);
 
   // IntersectionObserver
   useEffect(() => {
@@ -177,7 +195,7 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-3 mb-4">
+      <div className="md:hidden flex items-center gap-3 mb-4">
         <button
           type="button"
           onClick={onBack}
@@ -198,6 +216,24 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
+      </div>
+
+      {/* 카테고리 필터 칩 */}
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide mb-4">
+        {['전체', ...FilterService.CATEGORIES].map(cat => (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => setSelectedCategory(cat)}
+            className={`flex-shrink-0 px-3 py-1.5 text-sm rounded-full border transition-colors ${
+              selectedCategory === cat
+                ? 'border-primary bg-primary-50 text-primary-700 font-semibold'
+                : 'border-border bg-muted text-surface-foreground hover:border-primary-200'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
       {isLoading && (
