@@ -300,7 +300,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="search-modal-title" ref={modalRef}>
-            <div className="bg-surface rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div className="bg-surface rounded-xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
                 {/* 헤더 */}
                 <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border">
                     <h2 id="search-modal-title" className="text-lg sm:text-xl font-semibold text-foreground">통합 검색</h2>
@@ -408,13 +408,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                         <div
                                             key={`${book.isbn}-${index}`}
                                             onClick={() => handleBookClick(book)}
-                                            className="p-4 border border-border rounded-lg bg-muted hover:border-primary-300 hover:shadow-sm cursor-pointer transition-all"
+                                            className="p-3 border border-border rounded-lg bg-muted hover:border-primary-300 hover:shadow-sm cursor-pointer transition-all"
                                         >
-                                            <div className="flex items-start gap-4">
+                                            <div className="flex items-start gap-3">
                                                 <img
                                                     src={book.thumbnail}
                                                     alt={`${book.title} 표지`}
-                                                    className="w-16 h-auto rounded flex-shrink-0"
+                                                    className="w-12 h-auto rounded flex-shrink-0"
                                                     loading="lazy"
                                                     decoding="async"
                                                 />
