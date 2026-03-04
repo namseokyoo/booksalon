@@ -17,11 +17,12 @@ interface ForumViewProps {
   onBack: () => void;
   onNavigateToMessaging?: (userId: string) => void;
   onLoginClick?: () => void;
+  onShowToast?: (message: string, type?: 'info' | 'error') => void;
 }
 
 const POSTS_PAGE_SIZE = 20;
 
-const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessaging, onLoginClick }) => {
+const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessaging, onLoginClick, onShowToast }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -455,6 +456,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
         onBack={handleBackToList}
         onUserClick={handleUserClick}
         onSendMessage={handleSendMessage}
+        onShowToast={onShowToast}
       />
     );
   }

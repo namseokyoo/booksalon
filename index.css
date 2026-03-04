@@ -189,6 +189,39 @@
   }
 }
 
+/* ===== FOUT 방지: MaruBuri font-display 오버라이드 =====
+ * 외부 CDN(hangeul.pstatic.net) maru-buri.css에 font-display 미설정으로
+ * 초기 렌더에서 시스템 폰트가 잠깐 표시되는 FOUT 현상 발생.
+ * font-display: optional — 폰트 로드 대기 없이 즉시 폴백 폰트 사용.
+ * 폰트가 준비되면 다음 페이지 로드부터 적용 (레이아웃 재흐름 없음).
+ */
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.woff2') format('woff2'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-SemiBold.woff2') format('woff2'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-SemiBold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Bold.woff2') format('woff2'),
+       url('https://hangeul.pstatic.net/hangeul_static/webfont/MaruBuri/MaruBuri-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: optional;
+}
+
 /* 가로 스크롤 스크롤바 숨김 */
 .scrollbar-hide {
   -ms-overflow-style: none;

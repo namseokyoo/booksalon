@@ -138,7 +138,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
           {error && <p className="bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm p-2 sm:p-3 rounded-lg mb-3 sm:mb-4">{error}</p>}
           <div className="space-y-3 sm:space-y-4">
             <div>
-              <label htmlFor="signup-email" className="sr-only">이메일 주소</label>
+              <label htmlFor="signup-email" className="block text-sm font-medium text-foreground mb-1">이메일 주소</label>
               <input
                 id="signup-email"
                 type="email"
@@ -150,7 +150,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               />
             </div>
             <div>
-              <label htmlFor="signup-nickname" className="sr-only">닉네임</label>
+              <label htmlFor="signup-nickname" className="block text-sm font-medium text-foreground mb-1">닉네임</label>
               <input
                 id="signup-nickname"
                 type="text"
@@ -163,7 +163,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               />
             </div>
             <div>
-              <label htmlFor="signup-password" className="sr-only">비밀번호</label>
+              <label htmlFor="signup-password" className="block text-sm font-medium text-foreground mb-1">비밀번호</label>
               <input
                 id="signup-password"
                 type="password"
@@ -175,7 +175,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
               />
             </div>
             <div>
-              <label htmlFor="signup-password-confirm" className="sr-only">비밀번호 확인</label>
+              <label htmlFor="signup-password-confirm" className="block text-sm font-medium text-foreground mb-1">비밀번호 확인</label>
               <input
                 id="signup-password-confirm"
                 type="password"
@@ -244,7 +244,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-cta text-sm sm:text-base font-medium text-cta-foreground hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto disabled:bg-gray-400 transition-colors duration-200"
+            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-cta text-sm sm:text-base font-medium text-cta-foreground hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             {loading ? '가입 중...' : '가입하기'}
           </button>

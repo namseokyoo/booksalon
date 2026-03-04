@@ -96,11 +96,11 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
 
   return (
     <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 shadow-sm">
-      <div className="flex flex-col sm:flex-row items-start gap-4">
+      <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-5">
         <img
           src={book.thumbnail || 'https://picsum.photos/120/174'}
           alt={`${book.title} 표지`}
-          className="w-20 h-auto sm:w-24 sm:h-auto lg:w-32 lg:h-auto rounded-lg shadow-md flex-shrink-0 mx-auto sm:mx-0"
+          className="w-20 h-auto sm:w-24 md:w-28 sm:h-auto lg:w-32 lg:h-auto rounded-lg shadow-md flex-shrink-0 mx-auto sm:mx-0"
         />
         <div className="flex-grow text-center sm:text-left w-full">
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-serif text-foreground">

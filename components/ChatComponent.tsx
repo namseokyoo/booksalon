@@ -88,7 +88,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                             {otherUser.nickname || otherUser.displayName}
                         </h3>
                         <p className="text-muted-foreground text-sm">
-                            {otherUser.email}
+                            {otherUser.nickname || otherUser.email?.split('@')[0]}
                         </p>
                     </div>
                 </div>
@@ -121,7 +121,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                                     }`}
                             >
                                 <p className="text-sm">{message.content}</p>
-                                <p className={`text-xs mt-1 ${message.senderId === userProfile?.id ? 'text-gray-500' : 'text-gray-500'
+                                <p className={`text-xs mt-1 ${message.senderId === userProfile?.id ? 'text-muted-foreground' : 'text-muted-foreground'
                                     }`}>
                                     {formatMessageTime(message.createdAt)}
                                 </p>
@@ -140,12 +140,12 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="메시지를 입력하세요..."
-                        className="flex-1 bg-surface border border-border rounded-lg px-3 py-2 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary focus:outline-none"
+                        className="flex-1 bg-surface border border-border rounded-lg px-3 py-3 text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary focus:outline-none"
                     />
                     <button
                         type="submit"
                         disabled={!newMessage.trim()}
-                        className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                        className="px-4 py-3 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
                         전송
                     </button>

@@ -128,7 +128,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                 <div className="flex space-x-4 mb-6">
                     <button
                         onClick={() => setActiveTab('following')}
-                        className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'following'
+                        className={`px-4 py-2.5 rounded-md font-medium transition-colors ${activeTab === 'following'
                                 ? 'bg-primary text-primary-foreground'
                                 : 'bg-muted text-surface-foreground hover:bg-muted'
                             }`}
@@ -137,7 +137,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                     </button>
                     <button
                         onClick={() => setActiveTab('my')}
-                        className={`px-4 py-2 rounded-md font-medium transition-colors ${activeTab === 'my'
+                        className={`px-4 py-2.5 rounded-md font-medium transition-colors ${activeTab === 'my'
                                 ? 'bg-primary text-primary-foreground'
                                 : 'bg-muted text-surface-foreground hover:bg-muted'
                             }`}
@@ -167,7 +167,16 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
                             {activities.map((activity) => (
                                 <div key={activity.id} className="bg-muted rounded-lg p-4">
                                     <div className="flex items-start space-x-3">
-                                        <div className="text-2xl">{getActivityIcon(activity.type)}</div>
+                                        <div className="text-2xl" aria-hidden="true">
+                                            {getActivityIcon(activity.type)}
+                                            <span className="sr-only">
+                                                {activity.type === 'post' && '게시물'}
+                                                {activity.type === 'comment' && '댓글'}
+                                                {activity.type === 'like' && '좋아요'}
+                                                {activity.type === 'follow' && '팔로우'}
+                                                {activity.type === 'bookmark' && '북마크'}
+                                            </span>
+                                        </div>
                                         <div className="flex-grow">
                                             <div className="flex items-center space-x-2 mb-1">
                                                 <span className="font-semibold text-foreground">{activity.userName}</span>

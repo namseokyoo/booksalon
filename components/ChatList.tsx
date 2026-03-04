@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MessagingService } from '../lib/services';
 import { UserService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 import type { ChatRoom, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -67,7 +68,7 @@ const ChatRoomItem: React.FC<ChatRoomItemProps> = ({
             className="bg-surface border border-border p-4 rounded-xl hover:bg-muted hover:border-primary-300 cursor-pointer transition-all shadow-sm"
         >
             <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-sm border-2 border-white">
+                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-sm border-2 border-surface">
                     <span className="text-white font-semibold">
                         {otherUser.nickname?.charAt(0) || otherUser.displayName?.charAt(0) || 'U'}
                     </span>
@@ -105,7 +106,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
     useEffect(() => {
         if (!currentUser) return;
 
-        const loadChatRooms = async () => {
+        const fetchChats = async () => {
             try {
                 const rooms = await MessagingService.getChatRooms(userProfile?.id || '');
                 setChatRooms(rooms);
@@ -116,7 +117,21 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
             }
         };
 
-        loadChatRooms();
+        fetchChats();
+
+        // Realtime 구독: 새 메시지 수신 시 채팅 목록 refetch
+        const channel = supabase
+            .channel('chat_list_updates')
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'messages' },
+                () => { fetchChats(); }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, [currentUser]);
 
     const getOtherUser = async (chatRoom: ChatRoom): Promise<UserProfile | null> => {

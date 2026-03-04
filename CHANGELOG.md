@@ -116,12 +116,43 @@
 - 완전한 마이그레이션은 향후 버전에서 진행 예정
 - Firebase 의존성은 rollback 대비로 유지
 
+## [1.0.x] - 2026-03-04 (PR #4~#6: UI/UX 긴급 개선)
+
+### Fixed (PR #4 — U01~U20, 커밋 05b10ea, DEC-116)
+- **U01 LoginModal**: visible 레이블 추가, 제목 "로그인", disabled 패턴 적용
+- **U02 SignUpModal**: 4개 visible 레이블, disabled 패턴
+- **U03 SearchModal**: 게시글/댓글 클릭 시 포럼 이동 핵심 버그 수정, max-h dvh 적용
+- **U04 PostDetail**: 댓글 입력창 sticky 하단 고정, 삭제 인라인 확인 UI
+- **U05 PostItem**: 이메일 원문 노출 → split('@')[0] 마스킹
+- **U06 Header**: 벨 아이콘 헤더 직접 노출, 검색 터치 영역 확대
+- **U07 BookInfo**: text-base 적용, 비로그인 로그인 버튼 추가
+- **U08 CommentItem**: 터치 영역 확대, bg-cta 토큰, 아이콘 크기 조정
+- **U09 FilterPanel**: bg-primary 토큰, 패딩 개선
+- **U10 ActivityFeed**: 이모지 aria-hidden+sr-only 접근성 처리, 탭 패딩
+- **U11 ForumView**: FAB 비로그인 → 로그인 유도로 전환
+- **U12 ChatComponent**: text-muted-foreground 적용, 이메일 제거
+- **U13 RatingModal**: 인라인 에러 UI, rounded-xl, 별 48dp 터치 영역
+- **U14 ImageGallery**: 닫기 버튼 48dp, alt 한국어 변경
+- **U15 CreateForumModal**: 제목 "새 살롱 만들기"로 변경
+- **U16 NotificationComponent**: 알림 클릭 → 콘텐츠 이동 기능, SVG 벨 아이콘
+- **U17 ChatList**: border-surface 토큰, Supabase realtime 구독 적용
+- **U18 UserProfilePreview**: 이메일 제거, 팔로우 버튼 구현
+- **U19 ProfilePage**: 탭 그라데이션 힌트, 다크모드, 계정삭제 2단계 확인
+- **U20 CreatePostModal**: visible 레이블, resize-y textarea
+
+### Fixed (PR #5 — alert() 전체 교체, 커밋 ab539a5, DEC-117)
+- alert() 0건 달성: 10개 컴포넌트 전체 alert()/window.confirm() → 인라인 에러/성공/확인 UI 교체
+  - PostDetail(4건), ForumView(2건), PostItem(3건), CommentItem(3건+confirm), ForumList(2건)
+  - ReportModal(2건), ImageUploader(2건), UserMenu(3건), BookInfo(2건), ProfilePage(1건)
+
+### Fixed (PR #6 — 살롱 화면 레이아웃 긴급 수정, DEC-118)
+- ForumView: sticky 완전 제거 → 전체 페이지 스크롤 방식
+- BookInfo: "평점 남기기" 숨김, 독서상태 카드 하단 배치, gap-4 이미지 간격
+- 도서 정보/글 목록 너비 통일
+
 ## [Unreleased]
 
 ### Planned
 - 검색 섹션별 페이지네이션 (살롱/게시글/댓글)
-- 다크 모드 토글 기능
-- 반응형 디자인 개선
+- 반응형 디자인 고도화
 - 성능 최적화
-- 컴포넌트 레벨 Supabase 완전 마이그레이션
-- Firebase 의존성 완전 제거

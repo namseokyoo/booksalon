@@ -1,9 +1,10 @@
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useCallback } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivacyPage from './components/PrivacyPage';
 import TermsPage from './components/TermsPage';
+import Toast from './components/Toast';
 import type { Forum, Book } from './types';
 import { useSupabaseAuth } from './contexts/SupabaseAuthContext';
 
@@ -89,7 +90,12 @@ const App = () => {
   const [signupModalOpen, setSignupModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'info' | 'error' } | null>(null);
   const { loading, currentUser } = useSupabaseAuth();
+
+  const showToast = useCallback((message: string, type: 'info' | 'error' = 'info') => {
+    setToast({ message, type });
+  }, []);
 
   const handleSelectForum = (forum: Forum) => {
     setSelectedForum(forum);
@@ -242,7 +248,7 @@ const App = () => {
           ) : currentView === 'terms' ? (
             <TermsPage onBack={handleBackToList} />
           ) : currentView === 'list' ? (
-            <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} />
+            <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} onSearchClick={handleShowSearch} />
           ) : currentView === 'profile' ? (
             <ProfilePage onBack={handleBackToList} onDeleteClick={() => setDeleteModalOpen(true)} />
           ) : currentView === 'activity' ? (
@@ -252,7 +258,12 @@ const App = () => {
           ) : currentView === 'messaging' ? (
             <MessagingPage targetUserId={messagingTargetUserId || undefined} />
           ) : currentView === 'notifications' ? (
-            <NotificationComponent />
+            <NotificationComponent
+              onNavigate={(_targetType, _targetId) => {
+                // 알림 클릭 시 홈으로 이동 (향후 targetType/targetId 기반 상세 이동 확장 가능)
+                setCurrentView('list');
+              }}
+            />
           ) : currentView === 'admin' ? (
             <AdminDashboard />
           ) : selectedForum ? (
@@ -263,6 +274,7 @@ const App = () => {
                 setMessagingTargetUserId(userId);
                 setCurrentView('messaging');
               }}
+              onShowToast={showToast}
             />
           ) : (
             <div className="text-center p-8">
@@ -277,6 +289,14 @@ const App = () => {
       </main>
 
       <Footer />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <Suspense fallback={null}>
         {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
