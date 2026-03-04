@@ -56,8 +56,11 @@ export interface Comment {
   content: string;
   author: Author;
   createdAt: Timestamp;
+  updatedAt?: Timestamp; // 수정 일시 (BL-117)
   likes?: string[]; // 좋아요한 사용자 UID 목록
   likeCount?: number; // 좋아요 수
+  parentId?: string | null; // 대댓글 지원 (BL-117): null이면 최상위 댓글
+  replies?: Comment[]; // 대댓글 목록 (BL-117): 최대 1레벨
 }
 
 // 게시물 이미지 타입
