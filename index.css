@@ -31,8 +31,8 @@
   --color-primary-light: oklch(0.54 0.06 155);
 
   /* CTA — 딥 허니 앰버 (Caregiver 30%) */
-  --color-cta: oklch(0.62 0.12 65);
-  --color-cta-foreground: oklch(0.25 0.03 155);
+  --color-cta: oklch(0.75 0.14 65);
+  --color-cta-foreground: oklch(0.20 0.03 60);
 
   /* 세컨더리 (보조 버튼) */
   --color-secondary: oklch(0.94 0.006 80);

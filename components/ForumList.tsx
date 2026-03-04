@@ -743,10 +743,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
           <h2 className="font-serif text-xl sm:text-2xl font-bold text-primary leading-snug">
             당신의 마침표가<br />누군가의 물음표와 만나는 곳
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-            책을 읽고 떠오른 질문을 남기면,<br />
-            시간을 건너 다른 독자의 생각을 만나게 됩니다.
-          </p>
           {/* 통합 검색 (SearchModal) 진입 */}
           {onSearchClick && (
             <div className="mt-5 max-w-lg mx-auto">

@@ -339,7 +339,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
                     >
-                        커뮤니티 검색
+                        살롱 검색
                     </button>
                 </div>
 
