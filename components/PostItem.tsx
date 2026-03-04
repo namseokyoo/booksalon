@@ -14,16 +14,16 @@ import { LikeIcon } from './icons/LikeIcon';
 interface PostItemProps {
   post: Post;
   isbn: string;
+  onShowToast?: (message: string, type?: 'info' | 'error') => void;
 }
 
-const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
+const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [commentCount, setCommentCount] = useState(post.commentCount || 0);
-  const [likeError, setLikeError] = useState<string | null>(null);
   const [commentError, setCommentError] = useState<string | null>(null);
   const { currentUser } = useAuth();
 
@@ -51,11 +51,10 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
 
   const handleToggleLike = async () => {
     if (!currentUser) {
-      setLikeError('login-required');
+      onShowToast?.('좋아요를 누르려면 로그인이 필요합니다', 'info');
       return;
     }
 
-    setLikeError(null);
     try {
       const { data: userData } = await supabase
         .from('users')
@@ -77,7 +76,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
       setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
     } catch (error) {
       console.error('좋아요 토글 실패:', error);
-      setLikeError('좋아요 처리 중 오류가 발생했습니다.');
+      onShowToast?.('좋아요 처리 중 오류가 발생했습니다', 'error');
     }
   };
 
@@ -303,14 +302,6 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
               {post.images.length === 1 ? '이미지 1장' : `이미지 ${post.images.length}장`}
             </span>
           </div>
-        )}
-        {likeError === 'login-required' && (
-          <p className="text-xs mt-1 text-muted-foreground">
-            좋아요를 누르려면 로그인이 필요합니다.
-          </p>
-        )}
-        {likeError && likeError !== 'login-required' && (
-          <p className="text-xs mt-1 text-destructive">{likeError}</p>
         )}
         {!isExpanded && (
           <p className="text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-4 line-clamp-2 whitespace-pre-wrap">{post.content}</p>

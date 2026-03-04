@@ -18,9 +18,10 @@ interface PostDetailProps {
     onBack: () => void;
     onUserClick: (user: UserProfile) => void;
     onSendMessage?: (userId: string) => void;
+    onShowToast?: (message: string, type?: 'info' | 'error') => void;
 }
 
-const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick, onSendMessage }) => {
+const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick, onSendMessage, onShowToast }) => {
     const [newComment, setNewComment] = useState('');
     const [comments, setComments] = useState<Comment[]>([]);
     const [confirmDeletePost, setConfirmDeletePost] = useState(false);
@@ -32,7 +33,6 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     const [editTitle, setEditTitle] = useState(post.title);
     const [editContent, setEditContent] = useState(post.content);
     const [editError, setEditError] = useState<string | null>(null);
-    const [likeError, setLikeError] = useState<string | null>(null);
     const [viewCount, setViewCount] = useState(post.viewCount || 0);
     const [showMentionList, setShowMentionList] = useState(false);
     const [mentionSearch, setMentionSearch] = useState('');
@@ -179,10 +179,9 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     const handleToggleLike = async () => {
         if (!currentUser) {
-            setLikeError('login-required');
+            onShowToast?.('좋아요를 누르려면 로그인이 필요합니다', 'info');
             return;
         }
-        setLikeError(null);
 
         try {
             // 사용자 ID 조회
@@ -206,6 +205,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
         } catch (error) {
             console.error('좋아요 처리 실패:', error);
+            onShowToast?.('좋아요 처리 중 오류가 발생했습니다', 'error');
         }
     };
 
@@ -550,14 +550,6 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 <LikeIcon className="w-4 h-4" />
                                 <span>{likeCount}</span>
                             </button>
-                            {likeError === 'login-required' && (
-                                <p className="text-xs mt-1 text-muted-foreground">
-                                    좋아요를 누르려면 로그인이 필요합니다.
-                                </p>
-                            )}
-                            {likeError && likeError !== 'login-required' && (
-                                <p className="text-xs mt-1 text-destructive">{likeError}</p>
-                            )}
                             </div>
                             <span className="flex items-center space-x-1 text-muted-foreground">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
