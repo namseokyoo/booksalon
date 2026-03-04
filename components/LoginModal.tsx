@@ -56,13 +56,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
     try {
       setError('');
       setLoading(true);
-      await login(email, password);
+      const result = await login(email, password);
+      if (result.error) {
+        setError('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.');
+        return;
+      }
       onClose();
     } catch (err) {
       setError('로그인에 실패했습니다. 이메일 또는 비밀번호를 확인해주세요.');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleGoogleLogin = async () => {
