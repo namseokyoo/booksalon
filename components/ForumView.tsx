@@ -17,13 +17,15 @@ interface ForumViewProps {
   forum: Forum;
   onBack: () => void;
   onNavigateToMessaging?: (userId: string) => void;
+  onLoginClick?: () => void;
 }
 
 const POSTS_PAGE_SIZE = 20;
 
-const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessaging }) => {
+const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessaging, onLoginClick }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
@@ -284,10 +286,11 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
 
   const handleAddPost = async (title: string, content: string, tags?: string[], imagePreviews?: ImagePreview[]) => {
     if (!currentUser) {
-      alert("글을 작성하려면 로그인이 필요합니다.");
+      setSubmitError('글을 작성하려면 로그인이 필요합니다.');
       return;
     }
 
+    setSubmitError(null);
     setIsSubmitting(true);
 
     try {
@@ -405,7 +408,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
       setIsModalOpen(false);
     } catch (error) {
       console.error('게시물 작성 실패:', error);
-      alert('게시물 작성에 실패했습니다. 다시 시도해주세요.');
+      setSubmitError('게시물 작성에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);
     }
@@ -505,18 +508,28 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
       </div>
 
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          if (!currentUser) {
+            onLoginClick?.();
+          } else {
+            setIsModalOpen(true);
+          }
+        }}
         className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-cta text-cta-foreground rounded-full p-3 sm:p-4 shadow-lg hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-ring z-30 transition-colors duration-200"
-        aria-label="새로운 글 작성"
-        disabled={!currentUser}
-        title={!currentUser ? "로그인이 필요합니다" : "새로운 글 작성"}
+        aria-label={!currentUser ? "로그인이 필요합니다" : "새로운 글 작성"}
       >
         <PlusIcon className="h-5 w-5 sm:h-6 sm:w-6" />
       </button>
 
+      {submitError && (
+        <div className="fixed bottom-20 right-4 sm:right-6 z-30 bg-red-50 border border-red-200 rounded-lg px-4 py-2 shadow-md">
+          <p className="text-red-500 text-sm">{submitError}</p>
+        </div>
+      )}
+
       {isModalOpen && (
         <CreatePostModal
-          onClose={() => !isSubmitting && setIsModalOpen(false)}
+          onClose={() => { if (!isSubmitting) { setIsModalOpen(false); setSubmitError(null); } }}
           onSubmit={handleAddPost}
           isSubmitting={isSubmitting}
         />

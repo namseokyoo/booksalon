@@ -9,9 +9,10 @@ import RatingModal from './RatingModal';
 interface BookInfoProps {
   book: Book;
   forum?: Forum;
+  onLoginClick?: () => void;
 }
 
-const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
+const BookInfo: React.FC<BookInfoProps> = ({ book, forum, onLoginClick }) => {
   const [myRating, setMyRating] = useState<number | null>(null);
   const [averageRating, setAverageRating] = useState<number>(0);
   const [totalRatings, setTotalRatings] = useState<number>(0);
@@ -25,6 +26,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
   const [showDistribution, setShowDistribution] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ratingError, setRatingError] = useState<string | null>(null);
   const { currentUser, userProfile } = useAuth();
 
   useEffect(() => {
@@ -59,10 +61,15 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
 
   const handleRatingSubmit = async (rating: number, comment?: string) => {
     if (!currentUser || !forum?.isbn) {
-      alert('평점을 주시려면 로그인이 필요합니다.');
+      if (onLoginClick) {
+        onLoginClick();
+      } else {
+        setRatingError('평점을 주시려면 로그인이 필요합니다.');
+      }
       return;
     }
 
+    setRatingError(null);
     setIsSubmitting(true);
 
     try {
@@ -79,7 +86,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
       setDistribution(dist);
     } catch (error) {
       console.error('평점 저장 실패:', error);
-      alert('평점 저장에 실패했습니다. 다시 시도해주세요.');
+      setRatingError('평점 저장에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsSubmitting(false);
     }
@@ -97,7 +104,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold font-serif text-foreground">
             {book.title}
           </h2>
-          <p className="text-sm sm:text-md text-muted-foreground mt-1">
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             {book.authors.join(', ')}
           </p>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">{book.publisher}</p>
@@ -175,7 +182,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
               </div>
               <button
                 type="button"
-                onClick={() => setShowRatingModal(true)}
+                onClick={() => { setShowRatingModal(true); setRatingError(null); }}
                 className="px-3 py-1.5 text-sm text-primary hover:text-primary-700 border border-primary-300 rounded-lg hover:bg-primary-50 transition-colors"
               >
                 수정
@@ -189,7 +196,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
               </p>
               <button
                 type="button"
-                onClick={() => setShowRatingModal(true)}
+                onClick={() => { setShowRatingModal(true); setRatingError(null); }}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors"
               >
                 <svg
@@ -203,15 +210,27 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum }) => {
               </button>
             </div>
           )}
+          {ratingError && (
+            <p className="text-red-500 text-sm mt-2">{ratingError}</p>
+          )}
         </div>
       )}
 
       {/* 비로그인 사용자 */}
       {!currentUser && (
         <div className="mt-4 pt-4 border-t border-border text-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mb-2">
             로그인하면 평점을 남길 수 있습니다.
           </p>
+          {onLoginClick && (
+            <button
+              type="button"
+              onClick={onLoginClick}
+              className="text-sm text-primary hover:text-primary-700 underline"
+            >
+              로그인하기
+            </button>
+          )}
         </div>
       )}
 

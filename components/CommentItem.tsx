@@ -21,6 +21,10 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
   const [likeCount, setLikeCount] = useState(comment.likeCount || 0);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
+  const [likeError, setLikeError] = useState<string | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -82,10 +86,11 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
 
   const handleToggleLike = async () => {
     if (!currentUser) {
-      alert('좋아요하려면 로그인이 필요합니다.');
+      setLikeError('좋아요하려면 로그인이 필요합니다.');
       return;
     }
 
+    setLikeError(null);
     try {
       const { data: userData } = await supabase
         .from('users')
@@ -112,15 +117,16 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
 
   const handleEditComment = async () => {
     if (!currentUser || currentUser.uid !== comment.author.uid) {
-      alert('본인의 댓글만 수정할 수 있습니다.');
+      setEditError('본인의 댓글만 수정할 수 있습니다.');
       return;
     }
 
     if (editContent.trim() === '') {
-      alert('내용을 입력해주세요.');
+      setEditError('내용을 입력해주세요.');
       return;
     }
 
+    setEditError(null);
     try {
       const { error } = await supabase
         .from('comments')
@@ -142,25 +148,26 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
 
   const handleDeleteComment = async () => {
     if (!currentUser || currentUser.uid !== comment.author.uid) {
-      alert('본인의 댓글만 삭제할 수 있습니다.');
+      setDeleteError('본인의 댓글만 삭제할 수 있습니다.');
       return;
     }
 
-    if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
-      try {
-        const { error } = await supabase
-          .from('comments')
-          .delete()
-          .eq('id', comment.id);
+    setDeleteError(null);
+    try {
+      const { error } = await supabase
+        .from('comments')
+        .delete()
+        .eq('id', comment.id);
 
-        if (error) {
-          throw error;
-        }
-
-        // 게시물 댓글 수 감소 처리는 DB trigger 또는 별도 로직으로
-      } catch (error) {
-        console.error('댓글 삭제 실패:', error);
+      if (error) {
+        throw error;
       }
+
+      setShowDeleteConfirm(false);
+      // 게시물 댓글 수 감소 처리는 DB trigger 또는 별도 로직으로
+    } catch (error) {
+      console.error('댓글 삭제 실패:', error);
+      setDeleteError('댓글 삭제에 실패했습니다.');
     }
   };
 
@@ -184,21 +191,38 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
         </div>
         {isOwner && (
           <div className="flex items-center gap-2">
-            {!isEditing && (
+            {!isEditing && !showDeleteConfirm && (
               <>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="text-xs text-primary hover:text-primary-700 font-medium"
+                  className="min-h-[36px] px-3 text-xs text-primary hover:text-primary-700 font-medium"
                 >
                   수정
                 </button>
                 <button
-                  onClick={handleDeleteComment}
-                  className="text-xs text-destructive hover:text-red-700 font-medium"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="min-h-[36px] px-3 text-xs text-destructive hover:text-red-700 font-medium"
                 >
                   삭제
                 </button>
               </>
+            )}
+            {showDeleteConfirm && (
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-surface-foreground">삭제할까요?</span>
+                <button
+                  onClick={handleDeleteComment}
+                  className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  확인
+                </button>
+                <button
+                  onClick={() => { setShowDeleteConfirm(false); setDeleteError(null); }}
+                  className="px-2 py-1 text-xs bg-muted text-surface-foreground rounded hover:bg-muted/80"
+                >
+                  취소
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -212,10 +236,13 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
             className="w-full p-2 bg-surface border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary resize-none"
             rows={3}
           />
+          {editError && (
+            <p className="text-red-500 text-xs">{editError}</p>
+          )}
           <div className="flex gap-2">
             <button
               onClick={handleEditComment}
-              className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 font-medium"
+              className="px-3 py-1 bg-cta text-cta-foreground rounded-lg text-sm hover:bg-cta-700 font-medium"
             >
               저장
             </button>
@@ -223,6 +250,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
               onClick={() => {
                 setIsEditing(false);
                 setEditContent(comment.content);
+                setEditError(null);
               }}
               className="px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-gray-300 font-medium"
             >
@@ -240,10 +268,16 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
           className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
             }`}
         >
-          <LikeIcon className="w-3 h-3" filled={isLiked} />
+          <LikeIcon className="w-4 h-4" filled={isLiked} />
           <span>{likeCount}</span>
         </button>
       </div>
+      {likeError && (
+        <p className="text-red-500 text-xs mt-1">{likeError}</p>
+      )}
+      {deleteError && (
+        <p className="text-red-500 text-xs mt-1">{deleteError}</p>
+      )}
     </div>
   );
 };

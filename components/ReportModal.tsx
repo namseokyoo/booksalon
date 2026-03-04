@@ -21,6 +21,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
     const [reason, setReason] = useState('');
     const [description, setDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const { currentUser, userProfile } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -54,16 +55,21 @@ const ReportModal: React.FC<ReportModalProps> = ({
                 metadata
             );
 
-            alert('신고가 접수되었습니다. 검토 후 조치하겠습니다.');
-            onClose();
+            setSubmitMessage({ type: 'success', text: '신고가 접수되었습니다. 검토 후 조치하겠습니다.' });
 
             // 폼 초기화
             setReason('');
             setDescription('');
             setReportType('spam');
+
+            // 1.5초 후 모달 닫기
+            setTimeout(() => {
+                onClose();
+                setSubmitMessage(null);
+            }, 1500);
         } catch (error) {
             console.error('신고 접수 실패:', error);
-            alert('신고 접수에 실패했습니다. 다시 시도해주세요.');
+            setSubmitMessage({ type: 'error', text: '신고 접수에 실패했습니다. 다시 시도해주세요.' });
         } finally {
             setIsSubmitting(false);
         }
@@ -187,6 +193,12 @@ const ReportModal: React.FC<ReportModalProps> = ({
                                 required
                             />
                         </div>
+
+                        {submitMessage && (
+                            <p className={`text-sm ${submitMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                                {submitMessage.text}
+                            </p>
+                        )}
 
                         <div className="flex space-x-3 pt-4">
                             <button

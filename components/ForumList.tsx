@@ -54,6 +54,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
   const [existingForums, setExistingForums] = useState<Forum[]>([]);
   const [bookmarkedForums, setBookmarkedForums] = useState<Forum[]>([]);
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [bookmarkError, setBookmarkError] = useState<string | null>(null);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
   const [filteredForums, setFilteredForums] = useState<Forum[]>([]);
   const [searchPage, setSearchPage] = useState(1);
@@ -524,10 +525,15 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
     e.stopPropagation(); // 포럼 클릭 이벤트 방지
 
     if (!currentUser || !userProfile?.id) {
-      alert('북마크하려면 로그인이 필요합니다.');
+      if (onLoginClick) {
+        onLoginClick();
+      } else {
+        setBookmarkError('북마크하려면 로그인이 필요합니다.');
+      }
       return;
     }
 
+    setBookmarkError(null);
     try {
       const isBookmarked = await BookmarkService.toggleBookmark(userProfile.id, isbn);
 
@@ -548,9 +554,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
       }
     } catch (error) {
       console.error('북마크 토글 실패:', error);
-      alert('북마크 처리 중 오류가 발생했습니다.');
+      setBookmarkError('북마크 처리 중 오류가 발생했습니다.');
     }
-  }, [currentUser, forums]);
+  }, [currentUser, forums, onLoginClick]);
 
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -1262,6 +1268,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
 
       {searchResult && (
         <CreateForumModal book={searchResult} onClose={() => setSearchResult(null)} onCreate={handleCreateForum} />
+      )}
+
+      {bookmarkError && (
+        <div className="fixed bottom-20 right-4 sm:right-6 z-30 bg-red-50 border border-red-200 rounded-lg px-4 py-2 shadow-md">
+          <p className="text-red-500 text-sm">{bookmarkError}</p>
+        </div>
       )}
     </div>
   );
