@@ -813,33 +813,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
         </div>
       )}
 
-      {/* 카테고리 필터 칩 */}
-      <div className="mb-5">
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {['전체', ...FilterService.CATEGORIES].map(cat => (
-            <button
-              key={cat}
-              onClick={() => handleSelectCategory(cat)}
-              className={`flex-shrink-0 px-4 py-2.5 text-sm rounded-full border transition-colors ${
-                (filterOptions.category || '전체') === cat
-                  ? 'border-primary bg-primary-50 text-primary-700 font-semibold shadow-sm'
-                  : 'border-border bg-muted text-surface-foreground hover:border-primary-200 hover:text-primary-700'
-              }`}
-              type="button"
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-        {hasActiveFilters() && (
-          <button
-            onClick={handleResetFilters}
-            className="mt-2 text-xs text-muted-foreground hover:text-foreground underline"
-          >
-            필터 초기화
-          </button>
-        )}
-      </div>
 
       {/* 인기 게시물 섹션 — 검색 중이 아닐 때만 표시 */}
       {bestPosts.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
