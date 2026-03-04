@@ -104,7 +104,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, className = '' }) =
           >
             <img
               src={image.url}
-              alt={`Image ${index + 1}`}
+              alt={`${index + 1}번째 이미지`}
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"
@@ -122,7 +122,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, className = '' }) =
           {/* 닫기 버튼 */}
           <button
             onClick={closeLightbox}
-            className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full flex items-center justify-center text-white transition-colors z-10"
+            className="absolute top-4 right-4 w-12 h-12 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full flex items-center justify-center text-white transition-colors z-10"
             aria-label="닫기"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +174,7 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({ images, className = '' }) =
             )}
             <img
               src={sortedImages[selectedIndex].url}
-              alt={`Image ${selectedIndex + 1}`}
+              alt={`${selectedIndex + 1}번째 이미지`}
               className={`max-w-full max-h-[85vh] object-contain ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity`}
               onLoad={() => setIsLoading(false)}
               decoding="async"

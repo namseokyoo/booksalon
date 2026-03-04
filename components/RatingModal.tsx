@@ -24,12 +24,14 @@ const RatingModal: React.FC<RatingModalProps> = ({
   const [rating, setRating] = useState<number>(currentRating || 0);
   const [comment, setComment] = useState<string>('');
   const [hoverRating, setHoverRating] = useState<number | null>(null);
+  const [submitError, setSubmitError] = useState<string>('');
 
   const handleSubmit = () => {
     if (rating === 0) {
-      alert('평점을 선택해주세요.');
+      setSubmitError('평점을 선택해주세요.');
       return;
     }
+    setSubmitError('');
     onSubmit(rating, comment.trim() || undefined);
   };
 
@@ -52,7 +54,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
               aria-label={`${star}점`}
             >
               <svg
-                className={`w-10 h-10 ${
+                className={`w-12 h-12 ${
                   star <= displayRating ? 'text-amber-400' : 'text-gray-300'
                 } transition-colors`}
                 fill="currentColor"
@@ -88,7 +90,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div className="bg-surface rounded-2xl shadow-xl max-w-md w-full p-6">
+      <div className="bg-surface rounded-xl shadow-xl max-w-md w-full p-6">
         {/* 헤더 */}
         <div className="text-center mb-6">
           <h2 className="text-xl font-bold text-foreground">
@@ -100,7 +102,12 @@ const RatingModal: React.FC<RatingModalProps> = ({
         </div>
 
         {/* 별점 선택 */}
-        <div className="mb-6">{renderRatingSelector()}</div>
+        <div className="mb-6">
+          {renderRatingSelector()}
+          {submitError && (
+            <p className="text-sm text-destructive text-center mt-2">{submitError}</p>
+          )}
+        </div>
 
         {/* 한줄 코멘트 (선택) */}
         <div className="mb-6">

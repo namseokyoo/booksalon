@@ -98,7 +98,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                         <button
                             key={value}
                             onClick={() => handleSortChange(value as FilterOptions['sortBy'])}
-                            className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.sortBy === value
+                            className={`px-3 py-1.5 text-xs rounded transition-colors duration-200 ${currentOptions.sortBy === value
                                     ? 'bg-primary text-primary-foreground'
                                     : 'bg-muted text-surface-foreground hover:bg-muted'
                                 }`}
@@ -117,7 +117,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                         <div className="flex flex-wrap gap-2">
                             <button
                                 onClick={() => handleCategoryChange('전체')}
-                                className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${!currentOptions.category
+                                className={`px-3 py-1.5 text-xs rounded transition-colors duration-200 ${!currentOptions.category
                                         ? 'bg-primary text-primary-foreground'
                                         : 'bg-muted text-surface-foreground hover:bg-muted'
                                     }`}
@@ -128,7 +128,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                 <button
                                     key={category}
                                     onClick={() => handleCategoryChange(category)}
-                                    className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.category === category
+                                    className={`px-3 py-1.5 text-xs rounded transition-colors duration-200 ${currentOptions.category === category
                                             ? 'bg-primary text-primary-foreground'
                                             : 'bg-muted text-surface-foreground hover:bg-muted'
                                         }`}
@@ -147,8 +147,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                 <button
                                     key={tag}
                                     onClick={() => handleTagToggle(tag)}
-                                    className={`px-3 py-1 text-xs rounded transition-colors duration-200 ${currentOptions.tags?.includes(tag)
-                                            ? 'bg-yellow-600 text-white'
+                                    className={`px-3 py-1.5 text-xs rounded transition-colors duration-200 ${currentOptions.tags?.includes(tag)
+                                            ? 'bg-primary text-primary-foreground'
                                             : 'bg-muted text-surface-foreground hover:bg-muted'
                                         }`}
                                 >

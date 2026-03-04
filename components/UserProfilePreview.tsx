@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { UserProfile } from '../types';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useAuth } from '../contexts/AuthContext';
+import { SocialService } from '../lib/services/socialService';
 
 interface UserProfilePreviewProps {
     user: UserProfile;
@@ -11,8 +12,30 @@ interface UserProfilePreviewProps {
 }
 
 const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, onSendMessage }) => {
-    const { currentUser } = useAuth();
+    const { currentUser, userProfile } = useAuth();
     const isOwnProfile = currentUser && currentUser.uid === user.uid;
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followLoading, setFollowLoading] = useState(false);
+
+    useEffect(() => {
+        if (!userProfile || isOwnProfile) return;
+        SocialService.isFollowing(userProfile.id, user.id)
+            .then(setIsFollowing)
+            .catch((err) => console.error('팔로우 상태 확인 실패:', err));
+    }, [userProfile, user.id, isOwnProfile]);
+
+    const handleFollowToggle = async () => {
+        if (!userProfile || followLoading) return;
+        setFollowLoading(true);
+        try {
+            const result = await SocialService.toggleFollow(userProfile.id, user.id);
+            setIsFollowing(result);
+        } catch (error) {
+            console.error('팔로우 처리 실패:', error);
+        } finally {
+            setFollowLoading(false);
+        }
+    };
 
     const getDisplayName = () => {
         return user.nickname || user.displayName || user.email?.split('@')[0] || '익명';
@@ -61,7 +84,9 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold text-foreground">{getDisplayName()}</h3>
-                            <p className="text-muted-foreground text-sm">{user.email}</p>
+                            {user.nickname && user.nickname !== getDisplayName() && (
+                                <p className="text-muted-foreground text-sm">@{user.nickname}</p>
+                            )}
                         </div>
                     </div>
 
@@ -100,6 +125,19 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
                     )}
 
                     <div className="mt-6 flex justify-end space-x-2">
+                        {!isOwnProfile && (
+                            <button
+                                onClick={handleFollowToggle}
+                                disabled={followLoading}
+                                className={`px-4 py-2 rounded-lg transition-colors font-medium ${
+                                    isFollowing
+                                        ? 'bg-muted text-foreground border border-border hover:bg-muted/80'
+                                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                                {followLoading ? '처리 중...' : isFollowing ? '팔로잉' : '팔로우'}
+                            </button>
+                        )}
                         {!isOwnProfile && onSendMessage && (
                             <button
                                 onClick={() => {

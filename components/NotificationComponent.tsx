@@ -5,7 +5,11 @@ import type { Notification } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-const NotificationComponent: React.FC = () => {
+interface NotificationComponentProps {
+    onNavigate?: (targetType: 'post' | 'comment' | 'forum', targetId: string) => void;
+}
+
+const NotificationComponent: React.FC<NotificationComponentProps> = ({ onNavigate }) => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -113,7 +117,12 @@ const NotificationComponent: React.FC = () => {
             <div className="max-w-4xl mx-auto">
                 <div className="mb-6">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-2xl font-bold text-foreground mb-2">🔔 알림</h1>
+                        <h1 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+                            <svg className="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            알림
+                        </h1>
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllAsRead}
@@ -138,50 +147,63 @@ const NotificationComponent: React.FC = () => {
                     </div>
                 ) : (
                     <div className="space-y-3">
-                        {notifications.map((notification) => (
-                            <div
-                                key={notification.id}
-                                className={`bg-surface p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''
-                                    }`}
-                            >
-                                <div className="flex items-start space-x-3">
-                                    <div className="flex-shrink-0 mt-1">
-                                        {getNotificationIcon(notification.type)}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className={`font-semibold ${!notification.isRead ? 'text-foreground' : 'text-surface-foreground'
-                                                }`}>
-                                                {notification.title}
-                                            </h3>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-muted-foreground text-sm">
-                                                    {formatNotificationTime(notification.createdAt)}
-                                                </span>
-                                                {!notification.isRead && (
-                                                    <button
-                                                        onClick={() => handleMarkAsRead(notification.id)}
-                                                        className="text-primary hover:text-primary-700 text-sm"
-                                                    >
-                                                        읽음
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() => handleDeleteNotification(notification.id)}
-                                                    className="text-muted-foreground hover:text-red-400 text-sm"
-                                                >
-                                                    삭제
-                                                </button>
-                                            </div>
+                        {notifications.map((notification) => {
+                            const targetType = notification.metadata?.postId
+                                ? 'post'
+                                : notification.metadata?.commentId
+                                ? 'comment'
+                                : notification.metadata?.forumId
+                                ? 'forum'
+                                : null;
+                            const targetId = notification.metadata?.postId
+                                || notification.metadata?.commentId
+                                || notification.metadata?.forumId
+                                || null;
+                            const isClickable = !!onNavigate && !!targetType && !!targetId;
+
+                            return (
+                                <div
+                                    key={notification.id}
+                                    onClick={isClickable ? () => onNavigate!(targetType as 'post' | 'comment' | 'forum', targetId!) : undefined}
+                                    className={`bg-surface p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''} ${isClickable ? 'cursor-pointer hover:bg-muted' : ''}`}
+                                >
+                                    <div className="flex items-start space-x-3">
+                                        <div className="flex-shrink-0 mt-1">
+                                            {getNotificationIcon(notification.type)}
                                         </div>
-                                        <p className={`mt-1 ${!notification.isRead ? 'text-surface-foreground' : 'text-muted-foreground'
-                                            }`}>
-                                            {notification.content}
-                                        </p>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className={`font-semibold ${!notification.isRead ? 'text-foreground' : 'text-surface-foreground'}`}>
+                                                    {notification.title}
+                                                </h3>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-muted-foreground text-sm">
+                                                        {formatNotificationTime(notification.createdAt)}
+                                                    </span>
+                                                    {!notification.isRead && (
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }}
+                                                            className="text-primary hover:text-primary-700 text-sm min-h-[40px] px-3"
+                                                        >
+                                                            읽음
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); handleDeleteNotification(notification.id); }}
+                                                        className="text-muted-foreground hover:text-red-400 text-sm min-h-[40px] px-3"
+                                                    >
+                                                        삭제
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <p className={`mt-1 ${!notification.isRead ? 'text-surface-foreground' : 'text-muted-foreground'}`}>
+                                                {notification.content}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>

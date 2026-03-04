@@ -21,7 +21,7 @@ const CreateForumModal: React.FC<CreateForumModalProps> = ({ book, onClose, onCr
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
       <div className="bg-surface rounded-xl shadow-xl w-full max-w-sm sm:max-w-md max-h-[90vh] overflow-y-auto">
         <div className="p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-medium leading-6 text-foreground text-center mb-2">살롱을 만드시겠습니까?</h3>
+          <h3 className="text-base sm:text-lg font-medium leading-6 text-foreground text-center mb-2">새 살롱 만들기</h3>
           <p className="text-center text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">이 책에 대한 살롱이 없습니다. 새로운 살롱을 만드세요.</p>
           <BookInfo book={book} />
 

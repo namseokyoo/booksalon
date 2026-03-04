@@ -519,7 +519,14 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                         {communityResults.posts.map(post => (
                                             <div
                                                 key={post.id}
-                                                className="p-3 border border-border rounded-lg bg-muted"
+                                                className="p-3 border border-border rounded-lg bg-muted cursor-pointer hover:border-primary-300 hover:shadow-sm transition-all"
+                                                onClick={() => {
+                                                    const forum = communityResults.forums.find(f => f.isbn === post.forumIsbn);
+                                                    if (forum) {
+                                                        onSelectForum(forum);
+                                                        onClose();
+                                                    }
+                                                }}
                                             >
                                                 <p className="text-sm font-semibold text-foreground truncate">
                                                     <HighlightText text={post.title} highlight={searchedTerm} />
@@ -546,7 +553,14 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                         {communityResults.comments.map(comment => (
                                             <div
                                                 key={comment.id}
-                                                className="p-3 border border-border rounded-lg bg-muted"
+                                                className="p-3 border border-border rounded-lg bg-muted cursor-pointer hover:border-primary-300 hover:shadow-sm transition-all"
+                                                onClick={() => {
+                                                    const forum = communityResults.forums.find(f => f.isbn === comment.forumIsbn);
+                                                    if (forum) {
+                                                        onSelectForum(forum);
+                                                        onClose();
+                                                    }
+                                                }}
                                             >
                                                 <p className="text-xs text-muted-foreground line-clamp-2">
                                                     <HighlightText text={comment.content} highlight={searchedTerm} />
@@ -568,7 +582,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                 communityResults.comments.length === 0 && (
                                     <div className="flex flex-col items-center py-8">
                                         <SearchIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
-                                        <p className="text-center text-muted-foreground">아직 이 책에 대한 이야기는 도착하지 않았네요.</p>
+                                        <p className="text-center text-muted-foreground">검색 결과가 없습니다.</p>
                                     </div>
                                 )}
                             {!searchedTerm && (

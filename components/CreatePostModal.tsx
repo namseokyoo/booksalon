@@ -32,8 +32,8 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ onClose, onSubmit, is
         <div className="p-4 sm:p-6">
           <h3 className="text-base sm:text-lg font-medium leading-6 text-foreground mb-3 sm:mb-4">새로운 글 작성</h3>
           <div>
-            <label htmlFor="post-title" className="sr-only">
-              Title
+            <label htmlFor="post-title" className="block text-sm font-medium text-surface-foreground mb-1">
+              제목
             </label>
             <input
               id="post-title"
@@ -48,16 +48,15 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ onClose, onSubmit, is
             />
           </div>
           <div className="mt-3 sm:mt-4">
-            <label htmlFor="post-content" className="sr-only">
-              Content
+            <label htmlFor="post-content" className="block text-sm font-medium text-surface-foreground mb-1">
+              내용
             </label>
             <textarea
               id="post-content"
               name="content"
-              rows={6}
               required
               disabled={isSubmitting}
-              className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary focus:z-10 text-sm resize-none disabled:bg-muted disabled:cursor-not-allowed"
+              className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary focus:z-10 text-sm resize-y min-h-[150px] disabled:bg-muted disabled:cursor-not-allowed"
               placeholder="내용을 입력하세요..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
