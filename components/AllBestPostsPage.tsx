@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabaseAnon } from '../lib/supabase';
 import { ArrowLeftIcon } from './icons';
 
@@ -14,6 +14,7 @@ interface BestPost {
   comment_count: number;
   view_count: number;
   score: number;
+  created_at: string;
 }
 
 type SortType = 'popular' | 'recent' | 'likes' | 'comments';
@@ -30,97 +31,149 @@ interface AllBestPostsPageProps {
   onSelectForumWithPost: (forumIsbn: string, postId: string) => void;
 }
 
+function formatRelativeTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 60) return `${min}분 전`;
+  const hour = Math.floor(min / 60);
+  if (hour < 24) return `${hour}시간 전`;
+  const day = Math.floor(hour / 24);
+  if (day < 7) return `${day}일 전`;
+  return new Date(dateStr).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+}
+
+const PAGE_SIZE = 20;
+
 const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectForumWithPost }) => {
   const [posts, setPosts] = useState<BestPost[]>([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortType>('popular');
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const loadBestPosts = async () => {
-      try {
-        setIsLoading(true);
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const loadPage = useCallback(async (pageIndex: number, currentSortBy: SortType) => {
+    if (pageIndex === 0) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
 
-        const { data, error: postsError } = await supabaseAnon
-          .from('posts')
-          .select('id, title, author_id, forum_isbn, like_count, comment_count, view_count, created_at')
-          .gte('created_at', thirtyDaysAgo.toISOString())
-          .order('like_count', { ascending: false })
-          .limit(100);
+    try {
+      const from = pageIndex * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
 
-        if (postsError || !data) {
-          setError('인기 게시물을 불러오지 못했습니다.');
-          return;
-        }
+      let query = supabaseAnon
+        .from('posts')
+        .select('id, title, author_id, forum_isbn, like_count, comment_count, view_count, created_at')
+        .range(from, to);
 
-        const scored = data
-          .map(p => ({
-            ...p,
-            like_count: p.like_count || 0,
-            comment_count: p.comment_count || 0,
-            view_count: p.view_count || 0,
-            score: (p.like_count || 0) * 2 + (p.comment_count || 0) * 1.5 + (p.view_count || 0) * 0.1,
-          }))
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 50);
-
-        const authorIds = [...new Set(scored.map(p => p.author_id))];
-        const { data: usersData } = await supabaseAnon
-          .from('users')
-          .select('id, display_name, nickname')
-          .in('id', authorIds);
-
-        const userMap = new Map<string, string>();
-        usersData?.forEach((u: { id: string; display_name: string | null; nickname: string | null }) => {
-          userMap.set(u.id, u.nickname || u.display_name || '익명');
-        });
-
-        const forumIsbns = [...new Set(scored.map(p => p.forum_isbn))];
-        const { data: booksData } = await supabaseAnon
-          .from('books')
-          .select('isbn, title')
-          .in('isbn', forumIsbns);
-
-        const bookMap = new Map<string, string>();
-        booksData?.forEach((b: { isbn: string; title: string }) => {
-          bookMap.set(b.isbn, b.title);
-        });
-
-        const result: BestPost[] = scored.map(p => ({
-          id: p.id,
-          title: p.title,
-          author_id: p.author_id,
-          author_name: userMap.get(p.author_id) || '익명',
-          forum_isbn: p.forum_isbn,
-          book_title: bookMap.get(p.forum_isbn) || '',
-          like_count: p.like_count,
-          comment_count: p.comment_count,
-          view_count: p.view_count,
-          score: p.score,
-        }));
-
-        setPosts(result);
-      } catch (err) {
-        console.error('인기 게시물 전체 로드 실패:', err);
-        setError('인기 게시물을 불러오지 못했습니다.');
-      } finally {
-        setIsLoading(false);
+      if (currentSortBy === 'recent') {
+        query = query.order('created_at', { ascending: false });
+      } else if (currentSortBy === 'comments') {
+        query = query.order('comment_count', { ascending: false });
+      } else {
+        // popular, likes 모두 like_count 기준
+        query = query.order('like_count', { ascending: false });
       }
-    };
 
-    loadBestPosts();
+      const { data, error: postsError } = await query;
+
+      if (postsError || !data) {
+        if (pageIndex === 0) setError('인기 게시물을 불러오지 못했습니다.');
+        return;
+      }
+
+      if (data.length < PAGE_SIZE) {
+        setHasMore(false);
+      }
+
+      if (data.length === 0) {
+        return;
+      }
+
+      const normalized = data.map(p => ({
+        ...p,
+        like_count: p.like_count || 0,
+        comment_count: p.comment_count || 0,
+        view_count: p.view_count || 0,
+      }));
+
+      const authorIds = [...new Set(normalized.map(p => p.author_id))];
+      const { data: usersData } = await supabaseAnon
+        .from('users')
+        .select('id, display_name, nickname')
+        .in('id', authorIds);
+
+      const userMap = new Map<string, string>();
+      usersData?.forEach((u: { id: string; display_name: string | null; nickname: string | null }) => {
+        userMap.set(u.id, u.nickname || u.display_name || '익명');
+      });
+
+      const forumIsbns = [...new Set(normalized.map(p => p.forum_isbn))];
+      const { data: booksData } = await supabaseAnon
+        .from('books')
+        .select('isbn, title')
+        .in('isbn', forumIsbns);
+
+      const bookMap = new Map<string, string>();
+      booksData?.forEach((b: { isbn: string; title: string }) => {
+        bookMap.set(b.isbn, b.title);
+      });
+
+      const result: BestPost[] = normalized.map(p => ({
+        id: p.id,
+        title: p.title,
+        author_id: p.author_id,
+        author_name: userMap.get(p.author_id) || '익명',
+        forum_isbn: p.forum_isbn,
+        book_title: bookMap.get(p.forum_isbn) || '',
+        like_count: p.like_count,
+        comment_count: p.comment_count,
+        view_count: p.view_count,
+        score: p.like_count * 2 + p.comment_count * 1.5 + p.view_count * 0.1,
+        created_at: p.created_at,
+      }));
+
+      setPosts(prev => pageIndex === 0 ? result : [...prev, ...result]);
+    } catch (err) {
+      console.error('인기 게시물 전체 로드 실패:', err);
+      if (pageIndex === 0) setError('인기 게시물을 불러오지 못했습니다.');
+    } finally {
+      if (pageIndex === 0) {
+        setIsLoading(false);
+      } else {
+        setIsLoadingMore(false);
+      }
+    }
   }, []);
 
-  const sortedPosts = useMemo(() => {
-    const arr = [...posts];
-    if (sortBy === 'popular')  return arr.sort((a, b) => b.score - a.score);
-    if (sortBy === 'recent')   return arr.sort((a, b) => a.id < b.id ? 1 : -1);
-    if (sortBy === 'likes')    return arr.sort((a, b) => b.like_count - a.like_count);
-    if (sortBy === 'comments') return arr.sort((a, b) => b.comment_count - a.comment_count);
-    return arr;
-  }, [posts, sortBy]);
+  // sortBy 변경 시 리셋
+  useEffect(() => {
+    setPosts([]);
+    setPage(0);
+    setHasMore(true);
+    setError(null);
+  }, [sortBy]);
+
+  // 페이지 변경 시 fetch
+  useEffect(() => {
+    loadPage(page, sortBy);
+  }, [page, sortBy, loadPage]);
+
+  // IntersectionObserver
+  useEffect(() => {
+    if (!sentinelRef.current || !hasMore) return;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !isLoadingMore) {
+        setPage(prev => prev + 1);
+      }
+    }, { threshold: 0.5 });
+    observer.observe(sentinelRef.current);
+    return () => observer.disconnect();
+  }, [hasMore, isLoadingMore]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
@@ -157,31 +210,44 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
         <p className="text-center text-sm text-muted-foreground py-8">{error}</p>
       )}
 
-      {!isLoading && !error && sortedPosts.length === 0 && (
+      {!isLoading && !error && posts.length === 0 && (
         <p className="text-center text-sm text-muted-foreground py-8">게시물이 없습니다.</p>
       )}
 
-      {!isLoading && sortedPosts.length > 0 && (
+      {!isLoading && posts.length > 0 && (
         <div className="space-y-2">
-          {sortedPosts.map((post) => (
+          {posts.map((post) => (
             <div
               key={post.id}
               onClick={() => onSelectForumWithPost(post.forum_isbn, post.id)}
-              className="bg-surface rounded-xl shadow-sm border border-border py-2 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200 flex items-center gap-3"
+              className="bg-surface rounded-xl shadow-sm border border-border py-2.5 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200"
             >
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {post.book_title} · {post.author_name}
-                </p>
-              </div>
-              <div className="flex-shrink-0 flex gap-2 text-xs text-muted-foreground">
+              <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                {post.book_title} · {formatRelativeTime(post.created_at)}
+              </p>
+              <div className="flex gap-2 text-xs text-muted-foreground mt-1.5">
                 <span aria-label={`좋아요 ${post.like_count}개`}>❤️ {post.like_count}</span>
                 <span aria-label={`댓글 ${post.comment_count}개`}>💬 {post.comment_count}</span>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {isLoadingMore && (
+        <div className="flex justify-center items-center py-4">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+        </div>
+      )}
+
+      {/* 무한 스크롤 sentinel */}
+      {hasMore && !isLoading && (
+        <div ref={sentinelRef} className="h-4" />
+      )}
+
+      {!hasMore && posts.length > 0 && (
+        <p className="text-center text-xs text-muted-foreground py-4">모든 게시물을 불러왔습니다.</p>
       )}
     </div>
   );

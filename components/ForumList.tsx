@@ -31,6 +31,18 @@ interface BestPost {
   comment_count: number;
   view_count: number;
   score: number;
+  created_at: string;
+}
+
+function formatRelativeTime(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 60) return `${min}분 전`;
+  const hour = Math.floor(min / 60);
+  if (hour < 24) return `${hour}시간 전`;
+  const day = Math.floor(hour / 24);
+  if (day < 7) return `${day}일 전`;
+  return new Date(dateStr).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
 }
 
 interface ForumListProps {
@@ -200,6 +212,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
           comment_count: p.comment_count,
           view_count: p.view_count,
           score: p.score,
+          created_at: p.created_at,
         }));
 
         setBestPosts(bestPostsResult);
@@ -841,18 +854,18 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               더보기 →
             </button>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-2">
             {bestPosts.slice(0, visibleBestPostsCount).map((post) => (
               <div
                 key={post.id}
                 onClick={() => handleBestPostClick(post)}
-                className="bg-surface rounded-xl shadow-sm border border-border py-2 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200 flex items-center gap-3"
+                className="bg-surface rounded-xl shadow-sm border border-border py-2.5 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200"
               >
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5 truncate">{post.book_title}</p>
-                </div>
-                <div className="flex-shrink-0 flex gap-2 text-xs text-muted-foreground">
+                <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                  {post.book_title} · {formatRelativeTime(post.created_at)}
+                </p>
+                <div className="flex gap-2 text-xs text-muted-foreground mt-1.5">
                   <span aria-label={`좋아요 ${post.like_count}개`}>❤️ {post.like_count}</span>
                   <span aria-label={`댓글 ${post.comment_count}개`}>💬 {post.comment_count}</span>
                 </div>
