@@ -8,7 +8,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { UserService, PostImageService, SocialService, ViewCountService } from '../lib/services';
+import { UserService, PostImageService, SocialService, ViewCountService, CommentService } from '../lib/services';
+import type { CommentWithReplies } from '../lib/services';
 import { NotificationService } from '../lib/services/notificationService';
 import { LikeIcon } from './icons/LikeIcon';
 
@@ -23,7 +24,7 @@ interface PostDetailProps {
 
 const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick, onSendMessage, onShowToast }) => {
     const [newComment, setNewComment] = useState('');
-    const [comments, setComments] = useState<Comment[]>([]);
+    const [comments, setComments] = useState<CommentWithReplies[]>([]);
     const [confirmDeletePost, setConfirmDeletePost] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikeCount] = useState(post.likeCount || 0);
@@ -87,76 +88,17 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     useEffect(() => {
         const loadComments = async () => {
-            const { data: commentsData, error } = await supabase
-                .from('comments')
-                .select(`
-                    id,
-                    content,
-                    author_id,
-                    created_at,
-                    updated_at,
-                    like_count
-                `)
-                .eq('post_id', post.id)
-                .order('created_at', { ascending: true });
-
-            if (error) {
+            try {
+                const commentTree = await CommentService.getCommentsByPostId(post.id);
+                setComments(commentTree);
+            } catch (error) {
                 console.error('댓글 로드 실패:', error);
-                return;
             }
-
-            // 작성자 정보 조회
-            const authorIds = [...new Set((commentsData || []).map((c: { author_id: string }) => c.author_id))];
-            const { data: authors } = await supabase
-                .from('users')
-                .select('id, auth_id, email, display_name, nickname')
-                .in('id', authorIds);
-
-            const authorMap = new Map((authors || []).map((a: { id: string; auth_id: string; email: string; display_name: string | null; nickname: string | null }) => [a.id, a]));
-
-            // 좋아요 조회
-            const commentIds = (commentsData || []).map((c: { id: string }) => c.id);
-            const { data: commentLikes } = await supabase
-                .from('comment_likes')
-                .select('comment_id, user_id')
-                .in('comment_id', commentIds);
-
-            const likesByComment = new Map<string, string[]>();
-            commentLikes?.forEach((cl: { comment_id: string; user_id: string }) => {
-                const likes = likesByComment.get(cl.comment_id) || [];
-                likes.push(cl.user_id);
-                likesByComment.set(cl.comment_id, likes);
-            });
-
-            const comments: Comment[] = (commentsData || []).map((comment: {
-                id: string;
-                content: string;
-                author_id: string;
-                created_at: string;
-                updated_at: string | null;
-                like_count: number;
-            }) => {
-                const author = authorMap.get(comment.author_id);
-                return {
-                    id: comment.id,
-                    content: comment.content,
-                    author: {
-                        uid: author?.auth_id || comment.author_id,
-                        email: author?.email || '',
-                    },
-                    createdAt: comment.created_at ? new Date(comment.created_at) : new Date(),
-                    updatedAt: comment.updated_at ? new Date(comment.updated_at) : undefined,
-                    likeCount: comment.like_count,
-                    likes: likesByComment.get(comment.id) || [],
-                };
-            });
-
-            setComments(comments);
         };
 
         loadComments();
 
-        // 실시간 구독
+        // 실시간 구독 (기존 유지: post_id 필터로 모든 댓글/대댓글 변경 감지)
         const subscription = supabase
             .channel(`comments_${post.id}`)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'comments', filter: `post_id=eq.${post.id}` }, () => {
@@ -260,9 +202,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         );
     };
 
-    const handleAddComment = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!currentUser || newComment.trim() === '') return;
+    const handleAddCommentWithContent = async (content: string, parentId?: string | null) => {
+        if (!currentUser || content.trim() === '') return;
 
         try {
             // 사용자 ID 조회
@@ -278,72 +219,105 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
             const typedUserData = userData as { id: string };
 
-            // 댓글 생성
-            const { data: insertedComment, error: commentError } = await supabase
-                .from('comments')
-                .insert({
-                    content: newComment,
-                    author_id: typedUserData.id,
-                    post_id: post.id,
-                    like_count: 0,
-                })
-                .select('id')
-                .single();
+            // 댓글 또는 대댓글 생성 (CommentService 사용)
+            const insertedComment = await CommentService.createComment({
+                postId: post.id,
+                authorId: typedUserData.id,
+                content,
+                parentId: parentId || null,
+            });
 
-            if (commentError) {
-                throw commentError;
+            // 최상위 댓글일 때만 게시물 댓글 수 업데이트
+            if (!parentId) {
+                const { data: postData } = await supabase
+                    .from('posts')
+                    .select('comment_count')
+                    .eq('id', post.id)
+                    .single();
+
+                await supabase
+                    .from('posts')
+                    .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 })
+                    .eq('id', post.id);
+
+                // 사용자 통계 업데이트
+                await UserService.incrementStat(currentUser.uid, 'comment_count');
             }
 
-            // 게시물의 댓글 수 업데이트
-            const { data: postData } = await supabase
-                .from('posts')
-                .select('comment_count')
-                .eq('id', post.id)
-                .single();
-
-            await supabase
-                .from('posts')
-                .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 })
-                .eq('id', post.id);
-
-            // 사용자 통계 업데이트
-            await UserService.incrementStat(currentUser.uid, 'comment_count');
-
             // 댓글 알림 트리거 (자기 자신 제외)
-            if (authorProfile?.id && authorProfile.id !== typedUserData.id && insertedComment) {
+            // 대댓글인 경우: 원댓글 작성자에게 알림
+            // 최상위 댓글인 경우: 게시물 작성자에게 알림
+            if (parentId) {
+                // 원댓글 작성자 찾기
+                const parentComment = comments.find(c => c.id === parentId);
+                if (parentComment && parentComment.author.uid !== currentUser.uid) {
+                    const { data: parentAuthorData } = await supabase
+                        .from('users')
+                        .select('id')
+                        .eq('auth_id', parentComment.author.uid)
+                        .single();
+                    if (parentAuthorData) {
+                        const senderProfile = await UserService.getUserProfileById(typedUserData.id);
+                        const senderName = senderProfile?.nickname || senderProfile?.displayName || senderProfile?.email?.split('@')[0] || '누군가';
+                        NotificationService.createCommentNotification(
+                            (parentAuthorData as { id: string }).id,
+                            typedUserData.id,
+                            senderName,
+                            post.title,
+                            insertedComment.id,
+                            post.id,
+                            isbn
+                        ).catch(console.error);
+                    }
+                }
+            } else if (authorProfile?.id && authorProfile.id !== typedUserData.id) {
                 const senderProfile = await UserService.getUserProfileById(typedUserData.id);
                 const senderName = senderProfile?.nickname || senderProfile?.displayName || senderProfile?.email?.split('@')[0] || '누군가';
-                const insertedCommentId = (insertedComment as { id: string }).id;
                 NotificationService.createCommentNotification(
                     authorProfile.id,
                     typedUserData.id,
                     senderName,
                     post.title,
-                    insertedCommentId,
+                    insertedComment.id,
                     post.id,
                     isbn
                 ).catch(console.error);
             }
 
-            // 로컬 댓글 목록 즉시 갱신 (Realtime 의존하지 않음)
-            const newCommentObj: Comment = {
-                id: crypto.randomUUID(),
-                content: newComment,
-                author: {
-                    uid: currentUser.uid,
-                    email: currentUser.email || '',
-                },
-                createdAt: new Date(),
-                likeCount: 0,
-                likes: [],
-            };
-            setComments(prev => [...prev, newCommentObj]);
-
-            setNewComment('');
-            setShowMentionList(false);
+            // Realtime 구독이 loadComments를 재호출하므로 로컬 즉시 갱신은 생략.
+            // 단, Realtime 지연을 커버하기 위해 낙관적 업데이트 적용.
+            if (!parentId) {
+                const newCommentObj: CommentWithReplies = {
+                    id: insertedComment.id,
+                    postId: post.id,
+                    content,
+                    author: {
+                        uid: currentUser.uid,
+                        email: currentUser.email || '',
+                    },
+                    parentId: null,
+                    createdAt: new Date(),
+                    likeCount: 0,
+                    likes: [],
+                    replies: [],
+                };
+                setComments(prev => [...prev, newCommentObj]);
+            }
         } catch (error) {
             console.error('댓글 작성 실패:', error);
         }
+    };
+
+    const handleReply = async (parentId: string, content: string) => {
+        await handleAddCommentWithContent(content, parentId);
+    };
+
+    const handleAddComment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!currentUser || newComment.trim() === '') return;
+        await handleAddCommentWithContent(newComment);
+        setNewComment('');
+        setShowMentionList(false);
     };
 
     const handleEditPost = async () => {
@@ -597,10 +571,13 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                             {comments.map(comment => (
                                 <CommentItem
                                     key={comment.id}
-                                    comment={comment}
+                                    comment={comment as unknown as Comment}
                                     postId={post.id}
                                     isbn={isbn}
                                     onUserClick={handleUserClick}
+                                    replies={comment.replies ?? []}
+                                    onReply={handleReply}
+                                    currentUserId={currentUser?.uid}
                                 />
                             ))}
                         </div>

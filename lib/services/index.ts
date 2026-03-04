@@ -78,3 +78,10 @@ export {
   type ReadingStatus,
   type ReadingStats,
 } from './readingLogService'
+
+// Comment Service (BL-117: 대댓글 서비스 레이어)
+export {
+  CommentService,
+  type CommentWithReplies,
+  type CommentAuthor,
+} from './commentService'
