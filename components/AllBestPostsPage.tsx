@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabaseAnon } from '../lib/supabase';
 import { ArrowLeftIcon } from './icons';
 
@@ -16,6 +16,15 @@ interface BestPost {
   score: number;
 }
 
+type SortType = 'popular' | 'recent' | 'likes' | 'comments';
+
+const sortOptions: { value: SortType; label: string }[] = [
+  { value: 'popular',  label: '인기순' },
+  { value: 'recent',   label: '최신순' },
+  { value: 'likes',    label: '좋아요순' },
+  { value: 'comments', label: '댓글많은순' },
+];
+
 interface AllBestPostsPageProps {
   onBack: () => void;
   onSelectForumWithPost: (forumIsbn: string, postId: string) => void;
@@ -25,6 +34,7 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
   const [posts, setPosts] = useState<BestPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortType>('popular');
 
   useEffect(() => {
     const loadBestPosts = async () => {
@@ -103,9 +113,18 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
     loadBestPosts();
   }, []);
 
+  const sortedPosts = useMemo(() => {
+    const arr = [...posts];
+    if (sortBy === 'popular')  return arr.sort((a, b) => b.score - a.score);
+    if (sortBy === 'recent')   return arr.sort((a, b) => a.id < b.id ? 1 : -1);
+    if (sortBy === 'likes')    return arr.sort((a, b) => b.like_count - a.like_count);
+    if (sortBy === 'comments') return arr.sort((a, b) => b.comment_count - a.comment_count);
+    return arr;
+  }, [posts, sortBy]);
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         <button
           type="button"
           onClick={onBack}
@@ -114,7 +133,18 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
           <ArrowLeftIcon className="w-4 h-4" />
           뒤로
         </button>
-        <h1 className="font-serif text-xl font-semibold text-foreground">인기 게시물</h1>
+      </div>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="font-serif text-xl font-bold text-foreground">모든 게시물</h1>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as SortType)}
+          className="text-sm border border-border rounded-lg px-2 py-1.5 bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          {sortOptions.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
       </div>
 
       {isLoading && (
@@ -127,13 +157,13 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
         <p className="text-center text-sm text-muted-foreground py-8">{error}</p>
       )}
 
-      {!isLoading && !error && posts.length === 0 && (
-        <p className="text-center text-sm text-muted-foreground py-8">인기 게시물이 없습니다.</p>
+      {!isLoading && !error && sortedPosts.length === 0 && (
+        <p className="text-center text-sm text-muted-foreground py-8">게시물이 없습니다.</p>
       )}
 
-      {!isLoading && posts.length > 0 && (
+      {!isLoading && sortedPosts.length > 0 && (
         <div className="space-y-2">
-          {posts.map((post) => (
+          {sortedPosts.map((post) => (
             <div
               key={post.id}
               onClick={() => onSelectForumWithPost(post.forum_isbn, post.id)}
@@ -141,7 +171,9 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
             >
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">{post.book_title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                  {post.book_title} · {post.author_name}
+                </p>
               </div>
               <div className="flex-shrink-0 flex gap-2 text-xs text-muted-foreground">
                 <span aria-label={`좋아요 ${post.like_count}개`}>❤️ {post.like_count}</span>

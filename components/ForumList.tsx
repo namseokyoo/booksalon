@@ -1173,7 +1173,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                       </div>
                     )}
                   </div>
-                  <span className="flex-shrink-0 font-bold text-base text-foreground" aria-label="게시물 수">
+                  <span className="flex-shrink-0 font-bold text-sm text-foreground" aria-label="게시물 수">
                     {forum.postCount ?? 0}
                   </span>
                   <button
