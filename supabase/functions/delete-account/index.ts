@@ -20,15 +20,15 @@ Deno.serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
-    const jwt = authHeader.replace('Bearer ', '')
-
-    // 2. anon client로 JWT 검증 → auth_id 추출 (본인 확인)
+    // 2. Authorization 헤더를 전달한 anon client로 JWT 검증 → auth_id 추출 (본인 확인)
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-    const supabaseAnon = createClient(supabaseUrl, anonKey)
-    const { data: { user }, error: userError } = await supabaseAnon.auth.getUser(jwt)
+    const supabaseAnon = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } }
+    })
+    const { data: { user }, error: userError } = await supabaseAnon.auth.getUser()
 
     if (userError || !user) {
       return new Response(
