@@ -1173,12 +1173,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                       </div>
                     )}
                   </div>
-                  <div className="flex-shrink-0 flex items-center gap-1 text-xs text-muted-foreground">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                    <span aria-label="게시물 수">{forum.postCount ? `${forum.postCount}` : '0'}</span>
-                  </div>
+                  <span className="flex-shrink-0 font-bold text-base text-foreground" aria-label="게시물 수">
+                    {forum.postCount ?? 0}
+                  </span>
                   <button
                     onClick={(e) => handleToggleBookmark(forum.isbn, e)}
                     className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
