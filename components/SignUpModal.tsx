@@ -105,8 +105,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
       await loginWithGoogle();
       onClose();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : '소셜 로그인에 실패했습니다.';
-      setError(errorMessage);
+      setError('구글 가입 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
       console.error(err);
     }
     setSocialLoading(false);
@@ -119,8 +118,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
       await loginWithKakao();
       onClose();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : '카카오 로그인에 실패했습니다.';
-      setError(errorMessage);
+      setError('카카오 가입 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.');
       console.error(err);
     }
     setSocialLoading(false);
@@ -199,6 +197,24 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
           <div className="space-y-2">
             <button
               type="button"
+              onClick={handleKakaoSignUp}
+              disabled={socialLoading || loading}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-yellow-400 rounded-lg bg-yellow-400 text-black hover:bg-yellow-500 disabled:bg-yellow-300 disabled:opacity-50 transition-colors font-medium"
+            >
+              {socialLoading ? (
+                <span>가입 중...</span>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.373 0 0 4.813 0 10.759c0 4.05 2.709 7.51 6.452 9.258-.098-.689-.187-1.745.04-2.494.17-.73 1.108-4.754 1.108-4.754S6.68 12.27 6.68 11.36c0-.91.902-1.585 2.017-1.585s2.594 1.096 3.512 2.528c.69 1.23.94 1.89 1.506 1.89s2.198-.66 2.198-1.89c0-1.89-.94-3.688-2.198-4.828-1.159-.94-2.274-1.584-3.512-2.528C8.435.772 9.107.424 9.918.424c1.694 0 2.793 1.23 2.793 2.828 0 1.585-.902 3.688-2.274 5.31C9.11 10.722 10.32 12.27 12 12.27s4.17-1.46 4.898-1.89c.729-.43 1.69-1.08 1.17-1.69-.52-.61-1.69-1.08-2.793-1.585-1.104-.505-2.117-.94-2.793-1.584-.676-.643-1.108-1.084-1.17-1.585-.062-.5.104-.61.624-.61.52 0 1.69.104 2.274.61.584.505.314.94-.21 1.584-.524.643-.524 1.084.104 1.69.628.605 1.69 1.23 2.794 1.89 1.104.66 2.198 1.23 3.2 1.89 1.002.66 1.69 1.08 1.69 1.89 0 .81-.688 1.585-1.576 1.585-.888 0-1.576-.735-1.576-1.585z" fill="currentColor" />
+                  </svg>
+                  <span>카카오로 가입</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
               onClick={handleGoogleSignUp}
               disabled={socialLoading || loading}
               className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-border rounded-lg bg-surface text-surface-foreground hover:bg-muted disabled:bg-muted disabled:opacity-50 transition-colors font-medium"
@@ -214,24 +230,6 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                   </svg>
                   <span>구글로 가입</span>
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleKakaoSignUp}
-              disabled={socialLoading || loading}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-yellow-400 rounded-lg bg-yellow-400 text-black hover:bg-yellow-500 disabled:bg-yellow-300 disabled:opacity-50 transition-colors font-medium"
-            >
-              {socialLoading ? (
-                <span>가입 중...</span>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 0C5.373 0 0 4.813 0 10.759c0 4.05 2.709 7.51 6.452 9.258-.098-.689-.187-1.745.04-2.494.17-.73 1.108-4.754 1.108-4.754S6.68 12.27 6.68 11.36c0-.91.902-1.585 2.017-1.585s2.594 1.096 3.512 2.528c.69 1.23.94 1.89 1.506 1.89s2.198-.66 2.198-1.89c0-1.89-.94-3.688-2.198-4.828-1.159-.94-2.274-1.584-3.512-2.528C8.435.772 9.107.424 9.918.424c1.694 0 2.793 1.23 2.793 2.828 0 1.585-.902 3.688-2.274 5.31C9.11 10.722 10.32 12.27 12 12.27s4.17-1.46 4.898-1.89c.729-.43 1.69-1.08 1.17-1.69-.52-.61-1.69-1.08-2.793-1.585-1.104-.505-2.117-.94-2.793-1.584-.676-.643-1.108-1.084-1.17-1.585-.062-.5.104-.61.624-.61.52 0 1.69.104 2.274.61.584.505.314.94-.21 1.584-.524.643-.524 1.084.104 1.69.628.605 1.69 1.23 2.794 1.89 1.104.66 2.198 1.23 3.2 1.89 1.002.66 1.69 1.08 1.69 1.89 0 .81-.688 1.585-1.576 1.585-.888 0-1.576-.735-1.576-1.585z" fill="currentColor" />
-                  </svg>
-                  <span>카카오로 가입</span>
                 </>
               )}
             </button>

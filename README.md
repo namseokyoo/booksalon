@@ -5,7 +5,7 @@
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/namseokyoo/booksalon_251025/releases)
 [![React](https://img.shields.io/badge/React-19.2.0-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![Firebase](https://img.shields.io/badge/Firebase-v12-orange.svg)](https://firebase.google.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-blue.svg)](https://supabase.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC.svg)](https://tailwindcss.com/)
 
 **현재 버전**: `0.1.0` (베타) | [변경사항 보기](./CHANGELOG.md) | [버전 관리 가이드](./VERSION.md)
@@ -36,10 +36,10 @@
 - **Tailwind CSS** - 유틸리티 우선 CSS 프레임워크
 
 ### Backend
-- **Firebase v12** - 최신 Firebase SDK
-- **Firestore** - 실시간 NoSQL 데이터베이스
-- **Firebase Authentication** - 사용자 인증
-- **Firebase Storage** - 파일 저장소
+- **Supabase** - PostgreSQL 기반 백엔드 플랫폼
+- **PostgreSQL** - 관계형 데이터베이스
+- **Supabase Authentication** - 사용자 인증 (이메일, Google, Kakao OAuth)
+- **Supabase Storage** - 파일 저장소
 
 ### External APIs
 - **카카오 도서 검색 API** - ISBN 및 제목 검색
@@ -50,7 +50,7 @@
 
 - Node.js 18.0.0 이상
 - npm 또는 yarn
-- Firebase 프로젝트
+- Supabase 프로젝트
 - 카카오 API 키
 
 ### 설치 및 실행
@@ -70,27 +70,23 @@
    ```bash
    cp .env.example .env.local
    ```
-   
+
    `.env.local` 파일에 실제 값들을 입력:
    ```env
-   # Firebase 설정 (Firebase 콘솔에서 확인)
-   VITE_FIREBASE_API_KEY=your_firebase_api_key
-   VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   VITE_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-   VITE_FIREBASE_APP_ID=your_app_id
-   VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-   
+   # Supabase 설정 (Supabase 프로젝트 설정에서 확인)
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+
    # 카카오 API 키 (카카오 개발자 센터에서 발급)
    VITE_KAKAO_API_KEY=your_kakao_api_key
    ```
 
-4. **Firebase 설정**
-   - Firebase 콘솔에서 프로젝트 생성
-   - Firestore, Authentication, Storage 활성화
-   - 프로젝트 설정에서 웹 앱 추가
-   - Firebase 설정 정보를 `.env.local`에 입력
+4. **Supabase 설정**
+   - Supabase 콘솔에서 프로젝트 생성
+   - PostgreSQL 데이터베이스 활성화
+   - Authentication (이메일, Google, Kakao OAuth) 활성화
+   - Storage 버킷 생성
+   - 프로젝트 설정에서 Supabase URL과 Anon Key를 `.env.local`에 입력
 
 5. **개발 서버 실행**
    ```bash
@@ -194,21 +190,19 @@ booksalon/
 
 ## 🚀 배포
 
-### Firebase 호스팅
+### Vercel 배포
 ```bash
-# Firebase CLI 설치
-npm install -g firebase-tools
+# Vercel CLI 설치
+npm install -g vercel
 
-# Firebase 로그인
-firebase login
+# 로그인
+vercel login
 
-# 프로젝트 초기화
-firebase init hosting
-
-# 빌드 및 배포
-npm run build
-firebase deploy
+# 배포
+vercel deploy --prod
 ```
+
+배포 후 Supabase 프로젝트의 CORS 설정에서 배포된 URL을 허용 목록에 추가합니다.
 
 ## 🤝 기여하기
 
@@ -236,7 +230,7 @@ firebase deploy
 ## 🙏 감사의 말
 
 - [React](https://reactjs.org/) - UI 라이브러리
-- [Firebase](https://firebase.google.com/) - 백엔드 서비스
+- [Supabase](https://supabase.com/) - 백엔드 서비스
 - [Tailwind CSS](https://tailwindcss.com/) - CSS 프레임워크
 - [카카오](https://developers.kakao.com/) - 도서 검색 API
 
