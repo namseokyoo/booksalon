@@ -65,14 +65,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
   const [forumsPage, setForumsPage] = useState(0);
   const [hasMoreForums, setHasMoreForums] = useState(true);
   const [isLoadingMoreForums, setIsLoadingMoreForums] = useState(false);
+  const [visibleForumsCount, setVisibleForumsCount] = useState(5);
+  const [visibleBestPostsCount, setVisibleBestPostsCount] = useState(5);
   const { currentUser, userProfile, loading: authLoading } = useAuth();
-
-  const sortOptions = [
-    { value: 'recent', label: '최신순' },
-    { value: 'popular', label: '인기순' },
-    { value: 'posts', label: '게시물순' },
-    { value: 'title', label: '제목순' },
-  ];
 
   const enrichForumsData = (
     forumsData: Array<{
@@ -708,13 +703,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
     });
   }, []);
 
-  const handleSortChange = useCallback((sortBy: FilterOptions['sortBy']) => {
-    setFilterOptions(prev => ({
-      ...prev,
-      sortBy,
-    }));
-  }, []);
-
   const handleResetFilters = useCallback(() => {
     setFilterOptions({});
   }, []);
@@ -746,36 +734,9 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
             책을 읽고 떠오른 질문을 남기면,<br />
             시간을 건너 다른 독자의 생각을 만나게 됩니다.
           </p>
-          {/* 통합 검색바 */}
-          <form onSubmit={handleSearch} className="mt-5 max-w-lg mx-auto">
-            <div className="flex rounded-full shadow-sm bg-surface/80 backdrop-blur-sm border border-border/40 overflow-hidden">
-              <input
-                type="text"
-                name="isbn-search"
-                id="isbn-search-hero"
-                className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 rounded-none border-0 bg-transparent text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
-                placeholder="읽은 책을 검색해보세요"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <button
-                type="submit"
-                className="inline-flex items-center flex-shrink-0 px-3 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
-                disabled={isLoading}
-                aria-label="책 검색"
-              >
-                {isLoading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                ) : (
-                  <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                )}
-              </button>
-            </div>
-            {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
-          </form>
           {/* 통합 검색 (SearchModal) 진입 */}
           {onSearchClick && (
-            <div className="mt-3 max-w-lg mx-auto">
+            <div className="mt-5 max-w-lg mx-auto">
               <button
                 type="button"
                 onClick={onSearchClick}
@@ -789,14 +750,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               </button>
             </div>
           )}
-          <button
-            type="button"
-            onClick={onLoginClick}
-            className="mt-5 inline-flex items-center gap-2 bg-cta text-cta-foreground font-medium rounded-full px-8 py-3 hover:brightness-110 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            지금 시작하기
-            <span aria-hidden="true">&rarr;</span>
-          </button>
         </section>
       ) : (
         /* 로그인 사용자: 검색바 + 통합 검색 진입 */
@@ -879,24 +832,36 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
       {bestPosts.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
         <section className="mb-6">
           <h2 className="font-serif text-lg font-semibold text-foreground mb-3">인기 게시물</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {bestPosts.map(post => (
+          <div className="space-y-2">
+            {bestPosts.slice(0, visibleBestPostsCount).map((post, index) => (
               <div
                 key={post.id}
                 onClick={() => handleBestPostClick(post)}
-                className="min-w-[250px] md:min-w-[300px] max-w-[280px] md:max-w-[320px] bg-surface rounded-xl shadow-sm border border-border p-4 flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
+                className="bg-surface rounded-xl shadow-sm border border-border p-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200 flex items-center gap-3"
               >
-                <h3 className="font-medium text-foreground text-sm line-clamp-2">{post.title}</h3>
-                <p className="text-xs text-muted-foreground mt-1 truncate">{post.book_title}</p>
-                <p className="text-xs text-muted-foreground mt-1 truncate">{post.author_name}</p>
-                <div className="flex gap-3 mt-2 text-xs text-muted-foreground">
+                <span className="flex-shrink-0 w-6 text-center text-sm font-bold text-primary-400">{index + 1}</span>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate">{post.book_title}</p>
+                </div>
+                <div className="flex-shrink-0 flex gap-2 text-xs text-muted-foreground">
                   <span aria-label={`좋아요 ${post.like_count}개`}>❤️ {post.like_count}</span>
                   <span aria-label={`댓글 ${post.comment_count}개`}>💬 {post.comment_count}</span>
-                  <span aria-label={`조회 ${post.view_count}회`}>👁 {post.view_count}</span>
                 </div>
               </div>
             ))}
           </div>
+          {visibleBestPostsCount < bestPosts.length && (
+            <div className="text-center mt-3">
+              <button
+                type="button"
+                onClick={() => setVisibleBestPostsCount(prev => prev + 5)}
+                className="px-5 py-2 text-sm text-primary hover:text-primary-700 font-medium border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors duration-200"
+              >
+                더보기
+              </button>
+            </div>
+          )}
         </section>
       )}
 
@@ -1160,20 +1125,11 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-serif text-lg font-semibold text-foreground">최근 개설된 살롱</h2>
-          <select
-            value={filterOptions.sortBy || 'recent'}
-            onChange={(e) => handleSortChange(e.target.value as FilterOptions['sortBy'])}
-            className="text-xs sm:text-sm border border-border rounded-lg px-2 py-1.5 bg-surface text-foreground focus:ring-2 focus:ring-ring focus:border-primary cursor-pointer"
-          >
-            {sortOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
         </div>
         <div className="space-y-2">
           {filteredForums.length > 0 ? (
             <>
-              {filteredForums.map(forum => (
+              {filteredForums.slice(0, visibleForumsCount).map(forum => (
                 <div
                   key={forum.isbn}
                   onClick={() => onSelectForum(forum)}
@@ -1200,15 +1156,6 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
-                    {forum.averageRating && forum.averageRating > 0 && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <StarRating value={forum.averageRating} readonly size="sm" allowHalf />
-                        <span className="text-xs text-amber-500 font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
-                        {forum.totalRatings && (
-                          <span className="text-xs text-muted-foreground">({forum.totalRatings})</span>
-                        )}
-                      </div>
-                    )}
                     {forum.tags && forum.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-1">
                         {forum.tags.slice(0, 3).map((tag, index) => (
@@ -1223,25 +1170,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                         )}
                       </div>
                     )}
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                      <span className="inline-flex items-center gap-1" aria-label="게시물 수">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                        {forum.postCount ? `${forum.postCount}` : '0'}
-                      </span>
-                      {forum.memberCount && (
-                        <span className="inline-flex items-center gap-1" aria-label="참여자 수">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                          {forum.memberCount}
-                        </span>
-                      )}
-                      {forum.postCount === 0 && (
-                        <span className="text-primary-600 font-medium">첫 토론을 시작해보세요</span>
-                      )}
-                    </div>
+                  </div>
+                  <div className="flex-shrink-0 flex items-center gap-1 text-xs text-muted-foreground">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <span aria-label="게시물 수">{forum.postCount ? `${forum.postCount}` : '0'}</span>
                   </div>
                   <button
                     onClick={(e) => handleToggleBookmark(forum.isbn, e)}
@@ -1255,10 +1189,16 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                   </button>
                 </div>
               ))}
-              {hasMoreForums && (
+              {(visibleForumsCount < filteredForums.length || hasMoreForums) && (
                 <div className="text-center pt-4">
                   <button
-                    onClick={handleLoadMoreForums}
+                    onClick={async () => {
+                      const nextCount = visibleForumsCount + 5;
+                      if (nextCount > filteredForums.length && hasMoreForums) {
+                        await handleLoadMoreForums();
+                      }
+                      setVisibleForumsCount(nextCount);
+                    }}
                     disabled={isLoadingMoreForums}
                     className="px-6 py-2.5 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="살롱 더 보기"
