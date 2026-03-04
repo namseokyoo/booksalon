@@ -33,20 +33,26 @@ const ForumListSkeleton: React.FC = () => {
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
-            className="bg-muted rounded-lg p-3 sm:p-4 flex gap-3 sm:gap-4 animate-pulse"
+            className="bg-surface border border-border p-3 sm:p-4 rounded-xl flex items-start sm:items-center space-x-3 sm:space-x-4 animate-pulse"
           >
-            {/* 좌측 썸네일 */}
-            <div className="flex-shrink-0 w-16 h-22 sm:w-20 sm:h-28 bg-muted-foreground/20 rounded-md" />
+            {/* 좌측 썸네일 — 실제 카드와 동일한 크기 */}
+            <div className="flex-shrink-0 w-10 h-14 sm:w-12 sm:h-16 bg-muted-foreground/20 rounded-lg" />
 
-            {/* 우측 텍스트 라인 */}
-            <div className="flex-1 min-w-0 space-y-2 py-1">
-              <div className="h-5 bg-muted-foreground/20 rounded w-3/4" />
+            {/* 중앙 텍스트 라인 */}
+            <div className="flex-grow min-w-0 space-y-2">
+              <div className="h-4 bg-muted-foreground/20 rounded w-3/4" />
               <div className="h-3.5 bg-muted-foreground/15 rounded w-1/2" />
-              <div className="h-3 bg-muted-foreground/10 rounded w-2/3 mt-3" />
-              <div className="flex gap-2 mt-2">
+              <div className="h-3 bg-muted-foreground/10 rounded w-2/3" />
+              <div className="flex gap-2">
                 <div className="h-5 w-12 bg-muted-foreground/15 rounded-full" />
                 <div className="h-5 w-14 bg-muted-foreground/15 rounded-full" />
               </div>
+            </div>
+
+            {/* 우측 액션 영역 */}
+            <div className="flex-shrink-0 flex flex-col items-end space-y-2">
+              <div className="h-3 w-16 bg-muted-foreground/15 rounded" />
+              <div className="h-8 w-8 bg-muted-foreground/15 rounded-lg" />
             </div>
           </div>
         ))}

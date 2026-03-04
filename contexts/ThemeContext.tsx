@@ -25,42 +25,33 @@ function resolveTheme(theme: Theme): ResolvedTheme {
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useLocalStorage<Theme>('booksalon-theme', 'system');
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => resolveTheme(theme));
+  // systemResolved: system 모드에서 OS 테마 변경을 반영하기 위한 별도 state
+  const [systemResolved, setSystemResolved] = useState<ResolvedTheme>(getSystemTheme);
 
-  // Apply dark class to documentElement
+  // theme이 'system'이면 systemResolved를 사용, 아니면 theme 그대로
+  const resolvedTheme: ResolvedTheme = theme === 'system' ? systemResolved : theme;
+
+  // Apply dark class to documentElement (DOM 사이드이펙트만 처리 — setState 없음)
   useEffect(() => {
-    const resolved = resolveTheme(theme);
-    setResolvedTheme(resolved);
-
     const root = document.documentElement;
-    if (resolved === 'dark') {
+    if (resolvedTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-  }, [theme]);
+  }, [resolvedTheme]);
 
   // Listen for system preference changes when in system mode
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
     const handleChange = () => {
-      if (theme === 'system') {
-        const resolved = getSystemTheme();
-        setResolvedTheme(resolved);
-
-        const root = document.documentElement;
-        if (resolved === 'dark') {
-          root.classList.add('dark');
-        } else {
-          root.classList.remove('dark');
-        }
-      }
+      setSystemResolved(getSystemTheme());
     };
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme]);
+  }, []);
 
   // Cycle: light -> dark -> system -> light
   const toggleTheme = useCallback(() => {

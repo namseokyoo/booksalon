@@ -430,7 +430,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick }) =>
     return () => {
       subscription.unsubscribe();
     };
-  }, [authLoading]);
+  }, [authLoading, forumsPage]);
 
   const handleLoadMoreForums = async () => {
     if (!hasMoreForums || isLoadingMoreForums) return;

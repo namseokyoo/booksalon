@@ -420,10 +420,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                 </div>
 
                 {/* 탭 네비게이션 */}
-                <div className="flex gap-1 mb-6 border-b border-border">
+                <div className="flex gap-1 mb-6 border-b border-border overflow-x-auto">
                     <button
                         onClick={() => setActiveTab('stats')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'stats'
+                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'stats'
                             ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}

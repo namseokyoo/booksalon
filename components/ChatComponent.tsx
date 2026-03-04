@@ -34,13 +34,13 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
         return () => unsubscribe();
     }, [chatRoomId, currentUser]);
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
