@@ -30,6 +30,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
     const [deleteStep, setDeleteStep] = useState<0 | 1 | 2>(0);
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
     const [editForm, setEditForm] = useState({
         displayName: '',
         nickname: '',
@@ -149,7 +150,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
             setIsEditing(false);
         } catch (error) {
             console.error('프로필 저장 실패:', error);
-            alert('프로필 저장 중 오류가 발생했습니다.');
+            setSaveError('프로필 저장 중 오류가 발생했습니다.');
         }
     };
 
@@ -381,12 +382,15 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                                             저장
                                         </button>
                                         <button
-                                            onClick={() => setIsEditing(false)}
+                                            onClick={() => { setIsEditing(false); setSaveError(null); }}
                                             className="px-4 py-2 bg-muted text-surface-foreground rounded-lg hover:bg-muted transition-colors font-medium"
                                         >
                                             취소
                                         </button>
                                     </div>
+                                    {saveError && (
+                                        <p className="text-red-500 text-sm mt-2">{saveError}</p>
+                                    )}
                                 </div>
                             ) : (
                                 <div>

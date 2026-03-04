@@ -24,6 +24,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   disabled = false,
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = useCallback((files: FileList | File[]) => {
@@ -31,17 +32,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const remainingSlots = maxImages - images.length;
 
     if (remainingSlots <= 0) {
-      alert(`최대 ${maxImages}장까지 업로드 가능합니다.`);
+      setUploadError(`최대 ${maxImages}장까지 업로드 가능합니다.`);
       return;
     }
 
+    setUploadError(null);
     const filesToAdd = fileArray.slice(0, remainingSlots);
     const newImages: ImagePreview[] = [];
+    const errors: string[] = [];
 
     for (const file of filesToAdd) {
       const validation = PostImageService.validateFile(file);
       if (!validation.valid) {
-        alert(validation.error);
+        errors.push(validation.error || '파일 검증 실패');
         continue;
       }
 
@@ -55,6 +58,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         progress: 0,
         uploaded: false,
       });
+    }
+
+    if (errors.length > 0) {
+      setUploadError(errors[0]);
     }
 
     if (newImages.length > 0) {
@@ -221,6 +228,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       <p className="text-xs text-muted-foreground">
         JPG, PNG, GIF, WebP / 최대 5MB / 드래그 앤 드롭 가능
       </p>
+
+      {uploadError && (
+        <p className="text-red-500 text-xs">{uploadError}</p>
+      )}
     </div>
   );
 };

@@ -12,27 +12,29 @@ interface UserMenuProps {
 const UserMenu: React.FC<UserMenuProps> = ({ user, onClose, onShowProfile }) => {
     const { currentUser, userProfile } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const [messageStatus, setMessageStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     const handleSendMessage = async () => {
         if (!currentUser || currentUser.uid === user.uid) {
-            alert('자신에게는 메시지를 보낼 수 없습니다.');
+            setMessageStatus({ type: 'error', text: '자신에게는 메시지를 보낼 수 없습니다.' });
             return;
         }
 
         setIsLoading(true);
+        setMessageStatus(null);
         try {
             // 채팅방 생성 또는 기존 채팅방 찾기
-            const chatRoom = await MessagingService.getOrCreateChatRoom(
+            await MessagingService.getOrCreateChatRoom(
                 userProfile?.id || '',
                 user.id
             );
 
             // TODO: 메시지 페이지로 이동하는 로직 추가
-            alert(`${user.nickname || user.displayName}님과의 채팅방이 생성되었습니다.`);
-            onClose();
+            setMessageStatus({ type: 'success', text: `${user.nickname || user.displayName}님과의 채팅방이 생성되었습니다.` });
+            setTimeout(() => onClose(), 1500);
         } catch (error) {
             console.error('채팅방 생성 실패:', error);
-            alert('메시지 전송에 실패했습니다.');
+            setMessageStatus({ type: 'error', text: '메시지 전송에 실패했습니다.' });
         } finally {
             setIsLoading(false);
         }
@@ -84,6 +86,11 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onClose, onShowProfile }) => 
                         </svg>
                         {isLoading ? '처리 중...' : '메시지 보내기'}
                     </button>
+                )}
+                {messageStatus && (
+                    <p className={`px-4 py-1 text-xs ${messageStatus.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                        {messageStatus.text}
+                    </p>
                 )}
             </div>
         </div>
