@@ -37,11 +37,13 @@ interface ForumListProps {
   onSelectForum: (forum: Forum) => void;
   onLoginClick?: () => void;
   onSearchClick?: () => void;
+  onShowBestPosts?: () => void;
+  onSelectForumWithPost?: (forum: Forum, postId: string) => void;
 }
 
 const FORUMS_PAGE_SIZE = 20;
 
-const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSearchClick }) => {
+const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSearchClick, onShowBestPosts, onSelectForumWithPost }) => {
   const [forums, setForums] = useState<Forum[]>([]);
   const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -210,27 +212,25 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
     loadBestPosts();
   }, []);
 
-  // 베스트 게시물 클릭 시 해당 포럼으로 이동
+  // 베스트 게시물 클릭 시 해당 포럼으로 이동 (가능하면 해당 포스트 바로 열기)
   const handleBestPostClick = (post: BestPost) => {
-    // 이미 로드된 forums에서 해당 포럼을 찾기
     const existingForum = forums.find(f => f.isbn === post.forum_isbn);
-    if (existingForum) {
-      onSelectForum(existingForum);
-    } else {
-      // forums에 없는 경우 최소 Forum 객체를 구성하여 이동
-      const minimalForum: Forum = {
+    const forum = existingForum ?? {
+      isbn: post.forum_isbn,
+      book: {
         isbn: post.forum_isbn,
-        book: {
-          isbn: post.forum_isbn,
-          title: post.book_title,
-          authors: [],
-          publisher: '',
-          thumbnail: '',
-          contents: '',
-        },
-        postCount: 0,
-      };
-      onSelectForum(minimalForum);
+        title: post.book_title,
+        authors: [],
+        publisher: '',
+        thumbnail: '',
+        contents: '',
+      },
+      postCount: 0,
+    };
+    if (onSelectForumWithPost) {
+      onSelectForumWithPost(forum, post.id);
+    } else {
+      onSelectForum(forum);
     }
   };
 
@@ -831,15 +831,23 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
       {/* 인기 게시물 섹션 — 검색 중이 아닐 때만 표시 */}
       {bestPosts.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
         <section className="mb-6">
-          <h2 className="font-serif text-lg font-semibold text-foreground mb-3">인기 게시물</h2>
-          <div className="space-y-2">
-            {bestPosts.slice(0, visibleBestPostsCount).map((post, index) => (
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-serif text-lg font-semibold text-foreground">인기 게시물</h2>
+            <button
+              type="button"
+              onClick={() => onShowBestPosts?.()}
+              className="text-sm text-primary hover:text-primary-700 font-medium"
+            >
+              더보기 →
+            </button>
+          </div>
+          <div className="space-y-1">
+            {bestPosts.slice(0, visibleBestPostsCount).map((post) => (
               <div
                 key={post.id}
                 onClick={() => handleBestPostClick(post)}
-                className="bg-surface rounded-xl shadow-sm border border-border p-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200 flex items-center gap-3"
+                className="bg-surface rounded-xl shadow-sm border border-border py-2 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200 flex items-center gap-3"
               >
-                <span className="flex-shrink-0 w-6 text-center text-sm font-bold text-primary-400">{index + 1}</span>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5 truncate">{post.book_title}</p>
@@ -938,7 +946,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
       {existingForums.length > 0 && (
         <div className="mb-6">
           <h2 className="font-serif text-lg font-semibold text-foreground mb-4">최근 개설된 살롱</h2>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {existingForums
               .sort((a, b) => {
                 // createdAt 기준으로 정렬 (최신순)
@@ -978,18 +986,12 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                       </div>
                     )}
                     <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                      <span className="inline-flex items-center gap-1" aria-label="게시물 수">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
-                        {forum.postCount ? `${forum.postCount}` : '0'}
+                      <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
+                        {forum.postCount ?? 0}
                       </span>
                       {forum.memberCount && (
-                        <span className="inline-flex items-center gap-1" aria-label="참여자 수">
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
-                          {forum.memberCount}
+                        <span aria-label="참여자 수">
+                          {forum.memberCount}명
                         </span>
                       )}
                       {forum.postCount === 0 && (
