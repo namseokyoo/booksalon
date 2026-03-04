@@ -517,7 +517,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={handleToggleLike}
-                                className={`flex items-center space-x-1 transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
+                                className={`flex items-center space-x-1 p-2 -m-2 transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
                                     }`}
                             >
                                 <LikeIcon className="w-4 h-4" />

@@ -1,14 +1,15 @@
 {
   "name": "북살롱-(book-salon)",
   "private": true,
-  "version": "0.5.1",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/update-sitemap.cjs",
     "preview": "vite preview",
     "lint": "eslint ./*.{ts,tsx} components/ contexts/ hooks/ lib/",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "prepare": "husky"
   },
   "dependencies": {
     "@sentry/react": "^10.39.0",
@@ -26,6 +27,8 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.0",
     "globals": "^17.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.2",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.54.0",

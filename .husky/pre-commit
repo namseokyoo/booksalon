@@ -1,4 +1,5 @@
-# pre-commit hook
-# NOTE: npm test 스크립트 없음 (2026-03-04 발견). TypeScript 오류도 기존 존재.
-# BL-XXX: pre-commit hook 정비 필요 (type-check 통과 후 활성화)
-exit 0
+#!/bin/sh
+# pre-commit hook - 복구됨 (2026-03-04, QA Engineer 해밀턴)
+# npm test 스크립트 없으므로 type-check로 대체
+# NOTE: lint는 기존 에러 2건(ChatComponent.tsx, ThemeContext.tsx) 존재로 별도 백로그 처리
+npm run type-check

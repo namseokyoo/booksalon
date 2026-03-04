@@ -110,7 +110,7 @@ const Header: React.FC<HeaderProps> = ({
                                 {/* 사용자 프로필 버튼 */}
                                 <button
                                     onClick={handleUserMenuClick}
-                                    className="flex items-center space-x-2 px-2 sm:px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
+                                    className="flex items-center space-x-2 px-2 sm:px-3 py-2 min-h-[44px] text-xs sm:text-sm text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                                     aria-label="사용자 메뉴 열기"
                                     aria-expanded={isDropdownOpen}
                                     aria-haspopup="true"
@@ -175,6 +175,8 @@ const Header: React.FC<HeaderProps> = ({
                                             활동 피드
                                         </button>
 
+                                        {/* 메시지: 유저간 메시지 기능 미오픈. 향후 오픈 시 주석 해제 */}
+                                        {/*
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
@@ -187,6 +189,7 @@ const Header: React.FC<HeaderProps> = ({
                                             </svg>
                                             메시지
                                         </button>
+                                        */}
 
                                         <button
                                             onClick={() => {
@@ -234,14 +237,14 @@ const Header: React.FC<HeaderProps> = ({
                             <div className="flex gap-2">
                                 <button
                                     onClick={onSignUpClick}
-                                    className="px-3 py-1 text-xs sm:text-sm text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
+                                    className="px-3 py-2 min-h-[44px] text-xs sm:text-sm text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                                     aria-label="회원가입"
                                 >
                                     회원가입
                                 </button>
                                 <button
                                     onClick={onLoginClick}
-                                    className="px-3 py-1 text-xs sm:text-sm bg-cta text-cta-foreground hover:bg-cta-700 rounded-md transition-colors duration-200 font-medium"
+                                    className="px-3 py-2 min-h-[44px] text-xs sm:text-sm bg-cta text-cta-foreground hover:bg-cta-700 rounded-md transition-colors duration-200 font-medium"
                                     aria-label="로그인"
                                 >
                                     로그인

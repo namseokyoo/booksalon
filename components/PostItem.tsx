@@ -247,7 +247,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn }) => {
                 e.stopPropagation();
                 handleToggleLike();
               }}
-              className="flex items-center space-x-1 hover:text-red-400 transition-colors duration-200"
+              className="flex items-center space-x-1 p-2 -m-2 hover:text-red-400 transition-colors duration-200"
               aria-label={isLiked ? '좋아요 취소' : '좋아요'}
             >
               <LikeIcon

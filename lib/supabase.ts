@@ -56,7 +56,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
     // Navigator Lock 비활성화: 단일 사용자 앱이므로 multi-tab lock 불필요
     // token refresh fetch hang 시 auth 초기화 영구 블로킹 방지
-    lock: async (_name: string, _acquireTimeout: number, fn: () => Promise<unknown>) => fn(),
+    lock: async <R>(_name: string, _acquireTimeout: number, fn: () => Promise<R>): Promise<R> => fn(),
   },
   // 실시간 구독 설정
   realtime: {

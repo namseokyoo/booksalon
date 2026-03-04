@@ -1,6 +1,9 @@
 
 import React, { useState, Suspense } from 'react';
 import Header from './components/Header';
+import Footer from './components/Footer';
+import PrivacyPage from './components/PrivacyPage';
+import TermsPage from './components/TermsPage';
 import type { Forum, Book } from './types';
 import { useSupabaseAuth } from './contexts/SupabaseAuthContext';
 
@@ -72,7 +75,13 @@ const DeleteAccountModal = React.lazy(() => import('./components/DeleteAccountMo
 const SearchModal = React.lazy(() => import('./components/SearchModal'));
 
 const App = () => {
-  const [currentView, setCurrentView] = useState<'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin'>('list');
+  const getInitialView = (): 'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin' | 'privacy' | 'terms' => {
+    const path = window.location.pathname;
+    if (path === '/privacy') return 'privacy';
+    if (path === '/terms') return 'terms';
+    return 'list';
+  };
+  const [currentView, setCurrentView] = useState<'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin' | 'privacy' | 'terms'>(getInitialView());
   const [selectedForum, setSelectedForum] = useState<Forum | null>(null);
   const [messagingTargetUserId, setMessagingTargetUserId] = useState<string | null>(null);
 
@@ -228,7 +237,11 @@ const App = () => {
       <main aria-label="메인 콘텐츠">
         <ChunkErrorBoundary>
         <Suspense fallback={<div className="flex justify-center items-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
-          {currentView === 'list' ? (
+          {currentView === 'privacy' ? (
+            <PrivacyPage onBack={handleBackToList} />
+          ) : currentView === 'terms' ? (
+            <TermsPage onBack={handleBackToList} />
+          ) : currentView === 'list' ? (
             <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} />
           ) : currentView === 'profile' ? (
             <ProfilePage onBack={handleBackToList} onDeleteClick={() => setDeleteModalOpen(true)} />
@@ -262,6 +275,8 @@ const App = () => {
         </Suspense>
         </ChunkErrorBoundary>
       </main>
+
+      <Footer />
 
       <Suspense fallback={null}>
         {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
