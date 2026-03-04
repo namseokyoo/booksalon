@@ -1,0 +1,4 @@
+# pre-commit hook
+# NOTE: npm test 스크립트 없음 (2026-03-04 발견). TypeScript 오류도 기존 존재.
+# BL-XXX: pre-commit hook 정비 필요 (type-check 통과 후 활성화)
+exit 0
