@@ -7,7 +7,6 @@ import UserMenu from './UserMenu';
 import UserProfilePreview from './UserProfilePreview';
 import CreatePostModal from './CreatePostModal';
 import type { ImagePreview } from './ImageUploader';
-import ReadingStatusButton from './ReadingStatusButton';
 import { ArrowLeftIcon, PlusIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -462,19 +461,12 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="p-3 sm:p-6 lg:p-8 sticky top-[65px] bg-surface border-b border-border z-10 shadow-sm">
+      <div className="p-3 sm:p-6 lg:p-8">
         <button onClick={onBack} className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
           <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>목록으로 돌아가기</span>
         </button>
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <BookInfo book={forum.book} forum={forum} />
-          </div>
-          <div className="ml-3 flex-shrink-0">
-            <ReadingStatusButton isbn={forum.isbn} />
-          </div>
-        </div>
+        <BookInfo book={forum.book} forum={forum} isbn={forum.isbn} />
       </div>
 
       <div className="px-3 sm:px-6 lg:px-8 pb-20">
