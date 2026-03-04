@@ -62,6 +62,7 @@ class ChunkErrorBoundary extends React.Component<ChunkErrorBoundaryProps, ChunkE
 // React.lazy: 페이지 레벨 코드 스플리팅
 const ForumList = React.lazy(() => import('./components/ForumList'));
 const ForumView = React.lazy(() => import('./components/ForumView'));
+const AllBestPostsPage = React.lazy(() => import('./components/AllBestPostsPage'));
 const ProfilePage = React.lazy(() => import('./components/ProfilePage'));
 const ActivityFeed = React.lazy(() => import('./components/ActivityFeed'));
 const UserSearch = React.lazy(() => import('./components/UserSearch'));
@@ -76,14 +77,15 @@ const DeleteAccountModal = React.lazy(() => import('./components/DeleteAccountMo
 const SearchModal = React.lazy(() => import('./components/SearchModal'));
 
 const App = () => {
-  const getInitialView = (): 'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin' | 'privacy' | 'terms' => {
+  const getInitialView = (): 'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin' | 'privacy' | 'terms' | 'best-posts' => {
     const path = window.location.pathname;
     if (path === '/privacy') return 'privacy';
     if (path === '/terms') return 'terms';
     return 'list';
   };
-  const [currentView, setCurrentView] = useState<'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin' | 'privacy' | 'terms'>(getInitialView());
+  const [currentView, setCurrentView] = useState<'list' | 'forum' | 'profile' | 'activity' | 'search' | 'messaging' | 'notifications' | 'admin' | 'privacy' | 'terms' | 'best-posts'>(getInitialView());
   const [selectedForum, setSelectedForum] = useState<Forum | null>(null);
+  const [initialPostId, setInitialPostId] = useState<string | null>(null);
   const [messagingTargetUserId, setMessagingTargetUserId] = useState<string | null>(null);
 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
@@ -99,12 +101,43 @@ const App = () => {
 
   const handleSelectForum = (forum: Forum) => {
     setSelectedForum(forum);
+    setInitialPostId(null);
     setCurrentView('forum');
+  };
+
+  const handleSelectForumWithPost = (forum: Forum, postId: string) => {
+    setSelectedForum(forum);
+    setInitialPostId(postId);
+    setCurrentView('forum');
+  };
+
+  const handleSelectForumWithPostByIsbn = (forumIsbn: string, postId: string) => {
+    // AllBestPostsPage에서 호출 — isbn만 있는 경우 최소 Forum 구성
+    const minimalForum: Forum = {
+      isbn: forumIsbn,
+      book: {
+        isbn: forumIsbn,
+        title: '',
+        authors: [],
+        publisher: '',
+        thumbnail: '',
+        contents: '',
+      },
+      postCount: 0,
+    };
+    setSelectedForum(minimalForum);
+    setInitialPostId(postId);
+    setCurrentView('forum');
+  };
+
+  const handleShowBestPosts = () => {
+    setCurrentView('best-posts');
   };
 
   const handleHomeClick = () => {
     setCurrentView('list');
     setSelectedForum(null);
+    setInitialPostId(null);
   };
 
   const handleShowProfile = () => {
@@ -213,6 +246,7 @@ const App = () => {
 
   const handleBackToList = () => {
     setSelectedForum(null);
+    setInitialPostId(null);
     setCurrentView('list');
   };
 
@@ -247,8 +281,19 @@ const App = () => {
             <PrivacyPage onBack={handleBackToList} />
           ) : currentView === 'terms' ? (
             <TermsPage onBack={handleBackToList} />
+          ) : currentView === 'best-posts' ? (
+            <AllBestPostsPage
+              onBack={() => setCurrentView('list')}
+              onSelectForumWithPost={handleSelectForumWithPostByIsbn}
+            />
           ) : currentView === 'list' ? (
-            <ForumList onSelectForum={handleSelectForum} onLoginClick={() => setLoginModalOpen(true)} onSearchClick={handleShowSearch} />
+            <ForumList
+              onSelectForum={handleSelectForum}
+              onLoginClick={() => setLoginModalOpen(true)}
+              onSearchClick={handleShowSearch}
+              onShowBestPosts={handleShowBestPosts}
+              onSelectForumWithPost={handleSelectForumWithPost}
+            />
           ) : currentView === 'profile' ? (
             <ProfilePage onBack={handleBackToList} onDeleteClick={() => setDeleteModalOpen(true)} />
           ) : currentView === 'activity' ? (
@@ -269,7 +314,8 @@ const App = () => {
           ) : selectedForum ? (
             <ForumView
               forum={selectedForum}
-              onBack={handleBackToList}
+              initialPostId={initialPostId ?? undefined}
+              onBack={() => { setCurrentView('list'); setInitialPostId(null); }}
               onNavigateToMessaging={(userId) => {
                 setMessagingTargetUserId(userId);
                 setCurrentView('messaging');

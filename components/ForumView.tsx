@@ -14,6 +14,7 @@ import { UserService, TagService, PostImageService } from '../lib/services';
 
 interface ForumViewProps {
   forum: Forum;
+  initialPostId?: string;
   onBack: () => void;
   onNavigateToMessaging?: (userId: string) => void;
   onLoginClick?: () => void;
@@ -22,7 +23,7 @@ interface ForumViewProps {
 
 const POSTS_PAGE_SIZE = 20;
 
-const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessaging, onLoginClick, onShowToast }) => {
+const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onNavigateToMessaging, onLoginClick, onShowToast }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -158,6 +159,38 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, onBack, onNavigateToMessag
       setPosts(enrichedPosts);
       setPostsPage(0);
       setHasMorePosts((postsData || []).length >= POSTS_PAGE_SIZE);
+
+      // initialPostId가 있으면 해당 포스트 자동 열기
+      if (initialPostId) {
+        const targetPost = enrichedPosts.find(p => p.id === initialPostId);
+        if (targetPost) {
+          setSelectedPost(targetPost);
+        } else {
+          // 첫 페이지에 없을 수 있으므로 단건 조회
+          const { data: singlePostData } = await supabase
+            .from('posts')
+            .select(`
+              id,
+              title,
+              content,
+              author_id,
+              forum_isbn,
+              created_at,
+              updated_at,
+              comment_count,
+              like_count,
+              view_count
+            `)
+            .eq('id', initialPostId)
+            .single();
+          if (singlePostData) {
+            const enrichedSingle = await enrichPostsData([singlePostData]);
+            if (enrichedSingle.length > 0) {
+              setSelectedPost(enrichedSingle[0]);
+            }
+          }
+        }
+      }
     };
 
     loadPosts();
