@@ -203,26 +203,34 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   /**
    * 계정 삭제
    *
-   * 주의: Supabase에서 사용자 삭제는 서버 사이드에서만 가능
-   * 클라이언트에서는 비활성화 처리
+   * Edge Function(delete-account)을 호출하여 auth.users를 완전 삭제.
+   * SERVICE_ROLE_KEY는 Edge Function 환경변수에서만 사용 (클라이언트 미포함).
+   * JWT 검증은 Edge Function 내부에서 수행 — 본인만 삭제 가능.
    */
   const deleteAccount = async () => {
-    const authId = await getCurrentAuthId()
-    if (!authId) {
+    // 1. 현재 세션 JWT 가져오기
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) {
       throw new Error('로그인된 사용자가 없습니다.')
     }
 
-    // 프로필 비활성화
-    if (userProfile) {
-      await UserService.deactivateUser(userProfile.id, 'user_deletion_request')
+    // 2. Edge Function 호출
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const response = await fetch(`${supabaseUrl}/functions/v1/delete-account`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+
+    if (!response.ok) {
+      const data = await response.json()
+      throw new Error(data.error || '계정 삭제에 실패했습니다.')
     }
 
-    // 로그아웃 처리
+    // 3. 성공 → 로그아웃 (세션 정리)
     await logout()
-
-    // 참고: 실제 auth.users 삭제는 Supabase Dashboard 또는
-    // Edge Function에서 admin API로 처리해야 함
-    console.warn('계정 삭제 요청됨. 완전한 삭제는 관리자에게 문의하세요.')
   }
 
   /**
