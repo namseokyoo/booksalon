@@ -167,8 +167,8 @@ const AdminDashboard: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                         <div className="bg-surface border border-border p-6 rounded-xl shadow-sm">
                             <div className="flex items-center">
-                                <div className="p-2 bg-blue-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                                     </svg>
                                 </div>
@@ -181,8 +181,8 @@ const AdminDashboard: React.FC = () => {
 
                         <div className="bg-surface border border-border p-6 rounded-xl shadow-sm">
                             <div className="flex items-center">
-                                <div className="p-2 bg-green-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="p-2 bg-accent/10 rounded-lg">
+                                    <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                     </svg>
                                 </div>
@@ -195,8 +195,8 @@ const AdminDashboard: React.FC = () => {
 
                         <div className="bg-surface border border-border p-6 rounded-xl shadow-sm">
                             <div className="flex items-center">
-                                <div className="p-2 bg-yellow-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="p-2 bg-amber-100 rounded-lg">
+                                    <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
@@ -209,8 +209,8 @@ const AdminDashboard: React.FC = () => {
 
                         <div className="bg-surface border border-border p-6 rounded-xl shadow-sm">
                             <div className="flex items-center">
-                                <div className="p-2 bg-red-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="p-2 bg-destructive/10 rounded-lg">
+                                    <svg className="w-6 h-6 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                     </svg>
                                 </div>
@@ -246,14 +246,14 @@ const AdminDashboard: React.FC = () => {
                                         {user.isActive !== false ? (
                                             <button
                                                 onClick={() => handleDeactivateUser(user.uid)}
-                                                className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 font-medium"
+                                                className="px-3 py-1 bg-destructive text-white rounded-lg text-sm hover:bg-destructive/90 font-medium"
                                             >
                                                 비활성화
                                             </button>
                                         ) : (
                                             <button
                                                 onClick={() => handleActivateUser(user.uid)}
-                                                className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 font-medium"
+                                                className="px-3 py-1 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 font-medium"
                                             >
                                                 활성화
                                             </button>
@@ -285,7 +285,7 @@ const AdminDashboard: React.FC = () => {
                                     </div>
                                     <button
                                         onClick={() => handleDeleteForum(forum.isbn)}
-                                        className="px-3 py-1 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 font-medium"
+                                        className="px-3 py-1 bg-destructive text-white rounded-lg text-sm hover:bg-destructive/90 font-medium"
                                     >
                                         삭제
                                     </button>
@@ -303,8 +303,8 @@ const AdminDashboard: React.FC = () => {
                                 <div key={report.id} className="p-4 bg-muted border border-border rounded-xl">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center space-x-2">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${report.status === 'pending' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                                                    report.status === 'resolved' ? 'bg-green-100 text-green-700 border border-green-200' :
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${report.status === 'pending' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                                    report.status === 'resolved' ? 'bg-accent/10 text-accent border border-accent/20' :
                                                         'bg-muted text-surface-foreground border border-border'
                                                 }`}>
                                                 {report.status === 'pending' ? '대기중' :
@@ -326,7 +326,7 @@ const AdminDashboard: React.FC = () => {
                                     {report.status === 'pending' && (
                                         <button
                                             onClick={() => handleResolveReport(report.id)}
-                                            className="px-3 py-1 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 font-medium"
+                                            className="px-3 py-1 bg-accent text-white rounded-lg text-sm hover:bg-accent/90 font-medium"
                                         >
                                             해결 처리
                                         </button>

@@ -744,6 +744,20 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
           <h2 className="font-serif text-xl sm:text-2xl font-bold text-primary leading-snug">
             당신의 마침표가<br />누군가의 물음표와 만나는 곳
           </h2>
+          <p className="mt-3 text-sm sm:text-base text-muted-foreground">
+            책을 읽고, 생각을 나누고, 다음 책을 발견하세요
+          </p>
+          {onLoginClick && (
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={onLoginClick}
+                className="inline-flex items-center px-6 py-2.5 rounded-full bg-cta text-cta-foreground text-sm font-medium hover:bg-cta-700 transition-colors duration-200 shadow-sm"
+              >
+                지금 살롱 입장하기
+              </button>
+            </div>
+          )}
           {/* 통합 검색 (SearchModal) 진입 */}
           {onSearchClick && (
             <div className="mt-5 max-w-lg mx-auto">

@@ -74,6 +74,9 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
 
       setIsLiked(newIsLiked);
       setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+      if (newIsLiked) {
+        onShowToast?.('조용히 갈피를 끼워둘게요.');
+      }
     } catch (error) {
       console.error('좋아요 토글 실패:', error);
       onShowToast?.('좋아요 처리 중 오류가 발생했습니다', 'error');
