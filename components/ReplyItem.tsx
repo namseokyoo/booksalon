@@ -23,6 +23,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
   const [likeCount, setLikeCount] = useState(comment.likeCount || 0);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
+  const [displayContent, setDisplayContent] = useState(comment.content);
   const [editError, setEditError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -109,6 +110,8 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
     setEditError(null);
     try {
       await onEdit(comment.id, editContent);
+      // 낙관적 업데이트: 저장 성공 즉시 로컬 표시값 갱신
+      setDisplayContent(editContent);
       setIsEditing(false);
     } catch (error) {
       console.error('대댓글 수정 실패:', error);
@@ -201,7 +204,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
             <button
               onClick={() => {
                 setIsEditing(false);
-                setEditContent(comment.content);
+                setEditContent(displayContent);
                 setEditError(null);
               }}
               className="px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-gray-300 font-medium"
@@ -211,7 +214,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
           </div>
         </div>
       ) : (
-        <p className="text-sm text-surface-foreground whitespace-pre-wrap mb-2 leading-relaxed">{comment.content}</p>
+        <p className="text-sm text-surface-foreground whitespace-pre-wrap mb-2 leading-relaxed">{displayContent}</p>
       )}
 
       <div className="flex items-center space-x-3 mt-2">

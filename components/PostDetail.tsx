@@ -34,6 +34,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     const [editTitle, setEditTitle] = useState(post.title);
     const [editContent, setEditContent] = useState(post.content);
     const [editError, setEditError] = useState<string | null>(null);
+    const [localTitle, setLocalTitle] = useState(post.title);
+    const [localContent, setLocalContent] = useState(post.content);
     const [viewCount, setViewCount] = useState(post.viewCount || 0);
     const [showMentionList, setShowMentionList] = useState(false);
     const [mentionSearch, setMentionSearch] = useState('');
@@ -347,6 +349,9 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                 throw error;
             }
 
+            // 낙관적 업데이트: 저장 성공 즉시 로컬 표시값 갱신 (Realtime 이벤트 대기 없이)
+            setLocalTitle(editTitle);
+            setLocalContent(editContent);
             setIsEditing(false);
         } catch (error) {
             console.error('게시물 수정 실패:', error);
@@ -437,7 +442,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 className="text-2xl font-bold text-foreground bg-transparent border-b border-border focus:border-primary focus:outline-none w-full"
                             />
                         ) : (
-                            <h1 className="text-2xl font-bold font-serif text-foreground">{post.title}</h1>
+                            <h1 className="text-2xl font-bold font-serif text-foreground">{localTitle}</h1>
                         )}
                         {currentUser && currentUser.uid === post.author.uid && (
                             <div className="flex gap-2">
@@ -452,8 +457,8 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                         <button
                                             onClick={() => {
                                                 setIsEditing(false);
-                                                setEditTitle(post.title);
-                                                setEditContent(post.content);
+                                                setEditTitle(localTitle);
+                                                setEditContent(localContent);
                                             }}
                                             className="text-muted-foreground hover:text-foreground text-sm"
                                         >
@@ -550,7 +555,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 placeholder="내용을 입력하세요..."
                             />
                         ) : (
-                            <p className="text-surface-foreground whitespace-pre-wrap leading-relaxed">{post.content}</p>
+                            <p className="text-surface-foreground whitespace-pre-wrap leading-relaxed">{localContent}</p>
                         )}
                     </div>
 

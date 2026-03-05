@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabaseAnon } from '../lib/supabase';
 import { ArrowLeftIcon } from './icons';
+import { Heart, MessageCircle } from 'lucide-react';
 import { FilterService } from '../lib/services';
 
 interface BestPost {
@@ -263,8 +264,8 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
                 {post.book_title} · {formatRelativeTime(post.created_at)}
               </p>
               <div className="flex gap-2 text-xs text-muted-foreground mt-1.5">
-                <span aria-label={`좋아요 ${post.like_count}개`}>❤️ {post.like_count}</span>
-                <span aria-label={`댓글 ${post.comment_count}개`}>💬 {post.comment_count}</span>
+                <span aria-label={`좋아요 ${post.like_count}개`} className="flex items-center gap-0.5"><Heart className="w-3.5 h-3.5" /> {post.like_count}</span>
+                <span aria-label={`댓글 ${post.comment_count}개`} className="flex items-center gap-0.5"><MessageCircle className="w-3.5 h-3.5" /> {post.comment_count}</span>
               </div>
             </div>
           ))}

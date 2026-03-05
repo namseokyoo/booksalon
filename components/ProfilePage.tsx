@@ -243,7 +243,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                             {profile.profileImageUrl ? (
                                 <img src={profile.profileImageUrl} alt="프로필" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                             ) : (
-                                (profile.nickname || profile.displayName || profile.email).charAt(0).toUpperCase()
+                                (profile.nickname || profile.displayName || profile.email || '독').charAt(0).toUpperCase()
                             )}
                         </div>
 
@@ -395,7 +395,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                             ) : (
                                 <div>
                                     <h1 className="text-2xl font-bold text-foreground mb-2">
-                                        {profile.nickname || profile.displayName || profile.email.split('@')[0]}
+                                        {profile.nickname || profile.displayName || profile.email?.split('@')[0] || '독자'}
                                     </h1>
                                     <p className="text-muted-foreground mb-2">{profile.email}</p>
                                     {profile.bio && (

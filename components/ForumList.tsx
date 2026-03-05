@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Heart, MessageCircle } from 'lucide-react';
 import type { Forum, Book } from '../types';
 import {
   searchBookByIsbn,
@@ -835,8 +836,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                   {post.book_title} · {formatRelativeTime(post.created_at)}
                 </p>
                 <div className="flex gap-2 text-xs text-muted-foreground mt-1.5">
-                  <span aria-label={`좋아요 ${post.like_count}개`}>❤️ {post.like_count}</span>
-                  <span aria-label={`댓글 ${post.comment_count}개`}>💬 {post.comment_count}</span>
+                  <span aria-label={`좋아요 ${post.like_count}개`} className="flex items-center gap-0.5"><Heart className="w-3.5 h-3.5" /> {post.like_count}</span>
+                  <span aria-label={`댓글 ${post.comment_count}개`} className="flex items-center gap-0.5"><MessageCircle className="w-3.5 h-3.5" /> {post.comment_count}</span>
                 </div>
               </div>
             ))}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BarChart2, Users, BookOpen, AlertTriangle } from 'lucide-react';
 import { AdminService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Report } from '../types';
@@ -136,17 +137,17 @@ const AdminDashboard: React.FC = () => {
         <div className="min-h-screen bg-background p-4">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-foreground mb-2">🛡️ 관리자 대시보드</h1>
+                    <h1 className="text-2xl font-bold text-foreground mb-2">관리자 대시보드</h1>
                     <p className="text-muted-foreground">북살롱 서비스 관리 및 모니터링</p>
                 </div>
 
                 {/* 탭 네비게이션 */}
                 <div className="flex space-x-2 mb-6 border-b border-border">
                     {[
-                        { id: 'dashboard', label: '대시보드', icon: '📊' },
-                        { id: 'users', label: '사용자 관리', icon: '👥' },
-                        { id: 'forums', label: '포럼 관리', icon: '📚' },
-                        { id: 'reports', label: '신고 관리', icon: '⚠️' }
+                        { id: 'dashboard', label: '대시보드', icon: <BarChart2 className="w-4 h-4" /> },
+                        { id: 'users', label: '사용자 관리', icon: <Users className="w-4 h-4" /> },
+                        { id: 'forums', label: '포럼 관리', icon: <BookOpen className="w-4 h-4" /> },
+                        { id: 'reports', label: '신고 관리', icon: <AlertTriangle className="w-4 h-4" /> }
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -156,7 +157,7 @@ const AdminDashboard: React.FC = () => {
                                     : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                                 }`}
                         >
-                            {tab.icon} {tab.label}
+                            <span className="flex items-center gap-1.5">{tab.icon} {tab.label}</span>
                         </button>
                     ))}
                 </div>
