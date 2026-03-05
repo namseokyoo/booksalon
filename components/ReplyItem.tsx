@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { CommentWithReplies } from '../lib/services/commentService';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService, SocialService } from '../lib/services';
@@ -64,21 +63,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
     };
     checkLikeStatus();
   }, [currentUser, comment.id]);
-
-  const formatDate = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
-    if (!timestamp) return '방금 전';
-    let date: Date;
-    if (typeof timestamp === 'string') {
-      date = new Date(timestamp);
-    } else if (timestamp instanceof Date) {
-      date = timestamp;
-    } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
-      date = timestamp.toDate();
-    } else {
-      date = new Date();
-    }
-    return formatDistanceToNow(date, { addSuffix: true, locale: ko });
-  };
 
   const getDisplayName = () => {
     if (isLoading) return '로딩 중...';
@@ -144,7 +128,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
           >
             {getDisplayName()}
           </button>
-          <span className="text-xs text-muted-foreground">{formatDate(comment.createdAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatRelativeDate(comment.createdAt)}</span>
         </div>
         {isOwner && (
           <div className="flex items-center gap-2">

@@ -30,6 +30,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
     const [deleteStep, setDeleteStep] = useState<0 | 1 | 2>(0);
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
     const [editForm, setEditForm] = useState({
         displayName: '',
@@ -121,6 +122,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
     const handleSaveProfile = async () => {
         if (!currentUser || !profile) return;
 
+        setIsSaving(true);
         try {
             // 프로필 이미지 업로드 (있는 경우)
             let profileImageUrl: string | undefined;
@@ -151,6 +153,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
         } catch (error) {
             console.error('프로필 저장 실패:', error);
             setSaveError('프로필 저장 중 오류가 발생했습니다.');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -377,9 +381,10 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                                     <div className="flex gap-2">
                                         <button
                                             onClick={handleSaveProfile}
-                                            className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
+                                            disabled={isSaving}
+                                            className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            저장
+                                            {isSaving ? '저장 중...' : '저장'}
                                         </button>
                                         <button
                                             onClick={() => { setIsEditing(false); setSaveError(null); }}

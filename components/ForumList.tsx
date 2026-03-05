@@ -19,6 +19,7 @@ import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
 import ForumListSkeleton from './ForumListSkeleton';
 import ForumListError from './ForumListError';
+import { formatRelativeDate } from '../lib/dateUtils';
 
 // 베스트 게시물 타입
 interface BestPost {
@@ -33,17 +34,6 @@ interface BestPost {
   view_count: number;
   score: number;
   created_at: string;
-}
-
-function formatRelativeTime(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const min = Math.floor(diff / 60000);
-  if (min < 60) return `${min}분 전`;
-  const hour = Math.floor(min / 60);
-  if (hour < 24) return `${hour}시간 전`;
-  const day = Math.floor(hour / 24);
-  if (day < 7) return `${day}일 전`;
-  return new Date(dateStr).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
 }
 
 interface ForumListProps {
@@ -742,7 +732,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
         <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-5 py-6 sm:px-10 sm:py-10 text-center">
           <BookOpenIcon className="h-7 w-7 sm:h-9 sm:w-9 text-primary mx-auto mb-3 opacity-70" />
           <h2 className="font-serif text-xl sm:text-2xl font-bold text-primary leading-snug">
-            당신의 마침표가<br />누군가의 물음표와 만나는 곳
+            당신의 마침표가 누군가의 물음표와 만나는 곳
           </h2>
           <p className="mt-3 text-sm sm:text-base text-muted-foreground">
             책을 읽고, 생각을 나누고, 다음 책을 발견하세요
@@ -796,7 +786,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                 aria-label="책 검색"
               >
                 {isLoading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cta-foreground"></div>
                 ) : (
                   <>
                     <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -847,7 +837,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               >
                 <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
                 <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {post.book_title} · {formatRelativeTime(post.created_at)}
+                  {post.book_title} · {formatRelativeDate(post.created_at)}
                 </p>
                 <div className="flex gap-2 text-xs text-muted-foreground mt-1.5">
                   <span aria-label={`좋아요 ${post.like_count}개`} className="flex items-center gap-0.5"><Heart className="w-3.5 h-3.5" /> {post.like_count}</span>

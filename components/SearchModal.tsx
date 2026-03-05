@@ -365,7 +365,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                 aria-label="검색 실행"
                             >
                                 {isLoading ? (
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                                 ) : (
                                     <SearchIcon className="h-5 w-5" />
                                 )}

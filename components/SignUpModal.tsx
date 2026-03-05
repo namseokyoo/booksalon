@@ -240,17 +240,17 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
             </button>
           </div>
         </div>
-        <div className="bg-muted px-3 sm:px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-border">
+        <div className="bg-muted px-3 sm:px-6 py-3 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-border">
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 sm:px-4 py-2 bg-cta text-sm sm:text-base font-medium text-cta-foreground hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 py-2 bg-cta text-sm sm:text-base font-medium text-cta-foreground hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             {loading ? '가입 중...' : '가입하기'}
           </button>
           <button
             type="button"
-            className="mt-3 w-full inline-flex justify-center rounded-lg border border-border shadow-sm px-3 sm:px-4 py-2 bg-surface text-sm sm:text-base font-medium text-surface-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:mt-0 sm:w-auto transition-colors duration-200"
+            className="mt-3 w-full inline-flex justify-center rounded-lg border border-border shadow-sm px-3 py-2 bg-surface text-sm sm:text-base font-medium text-surface-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:mt-0 sm:w-auto transition-colors duration-200"
             onClick={onClose}
           >
             취소

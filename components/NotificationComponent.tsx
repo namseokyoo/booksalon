@@ -164,7 +164,12 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ onNavigat
                             return (
                                 <div
                                     key={notification.id}
-                                    onClick={isClickable ? () => onNavigate!(targetType as 'post' | 'comment' | 'forum', targetId!) : undefined}
+                                    onClick={isClickable ? async () => {
+                                        if (!notification.isRead) {
+                                            await handleMarkAsRead(notification.id);
+                                        }
+                                        onNavigate!(targetType as 'post' | 'comment' | 'forum', targetId!);
+                                    } : undefined}
                                     className={`bg-surface p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''} ${isClickable ? 'cursor-pointer hover:bg-muted' : ''}`}
                                 >
                                     <div className="flex items-start space-x-3">

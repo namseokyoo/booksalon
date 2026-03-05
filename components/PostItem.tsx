@@ -4,8 +4,7 @@ import CommentItem from './CommentItem';
 import TagList from './TagList';
 import ImageGallery from './ImageGallery';
 import { ChatBubbleIcon } from './icons';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService, SocialService } from '../lib/services';
@@ -220,28 +219,13 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
     }
   };
 
-  const formatDate = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
-    if (!timestamp) return '방금 전';
-    let date: Date;
-    if (typeof timestamp === 'string') {
-      date = new Date(timestamp);
-    } else if (timestamp instanceof Date) {
-      date = timestamp;
-    } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
-      date = timestamp.toDate();
-    } else {
-      date = new Date();
-    }
-    return formatDistanceToNow(date, { addSuffix: true, locale: ko });
-  };
-
   return (
     <div className="bg-surface rounded-lg shadow-md overflow-hidden">
       <div className="p-3 sm:p-3.5 md:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <h3 className="font-semibold font-serif text-base sm:text-base md:text-lg text-foreground">{post.title}</h3>
         <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
           <span className="font-medium text-primary truncate">{post.author.nickname || post.author.displayName || post.author.email?.split('@')[0]}</span>
-          <span>{formatDate(post.createdAt)}</span>
+          <span>{formatRelativeDate(post.createdAt)}</span>
         </div>
         <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
           <div className="flex items-center space-x-1">

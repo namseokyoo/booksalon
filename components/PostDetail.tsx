@@ -4,8 +4,7 @@ import CommentItem from './CommentItem';
 import UserProfilePreview from './UserProfilePreview';
 import ImageGallery from './ImageGallery';
 import { ArrowLeftIcon, MessageCircleIcon } from './icons';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { UserService, PostImageService, SocialService, ViewCountService, CommentService } from '../lib/services';
@@ -402,21 +401,6 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         }
     };
 
-    const formatTime = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
-        if (!timestamp) return '';
-        let date: Date;
-        if (typeof timestamp === 'string') {
-            date = new Date(timestamp);
-        } else if (timestamp instanceof Date) {
-            date = timestamp;
-        } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
-            date = timestamp.toDate();
-        } else {
-            date = new Date();
-        }
-        return formatDistanceToNow(date, { addSuffix: true, locale: ko });
-    };
-
     const getDisplayName = () => {
         if (isLoading) return '로딩 중...';
         return authorProfile?.nickname || authorProfile?.displayName || post.author.email?.split('@')[0] || '익명';
@@ -424,7 +408,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     return (
         <div className="max-w-4xl mx-auto">
-            <div className="p-3 sm:p-6 lg:p-8 sticky top-[65px] bg-surface border-b border-border z-10 shadow-sm">
+            <div className="p-3 sm:p-6 lg:p-8 sticky top-16 bg-surface border-b border-border z-10 shadow-sm">
                 <button onClick={onBack} className="md:hidden flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200">
                     <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>목록으로 돌아가기</span>
@@ -442,7 +426,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 className="text-2xl font-bold text-foreground bg-transparent border-b border-border focus:border-primary focus:outline-none w-full"
                             />
                         ) : (
-                            <h1 className="text-2xl font-bold font-serif text-foreground">{localTitle}</h1>
+                            <h1 className="text-2xl font-bold font-serif text-foreground break-words">{localTitle}</h1>
                         )}
                         {currentUser && currentUser.uid === post.author.uid && (
                             <div className="flex gap-2">
@@ -504,7 +488,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     </div>
 
                     {editError && (
-                        <p className="text-red-500 text-sm mb-2">{editError}</p>
+                        <p className="text-destructive text-sm mb-2">{editError}</p>
                     )}
 
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
@@ -518,12 +502,12 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                         >
                             {getDisplayName()}
                         </button>
-                        <span className="text-muted-foreground">{formatTime(post.createdAt)}</span>
+                        <span className="text-muted-foreground">{formatRelativeDate(post.createdAt)}</span>
                         <div className="flex items-center space-x-4">
                             <div>
                             <button
                                 onClick={handleToggleLike}
-                                className={`flex items-center space-x-1 p-2 -m-2 transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
+                                className={`flex items-center space-x-1 p-2 -m-2 transition-colors ${isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'
                                     }`}
                             >
                                 <LikeIcon className="w-4 h-4" />
@@ -594,7 +578,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     )}
 
                     {currentUser ? (
-                        <div className="relative sticky bottom-0 bg-surface border-t border-border z-10 pt-3">
+                        <div className="relative sticky bottom-0 bg-surface border-t border-border z-10 pt-3" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
                             <form onSubmit={handleAddComment} className="flex gap-2">
                                 <div className="flex-1 relative">
                                     <input

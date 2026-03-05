@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TagInput from './TagInput';
 import ImageUploader, { type ImagePreview } from './ImageUploader';
 
@@ -13,24 +13,48 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ onClose, onSubmit, is
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [images, setImages] = useState<ImagePreview[]>([]);
+  const [titleError, setTitleError] = useState('');
+  const [contentError, setContentError] = useState('');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() && content.trim() && !isSubmitting) {
-      onSubmit(
-        title.trim(),
-        content.trim(),
-        tags.length > 0 ? tags : undefined,
-        images.length > 0 ? images : undefined
-      );
+    let hasError = false;
+    if (!title.trim()) {
+      setTitleError('제목을 입력해주세요');
+      hasError = true;
     }
+    if (!content.trim()) {
+      setContentError('내용을 입력해주세요');
+      hasError = true;
+    }
+    if (hasError || isSubmitting) return;
+    onSubmit(
+      title.trim(),
+      content.trim(),
+      tags.length > 0 ? tags : undefined,
+      images.length > 0 ? images : undefined
+    );
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4">
-      <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-sm sm:max-w-lg max-h-[90vh] overflow-y-auto">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-post-title"
+    >
+      <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-sm sm:max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="p-4 sm:p-6">
-          <h3 className="text-base sm:text-lg font-medium leading-6 text-foreground mb-3 sm:mb-4">새로운 글 작성</h3>
+          <h3 id="create-post-title" className="text-base sm:text-lg font-medium leading-6 text-foreground mb-3 sm:mb-4">새로운 글 작성</h3>
           <div>
             <label htmlFor="post-title" className="block text-sm font-medium text-surface-foreground mb-1">
               제목
@@ -39,13 +63,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ onClose, onSubmit, is
               id="post-title"
               name="title"
               type="text"
-              required
               disabled={isSubmitting}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary focus:z-10 text-sm disabled:bg-muted disabled:cursor-not-allowed"
               placeholder="제목"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => { setTitle(e.target.value); setTitleError(''); }}
             />
+            {titleError && <p className="text-xs text-destructive mt-1">{titleError}</p>}
           </div>
           <div className="mt-3 sm:mt-4">
             <label htmlFor="post-content" className="block text-sm font-medium text-surface-foreground mb-1">
@@ -54,13 +78,13 @@ const CreatePostModal: React.FC<CreatePostModalProps> = ({ onClose, onSubmit, is
             <textarea
               id="post-content"
               name="content"
-              required
               disabled={isSubmitting}
               className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary focus:z-10 text-sm resize-y min-h-[150px] disabled:bg-muted disabled:cursor-not-allowed"
               placeholder="내용을 입력하세요..."
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={(e) => { setContent(e.target.value); setContentError(''); }}
             />
+            {contentError && <p className="text-xs text-destructive mt-1">{contentError}</p>}
           </div>
 
           {/* 이미지 업로드 */}
