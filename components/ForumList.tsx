@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, MessageCircle } from 'lucide-react';
 import type { Forum, Book } from '../types';
 import {
@@ -15,6 +16,7 @@ import CreateForumModal from './CreateForumModal';
 import { SearchIcon, BookOpenIcon } from './icons';
 import { supabase, supabaseAnon } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
 import ForumListSkeleton from './ForumListSkeleton';
@@ -36,17 +38,11 @@ interface BestPost {
   created_at: string;
 }
 
-interface ForumListProps {
-  onSelectForum: (forum: Forum) => void;
-  onLoginClick?: () => void;
-  onSearchClick?: () => void;
-  onShowBestPosts?: () => void;
-  onSelectForumWithPost?: (forum: Forum, postId: string) => void;
-}
-
 const FORUMS_PAGE_SIZE = 20;
 
-const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSearchClick, onShowBestPosts, onSelectForumWithPost }) => {
+const ForumList: React.FC = () => {
+  const navigate = useNavigate();
+  const { openLogin, openSearch } = useModals();
   const [forums, setForums] = useState<Forum[]>([]);
   const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -231,11 +227,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
       },
       postCount: 0,
     };
-    if (onSelectForumWithPost) {
-      onSelectForumWithPost(forum, post.id);
-    } else {
-      onSelectForum(forum);
-    }
+    navigate(`/forum/${forum.isbn}?post=${post.id}`, { state: { forum } });
   };
 
   const handleRetryInitialLoad = useCallback(() => {
@@ -525,11 +517,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
     e.stopPropagation(); // 포럼 클릭 이벤트 방지
 
     if (!currentUser || !userProfile?.id) {
-      if (onLoginClick) {
-        onLoginClick();
-      } else {
-        setBookmarkError('북마크하려면 로그인이 필요합니다.');
-      }
+      openLogin();
       return;
     }
 
@@ -556,7 +544,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
       console.error('북마크 토글 실패:', error);
       setBookmarkError('북마크 처리 중 오류가 발생했습니다.');
     }
-  }, [currentUser, forums, onLoginClick]);
+  }, [currentUser, forums, openLogin]);
 
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -686,7 +674,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
     };
 
     setSearchResult(null);
-    onSelectForum(newForum);
+    navigate(`/forum/${newForum.isbn}`, { state: { forum: newForum } });
   };
 
   const handleSelectCategory = useCallback((category?: string) => {
@@ -737,11 +725,11 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
           <p className="mt-3 text-sm sm:text-base text-muted-foreground">
             책을 읽고, 생각을 나누고, 다음 책을 발견하세요
           </p>
-          {onLoginClick && (
+          {!currentUser && (
             <div className="mt-4">
               <button
                 type="button"
-                onClick={onLoginClick}
+                onClick={openLogin}
                 className="inline-flex items-center px-6 py-2.5 rounded-full bg-cta text-cta-foreground text-sm font-medium hover:bg-cta-700 transition-colors duration-200 shadow-sm"
               >
                 지금 살롱 입장하기
@@ -749,21 +737,19 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
             </div>
           )}
           {/* 통합 검색 (SearchModal) 진입 */}
-          {onSearchClick && (
-            <div className="mt-5 max-w-lg mx-auto">
-              <button
-                type="button"
-                onClick={onSearchClick}
-                className="w-full flex items-center gap-2 px-5 py-3 rounded-full bg-surface/60 backdrop-blur-sm border border-border/40 text-muted-foreground text-sm hover:bg-surface/80 hover:text-foreground transition-colors duration-200 shadow-sm"
-                aria-label="책 제목, 저자, ISBN으로 통합 검색"
-              >
-                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span>책 제목, 저자, ISBN으로 검색...</span>
-              </button>
-            </div>
-          )}
+          <div className="mt-5 max-w-lg mx-auto">
+            <button
+              type="button"
+              onClick={openSearch}
+              className="w-full flex items-center gap-2 px-5 py-3 rounded-full bg-surface/60 backdrop-blur-sm border border-border/40 text-muted-foreground text-sm hover:bg-surface/80 hover:text-foreground transition-colors duration-200 shadow-sm"
+              aria-label="책 제목, 저자, ISBN으로 통합 검색"
+            >
+              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span>책 제목, 저자, ISBN으로 검색...</span>
+            </button>
+          </div>
         </section>
       ) : (
         /* 로그인 사용자: 검색바 + 통합 검색 진입 */
@@ -798,19 +784,17 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
             {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
           </form>
           {/* 통합 검색 (SearchModal) 진입 */}
-          {onSearchClick && (
-            <button
-              type="button"
-              onClick={onSearchClick}
-              className="mt-2 w-full flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-muted-foreground text-sm hover:bg-surface hover:text-foreground transition-colors duration-200"
-              aria-label="책 제목, 저자, ISBN으로 통합 검색"
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span>책 제목, 저자, ISBN으로 검색...</span>
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={openSearch}
+            className="mt-2 w-full flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-muted-foreground text-sm hover:bg-surface hover:text-foreground transition-colors duration-200"
+            aria-label="책 제목, 저자, ISBN으로 통합 검색"
+          >
+            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span>책 제목, 저자, ISBN으로 검색...</span>
+          </button>
         </div>
       )}
 
@@ -822,7 +806,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
             <h2 className="font-serif text-lg font-semibold text-foreground">인기 게시물</h2>
             <button
               type="button"
-              onClick={() => onShowBestPosts?.()}
+              onClick={() => navigate('/best-posts')}
               className="text-sm text-primary hover:text-primary-700 font-medium"
             >
               더보기 →
@@ -868,7 +852,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
             {bookmarkedForums.map((forum) => (
               <div
                 key={forum.isbn}
-                onClick={() => onSelectForum(forum)}
+                onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
                 className="bg-surface border border-border p-3 sm:p-4 md:p-5 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 md:space-x-5 border-l-4 border-l-cta"
               >
                 <img
@@ -945,7 +929,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               .map((forum) => (
                 <div
                   key={forum.isbn}
-                  onClick={() => onSelectForum(forum)}
+                  onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
                   className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3"
                 >
                   <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">
@@ -1014,7 +998,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               return (
                 <div
                   key={`${book.isbn}-${index}`}
-                  onClick={hasExistingForum ? () => onSelectForum(existingForum!) : () => setSearchResult(book)}
+                  onClick={hasExistingForum ? () => navigate(`/forum/${existingForum!.isbn}`, { state: { forum: existingForum! } }) : () => setSearchResult(book)}
                   className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3"
                 >
                   <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">
@@ -1121,7 +1105,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               {filteredForums.slice(0, visibleForumsCount).map(forum => (
                 <div
                   key={forum.isbn}
-                  onClick={() => onSelectForum(forum)}
+                  onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
                   className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3"
                 >
                   <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">

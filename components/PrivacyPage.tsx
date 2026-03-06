@@ -1,14 +1,13 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-interface PrivacyPageProps {
-  onBack: () => void;
-}
+const PrivacyPage: React.FC = () => {
+  const navigate = useNavigate();
 
-const PrivacyPage: React.FC<PrivacyPageProps> = ({ onBack }) => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <button
-        onClick={onBack}
+        onClick={() => navigate(-1)}
         className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1 transition-colors"
       >
         ← 돌아가기

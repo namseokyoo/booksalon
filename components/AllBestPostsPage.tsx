@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabaseAnon } from '../lib/supabase';
 import { ArrowLeftIcon } from './icons';
 import { Heart, MessageCircle } from 'lucide-react';
@@ -28,11 +29,6 @@ const sortOptions: { value: SortType; label: string }[] = [
   { value: 'comments', label: '댓글많은순' },
 ];
 
-interface AllBestPostsPageProps {
-  onBack: () => void;
-  onSelectForumWithPost: (forumIsbn: string, postId: string) => void;
-}
-
 function formatRelativeTime(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const min = Math.floor(diff / 60000);
@@ -46,7 +42,8 @@ function formatRelativeTime(dateStr: string): string {
 
 const PAGE_SIZE = 20;
 
-const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectForumWithPost }) => {
+const AllBestPostsPage: React.FC = () => {
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<BestPost[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -199,7 +196,7 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
       <div className="md:hidden flex items-center gap-3 mb-4">
         <button
           type="button"
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeftIcon className="w-4 h-4" />
@@ -256,7 +253,7 @@ const AllBestPostsPage: React.FC<AllBestPostsPageProps> = ({ onBack, onSelectFor
           {posts.map((post) => (
             <div
               key={post.id}
-              onClick={() => onSelectForumWithPost(post.forum_isbn, post.id)}
+              onClick={() => navigate(`/forum/${post.forum_isbn}?post=${post.id}`)}
               className="bg-surface rounded-xl shadow-sm border border-border py-2.5 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200"
             >
               <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>

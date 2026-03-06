@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Forum, Book } from '../types';
 import {
     searchBookByIsbn,
@@ -10,12 +11,11 @@ import {
 import { SearchIcon, BookOpenIcon } from './icons';
 import SearchSuggestions from './SearchSuggestions';
 import HighlightText from './HighlightText';
+import { useCreateForum } from '../hooks/useCreateForum';
 
 interface SearchModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSelectForum: (forum: Forum) => void;
-    onCreateForum: (book: Book) => void;
 }
 
 // 디바운스 훅
@@ -35,7 +35,9 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
-const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForum, onCreateForum }) => {
+const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
+    const navigate = useNavigate();
+    const createForum = useCreateForum();
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
@@ -253,7 +255,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
     };
 
     const handleBookClick = (book: Book) => {
-        onCreateForum(book);
+        createForum(book);
         onClose();
     };
 
@@ -475,7 +477,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                             <div
                                                 key={forum.isbn}
                                                 onClick={() => {
-                                                    onSelectForum(forum);
+                                                    navigate(`/forum/${forum.isbn}`, { state: { forum } });
                                                     onClose();
                                                 }}
                                                 className="p-3 border border-border rounded-lg bg-muted hover:border-primary-300 hover:shadow-sm cursor-pointer transition-all"
@@ -523,7 +525,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                                 onClick={() => {
                                                     const forum = communityResults.forums.find(f => f.isbn === post.forumIsbn);
                                                     if (forum) {
-                                                        onSelectForum(forum);
+                                                        navigate(`/forum/${forum.isbn}`, { state: { forum } });
                                                         onClose();
                                                     }
                                                 }}
@@ -557,7 +559,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                                                 onClick={() => {
                                                     const forum = communityResults.forums.find(f => f.isbn === comment.forumIsbn);
                                                     if (forum) {
-                                                        onSelectForum(forum);
+                                                        navigate(`/forum/${forum.isbn}`, { state: { forum } });
                                                         onClose();
                                                     }
                                                 }}

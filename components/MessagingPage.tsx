@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import ChatList from '../components/ChatList';
 import ChatComponent from '../components/ChatComponent';
 import UserSearch from '../components/UserSearch';
@@ -7,11 +8,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { UserService } from '../lib/services';
 import type { UserProfile } from '../types';
 
-interface MessagingPageProps {
-    targetUserId?: string;
-}
-
-const MessagingPage: React.FC<MessagingPageProps> = ({ targetUserId }) => {
+const MessagingPage: React.FC = () => {
+    const { userId: targetUserId } = useParams<{ userId: string }>();
     const [activeTab, setActiveTab] = useState<'chats' | 'search'>('chats');
     const [selectedChat, setSelectedChat] = useState<{
         chatRoomId: string;

@@ -319,7 +319,7 @@ Primary Chroma 0.06, Accent Chroma 0.12로 전반적으로 낮은 채도를 유�
 - 색상: #4A6B5D(세이지) + #C4882B(앰버) 확정 팔레트
 - 톤: 이솝 x 독립서점 x 롱블랙
 - 필수 산출물: 조합형, 심볼 단독, 파비콘 전용, 가로 배치형, 다크모드, 모노크롬
-- 시안 파일: `/Volumes/external/project/booksalon/logo-drafts/` 참조
+- 시안 파일: `logo-drafts/` 참조
 
 ---
 
@@ -430,7 +430,7 @@ OG Image 및 메타태그에 구 브랜딩 메시지가 남아있음:
 
 ## 참고 자료
 
-- 색상 샘플: `/Volumes/external/project/booksalon/color-sample.html`
-- 시안 1 목업: `/Volumes/external/project/booksalon/color-concept1.html`
-- 기존안 vs 조정안 비교: `/Volumes/external/project/booksalon/color-concept1-compare.html`
+- 색상 샘플: `color-sample.html`
+- 시안 1 목업: `color-concept1.html`
+- 기존안 vs 조정안 비교: `color-concept1-compare.html`
 - 스크린샷: `/tmp/concept1-full.png`

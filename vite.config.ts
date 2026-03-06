@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
               supabase: ['@supabase/supabase-js'],
               'date-utils': ['date-fns'],
               sentry: ['@sentry/react'],
+              router: ['react-router-dom'],
             }
           }
         }

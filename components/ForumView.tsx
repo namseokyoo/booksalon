@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useParams, useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import type { Forum, Post, UserProfile, PostImage } from '../types';
 import BookInfo from './BookInfo';
 import PostList from './PostList';
@@ -10,20 +11,27 @@ import type { ImagePreview } from './ImageUploader';
 import { ArrowLeftIcon, PlusIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
+import { useToast } from '../contexts/ToastContext';
+import { useForumLoader } from '../hooks/useForumLoader';
 import { UserService, TagService, PostImageService } from '../lib/services';
-
-interface ForumViewProps {
-  forum: Forum;
-  initialPostId?: string;
-  onBack: () => void;
-  onNavigateToMessaging?: (userId: string) => void;
-  onLoginClick?: () => void;
-  onShowToast?: (message: string, type?: 'info' | 'error') => void;
-}
 
 const POSTS_PAGE_SIZE = 20;
 
-const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onNavigateToMessaging, onLoginClick, onShowToast }) => {
+const ForumView: React.FC = () => {
+  const { isbn } = useParams<{ isbn: string }>();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { openLogin } = useModals();
+  const { showToast } = useToast();
+
+  const stateForum = (location.state as { forum?: Forum } | null)?.forum;
+  const { forum: loadedForum, loading: forumLoading, error: forumError } = useForumLoader(
+    stateForum ? undefined : isbn
+  );
+  const forum = stateForum || loadedForum;
+  const initialPostId = searchParams.get('post') || undefined;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -472,14 +480,33 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onN
   }, []);
 
   const handleSendMessage = useCallback((userId: string) => {
-    if (onNavigateToMessaging) {
-      onNavigateToMessaging(userId);
-    }
-  }, [onNavigateToMessaging]);
+    navigate(`/messages/${userId}`);
+  }, [navigate]);
 
   const handleBackToList = useCallback(() => {
     setSelectedPost(null);
   }, []);
+
+  // 딥링크: forum 데이터 로딩 중
+  if (!forum && forumLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // 딥링크: forum 데이터 로드 실패
+  if (!forum) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-foreground">{forumError || '해당 살롱을 찾을 수 없습니다.'}</p>
+        <button onClick={() => navigate('/')} className="mt-4 px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors">
+          목록으로 돌아가기
+        </button>
+      </div>
+    );
+  }
 
   if (selectedPost) {
     return (
@@ -489,7 +516,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onN
         onBack={handleBackToList}
         onUserClick={handleUserClick}
         onSendMessage={handleSendMessage}
-        onShowToast={onShowToast}
+        onShowToast={showToast}
       />
     );
   }
@@ -497,7 +524,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onN
   return (
     <div className="max-w-4xl mx-auto">
       <div className="p-3 sm:p-6 lg:p-8">
-        <button onClick={onBack} className="md:hidden flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
+        <button onClick={() => navigate('/')} className="md:hidden flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
           <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
           <span>목록으로 돌아가기</span>
         </button>
@@ -537,7 +564,7 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onN
       <button
         onClick={() => {
           if (!currentUser) {
-            onLoginClick?.();
+            openLogin();
           } else {
             setIsModalOpen(true);
           }

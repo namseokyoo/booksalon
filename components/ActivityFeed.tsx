@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { SocialService } from '../lib/services';
 import type { Activity } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-interface ActivityFeedProps {
-    onBack: () => void;
-}
-
-const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
+const ActivityFeed: React.FC = () => {
+    const navigate = useNavigate();
     const { currentUser, userProfile } = useAuth();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
@@ -112,7 +110,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({ onBack }) => {
             <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
                 <div className="flex items-center justify-between mb-6">
                     <button
-                        onClick={onBack}
+                        onClick={() => navigate(-1)}
                         className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200"
                     >
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

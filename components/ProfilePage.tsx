@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import { supabase } from '../lib/supabase';
 import { UserService, BookmarkService, ProfileImageService, ReadingLogService } from '../lib/services';
 import type { ReadingLog, ReadingStatus, ReadingStats } from '../lib/services/readingLogService';
@@ -10,12 +12,9 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
 
-interface ProfilePageProps {
-    onBack: () => void;
-    onDeleteClick?: () => void;
-}
-
-const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
+const ProfilePage: React.FC = () => {
+    const navigate = useNavigate();
+    const { openDeleteAccount } = useModals();
     const { currentUser, userProfile: authUserProfile } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
@@ -206,7 +205,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
             <div className="min-h-screen bg-background p-3 sm:p-6 lg:p-8">
                 <div className="max-w-4xl mx-auto">
                     <button
-                        onClick={onBack}
+                        onClick={() => navigate(-1)}
                         className="mb-6 px-4 py-2 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted transition-colors"
                     >
                         ← 돌아가기
@@ -225,7 +224,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                 {/* 헤더 */}
                 <div className="flex items-center justify-between mb-6">
                     <button
-                        onClick={onBack}
+                        onClick={() => navigate(-1)}
                         className="px-4 py-2 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted transition-colors"
                         aria-label="이전 페이지로 돌아가기"
                     >
@@ -722,7 +721,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                 </div>
 
                 {/* 위험 구역 */}
-                {onDeleteClick && (
+                {(
                     <div className="mt-8 border-t border-border pt-6">
                         <h2 className="text-sm font-semibold text-destructive mb-3 uppercase tracking-wide">위험 구역</h2>
                         {deleteStep === 0 && (
@@ -768,7 +767,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                                 />
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => { if (deleteConfirmText === '삭제') { onDeleteClick(); } }}
+                                        onClick={() => { if (deleteConfirmText === '삭제') { openDeleteAccount(); } }}
                                         disabled={deleteConfirmText !== '삭제'}
                                         className="px-4 py-2 text-sm text-white bg-destructive rounded-lg hover:bg-destructive/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                     >

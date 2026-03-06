@@ -1,33 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { BookOpenIcon } from './icons';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import ThemeToggle from './ThemeToggle';
 
-interface HeaderProps {
-    onLoginClick: () => void;
-    onSignUpClick: () => void;
-    onDeleteClick: () => void;
-    onProfileClick: () => void;
-    onActivityClick: () => void;
-    onSearchClick: () => void;
-    onMessagingClick: () => void;
-    onNotificationsClick: () => void;
-    onAdminClick: () => void;
-    onHomeClick: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({
-    onLoginClick,
-    onSignUpClick,
-    onDeleteClick,
-    onProfileClick,
-    onActivityClick,
-    onSearchClick,
-    onMessagingClick,
-    onNotificationsClick,
-    onAdminClick,
-    onHomeClick
-}) => {
+const Header: React.FC = () => {
+    const navigate = useNavigate();
+    const { openLogin, openSignup, openSearch } = useModals();
     const { currentUser, userProfile, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -81,15 +61,14 @@ const Header: React.FC<HeaderProps> = ({
             <div className="max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* 로고/홈 버튼 */}
-                    <a
-                        href="/"
-                        onClick={(e) => { e.preventDefault(); onHomeClick(); }}
+                    <Link
+                        to="/"
                         className="flex items-center space-x-2 text-foreground hover:text-primary transition-colors duration-200"
                         aria-label="북살롱 홈으로 이동"
                     >
                         <BookOpenIcon className="h-6 w-6 sm:h-8 sm:w-8" />
                         <h1 className="text-lg sm:text-2xl font-bold font-serif tracking-wider">북살롱</h1>
-                    </a>
+                    </Link>
 
                     {/* 검색 버튼 및 사용자 메뉴 */}
                     <nav className="flex items-center space-x-2 sm:space-x-3" aria-label="사이트 내비게이션">
@@ -97,7 +76,7 @@ const Header: React.FC<HeaderProps> = ({
                         <ThemeToggle />
                         {/* 통합 검색 버튼 */}
                         <button
-                            onClick={onSearchClick}
+                            onClick={openSearch}
                             className="p-2.5 text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                             aria-label="통합 검색 열기"
                         >
@@ -107,7 +86,7 @@ const Header: React.FC<HeaderProps> = ({
                         </button>
                         {currentUser && (
                             <button
-                                onClick={onNotificationsClick}
+                                onClick={() => navigate('/notifications')}
                                 className="p-2.5 text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                                 aria-label="알림 열기"
                             >
@@ -163,7 +142,7 @@ const Header: React.FC<HeaderProps> = ({
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
-                                                onProfileClick();
+                                                navigate('/profile');
                                             }}
                                             className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
@@ -176,7 +155,7 @@ const Header: React.FC<HeaderProps> = ({
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
-                                                onActivityClick();
+                                                navigate('/activity');
                                             }}
                                             className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
@@ -191,7 +170,7 @@ const Header: React.FC<HeaderProps> = ({
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
-                                                onMessagingClick();
+                                                navigate('/messages');
                                             }}
                                             className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
@@ -205,7 +184,7 @@ const Header: React.FC<HeaderProps> = ({
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
-                                                onNotificationsClick();
+                                                navigate('/notifications');
                                             }}
                                             className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
@@ -219,7 +198,7 @@ const Header: React.FC<HeaderProps> = ({
                                         <button
                                             onClick={() => {
                                                 setIsDropdownOpen(false);
-                                                onAdminClick();
+                                                navigate('/admin');
                                             }}
                                             className="flex items-center w-full px-4 py-2 text-sm text-surface-foreground hover:bg-muted transition-colors duration-200"
                                         >
@@ -247,14 +226,14 @@ const Header: React.FC<HeaderProps> = ({
                         ) : (
                             <div className="flex gap-2">
                                 <button
-                                    onClick={onSignUpClick}
+                                    onClick={openSignup}
                                     className="px-3 py-2 min-h-[44px] text-xs sm:text-sm text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                                     aria-label="회원가입"
                                 >
                                     회원가입
                                 </button>
                                 <button
-                                    onClick={onLoginClick}
+                                    onClick={openLogin}
                                     className="px-3 py-2 min-h-[44px] text-xs sm:text-sm bg-cta text-cta-foreground hover:bg-cta-700 rounded-md transition-colors duration-200 font-medium"
                                     aria-label="로그인"
                                 >

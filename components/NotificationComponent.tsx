@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { NotificationService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Notification } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-interface NotificationComponentProps {
-    onNavigate?: (targetType: 'post' | 'comment' | 'forum', targetId: string) => void;
-}
-
-const NotificationComponent: React.FC<NotificationComponentProps> = ({ onNavigate }) => {
+const NotificationComponent: React.FC = () => {
+    const navigate = useNavigate();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -159,7 +157,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ onNavigat
                                 || notification.metadata?.commentId
                                 || notification.metadata?.forumId
                                 || null;
-                            const isClickable = !!onNavigate && !!targetType && !!targetId;
+                            const isClickable = !!targetType && !!targetId;
 
                             return (
                                 <div
@@ -168,7 +166,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ onNavigat
                                         if (!notification.isRead) {
                                             await handleMarkAsRead(notification.id);
                                         }
-                                        onNavigate!(targetType as 'post' | 'comment' | 'forum', targetId!);
+                                        navigate('/');
                                     } : undefined}
                                     className={`bg-surface p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''} ${isClickable ? 'cursor-pointer hover:bg-muted' : ''}`}
                                 >
