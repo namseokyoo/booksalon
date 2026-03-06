@@ -8,7 +8,7 @@ import UserMenu from './UserMenu';
 import UserProfilePreview from './UserProfilePreview';
 import CreatePostModal from './CreatePostModal';
 import type { ImagePreview } from './ImageUploader';
-import { ArrowLeftIcon, PlusIcon } from './icons';
+import { PlusIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
@@ -508,9 +508,6 @@ const ForumView: React.FC = () => {
     return (
       <div className="text-center p-8">
         <p className="text-foreground">{forumError || '해당 살롱을 찾을 수 없습니다.'}</p>
-        <button onClick={() => navigate('/')} className="mt-4 px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors">
-          목록으로 돌아가기
-        </button>
       </div>
     );
   }
@@ -540,10 +537,6 @@ const ForumView: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="p-3 sm:p-6 lg:p-8">
-        <button onClick={() => navigate('/')} className="md:hidden flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200" aria-label="살롱 목록으로 돌아가기">
-          <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-          <span>목록으로 돌아가기</span>
-        </button>
         <BookInfo book={forum.book} forum={forum} isbn={forum.isbn} />
       </div>
 

@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabaseAnon } from '../lib/supabase';
-import { ArrowLeftIcon } from './icons';
 import { Heart, MessageCircle } from 'lucide-react';
 import { FilterService } from '../lib/services';
 
@@ -193,16 +192,6 @@ const AllBestPostsPage: React.FC = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="md:hidden flex items-center gap-3 mb-4">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeftIcon className="w-4 h-4" />
-          뒤로
-        </button>
-      </div>
       <div className="flex items-center justify-between mb-4">
         <h1 className="font-serif text-xl font-bold text-foreground">모든 게시물</h1>
         <select

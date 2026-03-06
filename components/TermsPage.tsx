@@ -1,17 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const TermsPage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <button
-        onClick={() => navigate(-1)}
-        className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1 transition-colors"
-      >
-        ← 돌아가기
-      </button>
       <article className="prose max-w-none text-foreground">
         <h1 className="text-2xl font-bold font-serif mb-6">이용약관</h1>
         <p className="text-muted-foreground text-sm mb-6">최종 수정일: 2026년 3월 4일</p>

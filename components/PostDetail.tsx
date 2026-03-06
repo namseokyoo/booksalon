@@ -3,7 +3,7 @@ import type { Post, Comment, UserProfile } from '../types';
 import CommentItem from './CommentItem';
 import UserProfilePreview from './UserProfilePreview';
 import ImageGallery from './ImageGallery';
-import { ArrowLeftIcon, MessageCircleIcon } from './icons';
+import { MessageCircleIcon } from './icons';
 import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -408,14 +408,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     return (
         <div className="max-w-4xl mx-auto">
-            <div className="p-3 sm:p-6 lg:p-8 sticky top-16 bg-surface border-b border-border z-10 shadow-sm">
-                <button onClick={onBack} className="md:hidden flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-4 transition-colors duration-200">
-                    <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span>목록으로 돌아가기</span>
-                </button>
-            </div>
-
-            <div className="px-3 sm:px-6 lg:px-8 pb-20">
+            <div className="px-3 sm:px-6 lg:px-8 pb-20 pt-3 sm:pt-6 lg:pt-8">
                 <div className="bg-surface border border-border rounded-xl p-4 sm:p-6 mb-6 shadow-sm">
                     <div className="flex items-start justify-between mb-4">
                         {isEditing ? (

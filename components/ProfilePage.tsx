@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { supabase } from '../lib/supabase';
@@ -13,7 +12,6 @@ import { ko } from 'date-fns/locale';
 import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
 
 const ProfilePage: React.FC = () => {
-    const navigate = useNavigate();
     const { openDeleteAccount } = useModals();
     const { currentUser, userProfile: authUserProfile } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -204,12 +202,6 @@ const ProfilePage: React.FC = () => {
         return (
             <div className="min-h-screen bg-background p-3 sm:p-6 lg:p-8">
                 <div className="max-w-4xl mx-auto">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="mb-6 px-4 py-2 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted transition-colors"
-                    >
-                        ← 돌아가기
-                    </button>
                     <div className="text-center p-8">
                         <p className="text-surface-foreground">프로필을 찾을 수 없습니다.</p>
                     </div>
@@ -222,14 +214,7 @@ const ProfilePage: React.FC = () => {
         <div className="min-h-screen bg-background p-3 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
                 {/* 헤더 */}
-                <div className="flex items-center justify-between mb-6">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="px-4 py-2 bg-surface border border-border text-surface-foreground rounded-lg hover:bg-muted transition-colors"
-                        aria-label="이전 페이지로 돌아가기"
-                    >
-                        ← 돌아가기
-                    </button>
+                <div className="flex items-center justify-end mb-6">
                     <button
                         onClick={() => setIsEditing(!isEditing)}
                         className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"

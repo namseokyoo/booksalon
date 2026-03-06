@@ -106,18 +106,8 @@ const ActivityFeed: React.FC = () => {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-                <div className="flex items-center justify-between mb-6">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors duration-200"
-                    >
-                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                        </svg>
-                        <span>돌아가기</span>
-                    </button>
+                <div className="mb-6">
                     <h1 className="text-2xl font-bold text-foreground">활동 피드</h1>
-                    <div></div>
                 </div>
 
                 {/* 탭 */}
