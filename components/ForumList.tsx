@@ -42,7 +42,7 @@ const FORUMS_PAGE_SIZE = 20;
 
 const ForumList: React.FC = () => {
   const navigate = useNavigate();
-  const { openLogin, openSearch } = useModals();
+  const { openLogin } = useModals();
   const [forums, setForums] = useState<Forum[]>([]);
   const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -736,19 +736,37 @@ const ForumList: React.FC = () => {
               </button>
             </div>
           )}
-          {/* 통합 검색 (SearchModal) 진입 */}
+          {/* 읽은 책 검색 폼 */}
           <div className="mt-5 max-w-lg mx-auto">
-            <button
-              type="button"
-              onClick={openSearch}
-              className="w-full flex items-center gap-2 px-5 py-3 rounded-full bg-surface/60 backdrop-blur-sm border border-border/40 text-muted-foreground text-sm hover:bg-surface/80 hover:text-foreground transition-colors duration-200 shadow-sm"
-              aria-label="책 제목, 저자, ISBN으로 통합 검색"
-            >
-              <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <span>책 제목, 저자, ISBN으로 검색...</span>
-            </button>
+            <form onSubmit={handleSearch}>
+              <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden">
+                <input
+                  type="text"
+                  name="isbn-search-hero"
+                  id="isbn-search-hero"
+                  className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
+                  placeholder="읽은 책을 검색해보세요"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="inline-flex items-center flex-shrink-0 gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
+                  disabled={isLoading}
+                  aria-label="책 검색"
+                >
+                  {isLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cta-foreground"></div>
+                  ) : (
+                    <>
+                      <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                      <span className="hidden sm:inline">검색</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+            </form>
           </div>
         </section>
       ) : (
@@ -783,18 +801,6 @@ const ForumList: React.FC = () => {
             </div>
             {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
           </form>
-          {/* 통합 검색 (SearchModal) 진입 */}
-          <button
-            type="button"
-            onClick={openSearch}
-            className="mt-2 w-full flex items-center gap-2 px-5 py-2.5 rounded-full bg-muted border border-border text-muted-foreground text-sm hover:bg-surface hover:text-foreground transition-colors duration-200"
-            aria-label="책 제목, 저자, ISBN으로 통합 검색"
-          >
-            <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <span>책 제목, 저자, ISBN으로 검색...</span>
-          </button>
         </div>
       )}
 
