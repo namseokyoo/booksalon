@@ -14,7 +14,6 @@ import HighlightText from './HighlightText';
 import { useCreateForum } from '../hooks/useCreateForum';
 
 interface SearchModalProps {
-    isOpen: boolean;
     onClose: () => void;
 }
 
@@ -35,7 +34,7 @@ function useDebounce<T>(value: T, delay: number): T {
     return debouncedValue;
 }
 
-const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
+const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
     const navigate = useNavigate();
     const createForum = useCreateForum();
     const [searchTerm, setSearchTerm] = useState('');
@@ -74,8 +73,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
     // ESC 키로 모달 닫기 + 포커스 트래핑
     useEffect(() => {
-        if (!isOpen) return;
-
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 onClose();
@@ -103,15 +100,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
+    }, [onClose]);
 
     // 초기 데이터 로드
     useEffect(() => {
-        if (isOpen) {
-            loadInitialData();
-            inputRef.current?.focus();
-        }
-    }, [isOpen]);
+        loadInitialData();
+        inputRef.current?.focus();
+    }, []);
 
     // 외부 클릭 감지
     useEffect(() => {
@@ -254,9 +249,9 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         setShowSuggestions(true);
     };
 
-    const handleBookClick = (book: Book) => {
-        createForum(book);
+    const handleBookClick = async (book: Book) => {
         onClose();
+        await createForum(book);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -297,8 +292,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         setBookSearchIsEnd(true);
         setLastBookSearchTerm('');
     };
-
-    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="search-modal-title" ref={modalRef}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { SocialService } from '../lib/services';
@@ -13,14 +13,8 @@ const ActivityFeed: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'following' | 'my'>('following');
 
-    useEffect(() => {
-        if (currentUser) {
-            loadActivities();
-        }
-    }, [currentUser, activeTab]);
-
-    const loadActivities = async () => {
-        if (!currentUser) return;
+    const loadActivities = useCallback(async () => {
+        if (!currentUser || !userProfile?.id) return;
 
         try {
             setLoading(true);
@@ -38,7 +32,11 @@ const ActivityFeed: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentUser, userProfile?.id, activeTab]);
+
+    useEffect(() => {
+        loadActivities();
+    }, [loadActivities]);
 
     const formatDate = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
         if (!timestamp) return '방금 전';
@@ -163,7 +161,18 @@ const ActivityFeed: React.FC = () => {
                     ) : (
                         <div className="space-y-4">
                             {activities.map((activity) => (
-                                <div key={activity.id} className="bg-muted rounded-lg p-4">
+                                <div
+                                    key={activity.id}
+                                    className={`bg-muted rounded-lg p-4 ${activity.forumIsbn ? 'cursor-pointer hover:bg-muted/80 transition-colors' : ''}`}
+                                    onClick={() => {
+                                        if (!activity.forumIsbn) return;
+                                        if (activity.type === 'post' || activity.type === 'comment' || activity.type === 'like') {
+                                            navigate(`/forum/${activity.forumIsbn}?post=${activity.targetId}`);
+                                        } else if (activity.type === 'bookmark') {
+                                            navigate(`/forum/${activity.forumIsbn}`);
+                                        }
+                                    }}
+                                >
                                     <div className="flex items-start space-x-3">
                                         <div className="text-2xl" aria-hidden="true">
                                             {getActivityIcon(activity.type)}

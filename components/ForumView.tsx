@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import type { Forum, Post, UserProfile, PostImage } from '../types';
 import BookInfo from './BookInfo';
@@ -32,6 +32,7 @@ const ForumView: React.FC = () => {
   );
   const forum = stateForum || loadedForum;
   const initialPostId = searchParams.get('post') || undefined;
+  const [initialPostLoading, setInitialPostLoading] = useState(!!initialPostId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -41,6 +42,8 @@ const ForumView: React.FC = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [postsPage, setPostsPage] = useState(0);
+  const postsPageRef = useRef(postsPage);
+  postsPageRef.current = postsPage;
   const [hasMorePosts, setHasMorePosts] = useState(true);
   const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const { currentUser } = useAuth();
@@ -134,7 +137,7 @@ const ForumView: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!forum.isbn) return;
+    if (!forum?.isbn) return;
 
     const loadPosts = async () => {
       const from = 0;
@@ -173,6 +176,7 @@ const ForumView: React.FC = () => {
         const targetPost = enrichedPosts.find(p => p.id === initialPostId);
         if (targetPost) {
           setSelectedPost(targetPost);
+          setInitialPostLoading(false);
         } else {
           // 첫 페이지에 없을 수 있으므로 단건 조회
           const { data: singlePostData } = await supabase
@@ -197,6 +201,7 @@ const ForumView: React.FC = () => {
               setSelectedPost(enrichedSingle[0]);
             }
           }
+          setInitialPostLoading(false);
         }
       }
     };
@@ -239,7 +244,7 @@ const ForumView: React.FC = () => {
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, async () => {
         // UPDATE 시 현재 로드된 범위만 리로드
-        const currentTo = ((postsPage + 1) * POSTS_PAGE_SIZE) - 1;
+        const currentTo = ((postsPageRef.current + 1) * POSTS_PAGE_SIZE) - 1;
         const { data: postsData } = await supabase
           .from('posts')
           .select(`
@@ -272,9 +277,10 @@ const ForumView: React.FC = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [forum.isbn]);
+  }, [forum?.isbn, initialPostId]);
 
   const handleLoadMorePosts = async () => {
+    if (!forum) return;
     if (!hasMorePosts || isLoadingMorePosts) return;
 
     setIsLoadingMorePosts(true);
@@ -326,6 +332,7 @@ const ForumView: React.FC = () => {
   };
 
   const handleAddPost = async (title: string, content: string, tags?: string[], imagePreviews?: ImagePreview[]) => {
+    if (!forum) return;
     if (!currentUser) {
       setSubmitError('글을 작성하려면 로그인이 필요합니다.');
       return;
@@ -504,6 +511,15 @@ const ForumView: React.FC = () => {
         <button onClick={() => navigate('/')} className="mt-4 px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors">
           목록으로 돌아가기
         </button>
+      </div>
+    );
+  }
+
+  // 포스트 직접 진입 로딩 중 (살롱 화면 깜빡임 방지)
+  if (initialPostId && initialPostLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }

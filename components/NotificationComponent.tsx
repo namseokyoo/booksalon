@@ -96,9 +96,9 @@ const NotificationComponent: React.FC = () => {
         }
     };
 
-    const formatNotificationTime = (timestamp: string | undefined) => {
+    const formatNotificationTime = (timestamp: string | Date | undefined) => {
         if (!timestamp) return '';
-        const date = new Date(timestamp);
+        const date = new Date(String(timestamp));
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 
@@ -166,7 +166,14 @@ const NotificationComponent: React.FC = () => {
                                         if (!notification.isRead) {
                                             await handleMarkAsRead(notification.id);
                                         }
-                                        navigate('/');
+                                        const metadata = notification.metadata;
+                                        if (targetType === 'post' || targetType === 'comment') {
+                                            navigate(`/forum/${metadata?.forumId}?post=${metadata?.postId}`);
+                                        } else if (targetType === 'forum') {
+                                            navigate(`/forum/${metadata?.forumId}`);
+                                        } else {
+                                            navigate('/');
+                                        }
                                     } : undefined}
                                     className={`bg-surface p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''} ${isClickable ? 'cursor-pointer hover:bg-muted' : ''}`}
                                 >

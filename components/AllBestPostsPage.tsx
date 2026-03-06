@@ -253,7 +253,15 @@ const AllBestPostsPage: React.FC = () => {
           {posts.map((post) => (
             <div
               key={post.id}
-              onClick={() => navigate(`/forum/${post.forum_isbn}?post=${post.id}`)}
+              onClick={() => navigate(`/forum/${post.forum_isbn}?post=${post.id}`, {
+                state: {
+                  forum: {
+                    isbn: post.forum_isbn,
+                    book: { isbn: post.forum_isbn, title: post.book_title, authors: [], publisher: '', thumbnail: '', contents: '' },
+                    postCount: 0,
+                  },
+                },
+              })}
               className="bg-surface rounded-xl shadow-sm border border-border py-2.5 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200"
             >
               <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>

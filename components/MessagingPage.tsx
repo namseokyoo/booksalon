@@ -19,16 +19,16 @@ const MessagingPage: React.FC = () => {
 
     // targetUserId가 있으면 자동으로 해당 사용자와의 채팅 시작
     useEffect(() => {
-        const startChatWithUser = async () => {
-            if (!targetUserId || !currentUser) return;
+        if (!targetUserId || !currentUser || !myProfile?.id) return;
 
+        const startChatWithUser = async () => {
             try {
                 // targetUserId는 users.id로 전달됨
                 const targetProfile = await UserService.getUserProfileById(targetUserId);
                 if (!targetProfile) return;
 
                 const chatRoom = await MessagingService.getOrCreateChatRoom(
-                    myProfile?.id || '',
+                    myProfile.id,
                     targetProfile.id
                 );
 
@@ -40,7 +40,7 @@ const MessagingPage: React.FC = () => {
         };
 
         startChatWithUser();
-    }, [targetUserId, currentUser]);
+    }, [targetUserId, currentUser, myProfile?.id]);
 
     const handleSelectChat = (chatRoomId: string, otherUser: UserProfile) => {
         setSelectedChat({ chatRoomId, otherUser });

@@ -43,7 +43,7 @@ export default function RootLayout() {
         {loginOpen && <LoginModal onClose={closeLogin} />}
         {signupOpen && <SignUpModal onClose={closeSignup} />}
         {deleteAccountOpen && <DeleteAccountModal onClose={closeDeleteAccount} />}
-        {searchOpen && <SearchModal isOpen={searchOpen} onClose={closeSearch} />}
+        {searchOpen && <SearchModal onClose={closeSearch} />}
       </Suspense>
     </div>
   );
