@@ -162,7 +162,7 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
               <div className="border-t border-border" />
               <button
                 onClick={handleRemoveStatus}
-                className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-red-50 transition-colors duration-200"
+                className="w-full text-left px-4 py-2.5 text-sm text-destructive hover:bg-destructive/5 transition-colors duration-200"
               >
                 상태 제거
               </button>

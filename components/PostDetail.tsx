@@ -462,7 +462,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                                 <span className="text-xs text-destructive">정말 삭제하시겠습니까?</span>
                                                 <button
                                                     onClick={handleDeletePost}
-                                                    className="min-h-[40px] px-3 rounded-md text-destructive hover:text-red-700 text-sm font-medium"
+                                                    className="min-h-[40px] px-3 rounded-md text-destructive hover:text-destructive text-sm font-medium"
                                                 >
                                                     확인
                                                 </button>

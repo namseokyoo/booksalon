@@ -869,7 +869,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
               <div
                 key={forum.isbn}
                 onClick={() => onSelectForum(forum)}
-                className="bg-surface border border-border p-3 sm:p-4 md:p-5 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 md:space-x-5 border-l-4 border-l-amber-400"
+                className="bg-surface border border-border p-3 sm:p-4 md:p-5 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 md:space-x-5 border-l-4 border-l-cta"
               >
                 <img
                   src={forum.book.thumbnail}
@@ -888,11 +888,11 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                 <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
                   <button
                     onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="p-2.5 hover:bg-amber-50 rounded-lg transition-colors duration-200 active:scale-90"
+                    className="p-2.5 hover:bg-cta/5 rounded-lg transition-colors duration-200 active:scale-90"
                     title="북마크 해제"
                   >
                     <BookmarkIcon
-                      className="h-4 w-4 text-amber-500"
+                      className="h-4 w-4 text-cta"
                       filled={true}
                     />
                   </button>
@@ -966,7 +966,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                     {forum.averageRating && forum.averageRating > 0 && (
                       <div className="flex items-center gap-1 mt-1">
                         <StarRating value={forum.averageRating} readonly size="sm" allowHalf />
-                        <span className="text-xs text-amber-500 font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
+                        <span className="text-xs text-rating font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
                         {forum.totalRatings && (
                           <span className="text-xs text-muted-foreground">({forum.totalRatings})</span>
                         )}
@@ -1035,7 +1035,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                     {hasExistingForum && existingForum!.averageRating && existingForum!.averageRating > 0 && (
                       <div className="flex items-center gap-1 mt-1">
                         <StarRating value={existingForum!.averageRating} readonly size="sm" allowHalf />
-                        <span className="text-xs text-amber-500 font-semibold ml-1">{existingForum!.averageRating.toFixed(1)}</span>
+                        <span className="text-xs text-rating font-semibold ml-1">{existingForum!.averageRating.toFixed(1)}</span>
                         {existingForum!.totalRatings && (
                           <span className="text-xs text-muted-foreground">({existingForum!.totalRatings})</span>
                         )}
@@ -1044,7 +1044,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                     <div className="mt-1">
                       {hasExistingForum ? (
                         <>
-                          <p className="text-xs text-amber-600 font-medium">기존 살롱 참여</p>
+                          <p className="text-xs text-primary-600 font-medium">기존 살롱 참여</p>
                           <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
                             <span className="inline-flex items-center gap-1" aria-label="게시물 수">
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -1169,7 +1169,7 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
                     title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
                   >
                     <BookmarkIcon
-                      className={`h-4 w-4 ${bookmarks.has(forum.isbn) ? 'text-amber-500' : 'text-muted-foreground'} hover:text-amber-500`}
+                      className={`h-4 w-4 ${bookmarks.has(forum.isbn) ? 'text-cta' : 'text-muted-foreground'} hover:text-cta`}
                       filled={bookmarks.has(forum.isbn)}
                     />
                   </button>
@@ -1230,8 +1230,8 @@ const ForumList: React.FC<ForumListProps> = ({ onSelectForum, onLoginClick, onSe
       )}
 
       {bookmarkError && (
-        <div className="fixed bottom-20 right-4 sm:right-6 z-30 bg-red-50 border border-red-200 rounded-lg px-4 py-2 shadow-md">
-          <p className="text-red-500 text-sm">{bookmarkError}</p>
+        <div className="fixed bottom-20 right-4 sm:right-6 z-30 bg-destructive/5 border border-destructive/20 rounded-lg px-4 py-2 shadow-md">
+          <p className="text-destructive text-sm">{bookmarkError}</p>
         </div>
       )}
     </div>

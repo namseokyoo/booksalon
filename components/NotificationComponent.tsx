@@ -85,7 +85,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ onNavigat
                 );
             case 'system':
                 return (
-                    <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 );
@@ -195,7 +195,7 @@ const NotificationComponent: React.FC<NotificationComponentProps> = ({ onNavigat
                                                     )}
                                                     <button
                                                         onClick={(e) => { e.stopPropagation(); handleDeleteNotification(notification.id); }}
-                                                        className="text-muted-foreground hover:text-red-400 text-sm min-h-[40px] px-3"
+                                                        className="text-muted-foreground hover:text-destructive text-sm min-h-[40px] px-3"
                                                     >
                                                         삭제
                                                     </button>

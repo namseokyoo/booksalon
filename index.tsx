@@ -27,7 +27,7 @@ const isSupabaseConfigured =
 const SupabaseNotConfigured = () => (
   <div className="flex items-center justify-center min-h-screen bg-background text-foreground p-4">
     <div className="max-w-2xl w-full bg-surface rounded-lg shadow-xl p-8">
-      <h1 className="text-2xl font-bold text-red-400 mb-4">Supabase 설정이 필요합니다</h1>
+      <h1 className="text-2xl font-bold text-destructive mb-4">Supabase 설정이 필요합니다</h1>
       <p className="text-surface-foreground mb-4">
         앱을 실행하려면 Supabase 프로젝트 설정이 필요합니다. 아래 단계에 따라 <code className="bg-muted text-cyan-400 p-1 rounded text-sm">.env</code> 파일을 생성해주세요.
       </p>

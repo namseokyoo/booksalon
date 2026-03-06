@@ -195,7 +195,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
             <div className="hidden" />
           )}
           {ratingError && (
-            <p className="text-red-500 text-sm mt-2">{ratingError}</p>
+            <p className="text-destructive text-sm mt-2">{ratingError}</p>
           )}
         </div>
       )}

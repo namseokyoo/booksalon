@@ -67,14 +67,14 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onClose }) => {
         <div className="p-6">
           <h3 id="delete-account-modal-title" className="text-lg font-medium leading-6 text-foreground mb-2 text-center">정말 탈퇴하시겠습니까?</h3>
           <p className="text-center text-sm text-muted-foreground mb-4">이 작업은 되돌릴 수 없습니다. 모든 데이터가 영구적으로 삭제됩니다.</p>
-          {error && <p className="bg-red-900/50 text-red-300 text-sm p-3 rounded-md my-4">{error}</p>}
+          {error && <p className="bg-destructive/50 text-destructive text-sm p-3 rounded-md my-4">{error}</p>}
         </div>
         <div className="bg-background px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg">
           <button
             type="button"
             disabled={loading}
             onClick={handleDelete}
-            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-muted"
+            className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-destructive text-base font-medium text-white hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-destructive sm:ml-3 sm:w-auto sm:text-sm disabled:bg-muted"
           >
             {loading ? '삭제 중...' : '네, 탈퇴합니다.'}
           </button>

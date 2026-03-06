@@ -195,7 +195,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
                         </div>
 
                         {submitMessage && (
-                            <p className={`text-sm ${submitMessage.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                            <p className={`text-sm ${submitMessage.type === 'success' ? 'text-success' : 'text-destructive'}`}>
                                 {submitMessage.text}
                             </p>
                         )}

@@ -549,8 +549,8 @@ const ForumView: React.FC<ForumViewProps> = ({ forum, initialPostId, onBack, onN
       </button>
 
       {submitError && (
-        <div className="fixed bottom-20 right-4 sm:right-6 z-30 bg-red-50 border border-red-200 rounded-lg px-4 py-2 shadow-md">
-          <p className="text-red-500 text-sm">{submitError}</p>
+        <div className="fixed bottom-20 right-4 sm:right-6 z-30 bg-destructive/5 border border-destructive/20 rounded-lg px-4 py-2 shadow-md">
+          <p className="text-destructive text-sm">{submitError}</p>
         </div>
       )}
 

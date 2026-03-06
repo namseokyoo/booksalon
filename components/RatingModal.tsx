@@ -55,7 +55,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
             >
               <svg
                 className={`w-12 h-12 ${
-                  star <= displayRating ? 'text-amber-400' : 'text-gray-300'
+                  star <= displayRating ? 'text-rating' : 'text-rating-muted'
                 } transition-colors`}
                 fill="currentColor"
                 viewBox="0 0 20 20"

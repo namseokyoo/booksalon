@@ -88,7 +88,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onClose, onShowProfile }) => 
                     </button>
                 )}
                 {messageStatus && (
-                    <p className={`px-4 py-1 text-xs ${messageStatus.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                    <p className={`px-4 py-1 text-xs ${messageStatus.type === 'success' ? 'text-success' : 'text-destructive'}`}>
                         {messageStatus.text}
                     </p>
                 )}

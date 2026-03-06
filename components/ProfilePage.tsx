@@ -394,7 +394,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                                         </button>
                                     </div>
                                     {saveError && (
-                                        <p className="text-red-500 text-sm mt-2">{saveError}</p>
+                                        <p className="text-destructive text-sm mt-2">{saveError}</p>
                                     )}
                                 </div>
                             ) : (
@@ -600,17 +600,17 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
 
                             {/* 통계 요약 */}
                             <div className="grid grid-cols-3 gap-3 mb-6">
-                                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 text-center">
-                                    <div className="text-2xl font-bold text-blue-500">{readingStats.reading}</div>
-                                    <div className="text-xs text-blue-500 mt-0.5">{'\uD83D\uDCD6'} 읽는 중</div>
+                                <div className="bg-status-reading/10 border border-status-reading/20 rounded-xl p-3 text-center">
+                                    <div className="text-2xl font-bold text-status-reading">{readingStats.reading}</div>
+                                    <div className="text-xs text-status-reading mt-0.5">{'\uD83D\uDCD6'} 읽는 중</div>
                                 </div>
-                                <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 text-center">
-                                    <div className="text-2xl font-bold text-green-500">{readingStats.completed}</div>
-                                    <div className="text-xs text-green-500 mt-0.5">{'\u2705'} 완독</div>
+                                <div className="bg-status-complete/10 border border-status-complete/20 rounded-xl p-3 text-center">
+                                    <div className="text-2xl font-bold text-status-complete">{readingStats.completed}</div>
+                                    <div className="text-xs text-status-complete mt-0.5">{'\u2705'} 완독</div>
                                 </div>
-                                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-center">
-                                    <div className="text-2xl font-bold text-amber-500">{readingStats.wantToRead}</div>
-                                    <div className="text-xs text-amber-500 mt-0.5">{'\uD83D\uDCCB'} 읽고 싶음</div>
+                                <div className="bg-status-wishlist/10 border border-status-wishlist/20 rounded-xl p-3 text-center">
+                                    <div className="text-2xl font-bold text-status-wishlist">{readingStats.wantToRead}</div>
+                                    <div className="text-xs text-status-wishlist mt-0.5">{'\uD83D\uDCCB'} 읽고 싶음</div>
                                 </div>
                             </div>
 
@@ -653,9 +653,9 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onDeleteClick }) => {
                                                 log.status === 'completed' ? '\u2705 완독' :
                                                 '\uD83D\uDCCB 읽고 싶음';
                                             const statusColor =
-                                                log.status === 'reading' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-                                                log.status === 'completed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                                'bg-amber-500/10 text-amber-500 border-amber-500/20';
+                                                log.status === 'reading' ? 'bg-status-reading/10 text-status-reading border-status-reading/20' :
+                                                log.status === 'completed' ? 'bg-status-complete/10 text-status-complete border-status-complete/20' :
+                                                'bg-status-wishlist/10 text-status-wishlist border-status-wishlist/20';
 
                                             return (
                                                 <div key={log.id} className="bg-muted border border-border rounded-xl p-4 hover:shadow-md transition-shadow">

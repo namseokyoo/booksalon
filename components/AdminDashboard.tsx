@@ -195,8 +195,8 @@ const AdminDashboard: React.FC = () => {
 
                         <div className="bg-surface border border-border p-6 rounded-xl shadow-sm">
                             <div className="flex items-center">
-                                <div className="p-2 bg-amber-100 rounded-lg">
-                                    <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="p-2 bg-warning/10 rounded-lg">
+                                    <svg className="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
@@ -303,7 +303,7 @@ const AdminDashboard: React.FC = () => {
                                 <div key={report.id} className="p-4 bg-muted border border-border rounded-xl">
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center space-x-2">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${report.status === 'pending' ? 'bg-amber-100 text-amber-700 border border-amber-200' :
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${report.status === 'pending' ? 'bg-warning/10 text-warning-foreground border border-warning/20' :
                                                     report.status === 'resolved' ? 'bg-accent/10 text-accent border border-accent/20' :
                                                         'bg-muted text-surface-foreground border border-border'
                                                 }`}>

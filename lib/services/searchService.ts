@@ -112,7 +112,7 @@ export class SearchService {
 
     return text.replace(
       regex,
-      '<mark class="bg-yellow-200 text-yellow-900 font-medium">$1</mark>'
+      '<mark class="bg-highlight text-highlight-foreground font-medium">$1</mark>'
     )
   }
 

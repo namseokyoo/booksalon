@@ -63,7 +63,7 @@ const StarRating: React.FC<StarRatingProps> = ({
       >
         {/* 배경 별 (회색) */}
         <svg
-          className={`${starSize} text-gray-300`}
+          className={`${starSize} text-rating-muted`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -77,7 +77,7 @@ const StarRating: React.FC<StarRatingProps> = ({
             style={{ width: showHalf ? '50%' : fillRatio >= 1 ? '100%' : '0%' }}
           >
             <svg
-              className={`${starSize} text-amber-400`}
+              className={`${starSize} text-rating`}
               fill="currentColor"
               viewBox="0 0 20 20"
             >

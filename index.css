@@ -50,6 +50,19 @@
   --color-warning: oklch(0.769 0.188 70);
   --color-warning-foreground: oklch(0.22 0.02 60);
 
+  /* 별점/평가 — CTA와 동일 Hue(65) 계열이나 독립 제어 가능 */
+  --color-rating: oklch(0.75 0.14 65);
+  --color-rating-muted: oklch(0.90 0.02 65);
+
+  /* 독서 상태 3종 — 의미별 독립 토큰 */
+  --color-status-wishlist: oklch(0.75 0.14 65);
+  --color-status-reading: oklch(0.55 0.15 250);
+  --color-status-complete: oklch(0.627 0.194 149);
+
+  /* 검색 하이라이트 */
+  --color-highlight: oklch(0.92 0.12 90);
+  --color-highlight-foreground: oklch(0.25 0.05 60);
+
   /* UI 요소 */
   --color-border: oklch(0.90 0.008 80);
   --color-input: oklch(0.90 0.008 80);
@@ -156,6 +169,19 @@
     --color-success-foreground: oklch(1.0 0 0);
     --color-warning: oklch(0.800 0.170 70);
     --color-warning-foreground: oklch(0.15 0.01 155);
+
+    /* 별점/평가 */
+    --color-rating: oklch(0.75 0.14 65);
+    --color-rating-muted: oklch(0.35 0.02 65);
+
+    /* 독서 상태 3종 */
+    --color-status-wishlist: oklch(0.75 0.14 65);
+    --color-status-reading: oklch(0.70 0.15 250);
+    --color-status-complete: oklch(0.660 0.180 149);
+
+    /* 검색 하이라이트 */
+    --color-highlight: oklch(0.35 0.08 90);
+    --color-highlight-foreground: oklch(0.90 0.05 60);
 
     /* UI 요소 */
     --color-border: oklch(0.30 0.01 155);

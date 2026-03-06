@@ -15,7 +15,7 @@ const HighlightText: React.FC<HighlightTextProps> = ({
   text,
   highlight,
   className = '',
-  highlightClassName = 'bg-yellow-200 text-yellow-900 font-medium',
+  highlightClassName = 'bg-highlight text-highlight-foreground font-medium',
 }) => {
   // 검색어가 없거나 텍스트가 없으면 그대로 반환
   if (!highlight.trim() || !text) {
@@ -61,7 +61,7 @@ export const highlightSearchTerm = (text: string, term: string): string => {
   const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`(${escapedTerm})`, 'gi');
 
-  return text.replace(regex, '<mark class="bg-yellow-200 text-yellow-900 font-medium">$1</mark>');
+  return text.replace(regex, '<mark class="bg-highlight text-highlight-foreground font-medium">$1</mark>');
 };
 
 export default HighlightText;

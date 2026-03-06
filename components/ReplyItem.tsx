@@ -142,7 +142,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="min-h-[36px] px-3 text-xs text-destructive hover:text-red-700 font-medium"
+                  className="min-h-[36px] px-3 text-xs text-destructive hover:text-destructive/80 font-medium"
                 >
                   삭제
                 </button>
@@ -153,7 +153,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
                 <span className="text-xs text-surface-foreground">삭제할까요?</span>
                 <button
                   onClick={handleDeleteConfirm}
-                  className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                  className="px-2 py-1 text-xs bg-destructive text-white rounded hover:bg-destructive/90"
                 >
                   확인
                 </button>
@@ -177,7 +177,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
             className="w-full p-2 bg-surface border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary resize-none"
             rows={2}
           />
-          {editError && <p className="text-red-500 text-xs">{editError}</p>}
+          {editError && <p className="text-destructive text-xs">{editError}</p>}
           <div className="flex gap-2">
             <button
               onClick={handleEditSubmit}
@@ -204,14 +204,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
       <div className="flex items-center space-x-3 mt-2">
         <button
           onClick={handleToggleLike}
-          className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
+          className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'}`}
         >
           <LikeIcon className="w-4 h-4" filled={isLiked} />
           <span>{likeCount}</span>
         </button>
       </div>
-      {likeError && <p className="text-red-500 text-xs mt-1">{likeError}</p>}
-      {deleteError && <p className="text-red-500 text-xs mt-1">{deleteError}</p>}
+      {likeError && <p className="text-destructive text-xs mt-1">{likeError}</p>}
+      {deleteError && <p className="text-destructive text-xs mt-1">{deleteError}</p>}
     </div>
   );
 };

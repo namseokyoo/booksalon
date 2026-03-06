@@ -151,7 +151,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
             {/* 에러 표시 */}
             {image.error && (
-              <div className="absolute inset-0 bg-red-500 bg-opacity-75 flex items-center justify-center p-2">
+              <div className="absolute inset-0 bg-destructive bg-opacity-75 flex items-center justify-center p-2">
                 <span className="text-white text-xs text-center">{image.error}</span>
               </div>
             )}
@@ -230,7 +230,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       </p>
 
       {uploadError && (
-        <p className="text-red-500 text-xs">{uploadError}</p>
+        <p className="text-destructive text-xs">{uploadError}</p>
       )}
     </div>
   );

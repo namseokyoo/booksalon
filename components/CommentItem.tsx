@@ -196,7 +196,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="min-h-[36px] px-3 text-xs text-destructive hover:text-red-700 font-medium"
+                  className="min-h-[36px] px-3 text-xs text-destructive hover:text-destructive font-medium"
                 >
                   삭제
                 </button>
@@ -207,7 +207,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
                 <span className="text-xs text-surface-foreground">삭제할까요?</span>
                 <button
                   onClick={handleDeleteComment}
-                  className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                  className="px-2 py-1 text-xs bg-destructive text-white rounded hover:bg-destructive/90"
                 >
                   확인
                 </button>
@@ -232,7 +232,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
             rows={3}
           />
           {editError && (
-            <p className="text-red-500 text-xs">{editError}</p>
+            <p className="text-destructive text-xs">{editError}</p>
           )}
           <div className="flex gap-2">
             <button
@@ -260,7 +260,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
       <div className="flex items-center space-x-3 mt-2">
         <button
           onClick={handleToggleLike}
-          className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'
+          className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'
             }`}
         >
           <LikeIcon className="w-4 h-4" filled={isLiked} />
@@ -276,10 +276,10 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
         )}
       </div>
       {likeError && (
-        <p className="text-red-500 text-xs mt-1">{likeError}</p>
+        <p className="text-destructive text-xs mt-1">{likeError}</p>
       )}
       {deleteError && (
-        <p className="text-red-500 text-xs mt-1">{deleteError}</p>
+        <p className="text-destructive text-xs mt-1">{deleteError}</p>
       )}
 
       {showReplyInput && onReply && (

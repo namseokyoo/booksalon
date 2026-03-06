@@ -391,7 +391,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSelectForu
                 {/* 검색 결과 */}
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6">
                     {error && (
-                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="mb-4 p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
                             <p className="text-sm text-destructive">{error}</p>
                         </div>
                     )}

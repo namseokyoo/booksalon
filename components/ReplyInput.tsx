@@ -32,7 +32,7 @@ const ReplyInput: React.FC<ReplyInputProps> = ({ parentId, onSubmit, onCancel, i
         disabled={isSubmitting}
         className="w-full p-2 bg-surface border border-border rounded-lg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary resize-none"
       />
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+      {error && <p className="text-destructive text-xs">{error}</p>}
       <div className="flex gap-2">
         <button
           type="submit"

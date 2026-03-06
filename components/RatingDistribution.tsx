@@ -86,7 +86,7 @@ const RatingDistribution: React.FC<RatingDistributionProps> = ({
                 {/* 막대 그래프 */}
                 <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-amber-400 rounded-full transition-all duration-300"
+                    className="h-full bg-rating rounded-full transition-all duration-300"
                     style={{ width: `${barWidth}%` }}
                   />
                 </div>

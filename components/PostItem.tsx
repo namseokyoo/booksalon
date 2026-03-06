@@ -238,7 +238,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
                 e.stopPropagation();
                 handleToggleLike();
               }}
-              className="flex items-center space-x-1 p-2 -m-2 hover:text-red-400 transition-colors duration-200"
+              className="flex items-center space-x-1 p-2 -m-2 hover:text-destructive transition-colors duration-200"
               aria-label={isLiked ? '좋아요 취소' : '좋아요'}
             >
               <LikeIcon
@@ -333,7 +333,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
               </button>
             </form>
             {commentError && (
-              <p className="text-red-500 text-xs mt-1">{commentError}</p>
+              <p className="text-destructive text-xs mt-1">{commentError}</p>
             )}
           </div>
         </div>
