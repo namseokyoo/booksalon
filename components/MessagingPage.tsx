@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MessageCircle } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import ChatList from '../components/ChatList';
 import ChatComponent from '../components/ChatComponent';
@@ -71,7 +72,7 @@ const MessagingPage: React.FC = () => {
         <div className="min-h-screen bg-background p-4">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-foreground mb-2">💬 메시지</h1>
+                    <h1 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2"><MessageCircle className="w-6 h-6" /> 메시지</h1>
                     <p className="text-muted-foreground">다른 사용자와 실시간으로 소통하세요</p>
                 </div>
 
