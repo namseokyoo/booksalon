@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import type { ChatRoom, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import MessagingPageSkeleton from './MessagingPageSkeleton';
 
 interface ChatListProps {
     onSelectChat: (chatRoomId: string, otherUser: UserProfile) => void;
@@ -155,11 +156,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
     };
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <MessagingPageSkeleton />;
     }
 
     if (chatRooms.length === 0) {

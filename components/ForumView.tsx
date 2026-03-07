@@ -7,6 +7,7 @@ import PostDetail from './PostDetail';
 import UserMenu from './UserMenu';
 import UserProfilePreview from './UserProfilePreview';
 import CreatePostModal from './CreatePostModal';
+import ForumViewSkeleton from './ForumViewSkeleton';
 import type { ImagePreview } from './ImageUploader';
 import { PlusIcon } from './icons';
 import { supabase } from '../lib/supabase';
@@ -496,11 +497,7 @@ const ForumView: React.FC = () => {
 
   // 딥링크: forum 데이터 로딩 중
   if (!forum && forumLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <ForumViewSkeleton />;
   }
 
   // 딥링크: forum 데이터 로드 실패
@@ -514,11 +511,7 @@ const ForumView: React.FC = () => {
 
   // 포스트 직접 진입 로딩 중 (살롱 화면 깜빡임 방지)
   if (initialPostId && initialPostLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
+    return <ForumViewSkeleton />;
   }
 
   if (selectedPost) {

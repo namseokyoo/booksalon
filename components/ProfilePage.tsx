@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { MapPin, Globe, Target, BookOpen, CheckCircle, BookmarkPlus } from 'lucide-react';
 import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
+import ProfilePageSkeleton from './ProfilePageSkeleton';
 
 const ProfilePage: React.FC = () => {
     const { openDeleteAccount } = useModals();
@@ -192,11 +193,7 @@ const ProfilePage: React.FC = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-background">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <ProfilePageSkeleton />;
     }
 
     if (!profile) {

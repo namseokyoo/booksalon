@@ -6,6 +6,7 @@ import { SocialService } from '../lib/services';
 import type { Activity } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import ActivityFeedSkeleton from './ActivityFeedSkeleton';
 
 const ActivityFeed: React.FC = () => {
     const navigate = useNavigate();
@@ -136,10 +137,7 @@ const ActivityFeed: React.FC = () => {
                 {/* 활동 목록 */}
                 <div className="bg-surface rounded-lg p-6">
                     {loading ? (
-                        <div className="text-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                            <p className="text-muted-foreground mt-2">활동을 불러오는 중...</p>
-                        </div>
+                        <ActivityFeedSkeleton />
                     ) : activities.length === 0 ? (
                         <div className="text-center py-8">
                             <p className="text-muted-foreground">
