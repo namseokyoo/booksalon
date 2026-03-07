@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { Post, Comment, UserProfile } from '../types';
 import CommentItem from './CommentItem';
 import UserProfilePreview from './UserProfilePreview';
@@ -485,16 +486,12 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     )}
 
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
-                        <button
-                            onClick={() => {
-                                if (authorProfile) {
-                                    handleUserClick(authorProfile);
-                                }
-                            }}
+                        <Link
+                            to={`/profile/${authorProfile?.uid || post.author.uid}`}
                             className="hover:text-primary transition-colors font-medium"
                         >
                             {getDisplayName()}
-                        </button>
+                        </Link>
                         <span className="text-muted-foreground">{formatRelativeDate(post.createdAt)}</span>
                         <div className="flex items-center space-x-4">
                             <div>

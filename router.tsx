@@ -22,6 +22,7 @@ export const router = createBrowserRouter([
       { index: true, element: <ForumList /> },
       { path: 'forum/:isbn', element: <ForumView /> },
       { path: 'profile', element: <ProfilePage /> },
+      { path: 'profile/:userId', element: <ProfilePage /> },
       { path: 'activity', element: <ActivityFeed /> },
       { path: 'best-posts', element: <AllBestPostsPage /> },
       { path: 'messages', element: <MessagingPage /> },

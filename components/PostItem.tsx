@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { Post, Comment } from '../types';
 import CommentItem from './CommentItem';
 import TagList from './TagList';
@@ -17,6 +18,7 @@ interface PostItemProps {
 }
 
 const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast }) => {
+  const postAuthor = post.author as typeof post.author & { nickname?: string; displayName?: string };
   const [isExpanded, setIsExpanded] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState<Comment[]>([]);
@@ -224,7 +226,13 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
       <div className="p-3 sm:p-3.5 md:p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <h3 className="font-semibold font-serif text-base sm:text-base md:text-lg text-foreground">{post.title}</h3>
         <div className="flex items-center space-x-2 text-xs text-muted-foreground mt-2">
-          <span className="font-medium text-primary truncate">{post.author.nickname || post.author.displayName || post.author.email?.split('@')[0]}</span>
+          <Link
+            to={`/profile/${postAuthor.uid}`}
+            onClick={(e) => e.stopPropagation()}
+            className="font-medium text-primary truncate hover:underline"
+          >
+            {postAuthor.nickname || postAuthor.displayName || postAuthor.email?.split('@')[0]}
+          </Link>
           <span>{formatRelativeDate(post.createdAt)}</span>
         </div>
         <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">

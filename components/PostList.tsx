@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { Post, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -78,17 +79,15 @@ const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserCl
                     </h3>
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <div className="relative">
-                            <button
+                            <Link
+                                to={`/profile/${authorProfile?.uid || post.author.uid}`}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    if (authorProfile) {
-                                        onUserClick(authorProfile);
-                                    }
                                 }}
                                 className="hover:text-primary transition-colors font-medium"
                             >
                                 {getDisplayName()}
-                            </button>
+                            </Link>
                         </div>
                         <span className="text-muted-foreground">{formatTime(post.createdAt)}</span>
                         <div className="flex items-center space-x-3">

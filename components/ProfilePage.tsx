@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { supabase } from '../lib/supabase';
@@ -14,6 +15,7 @@ import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } fr
 import ProfilePageSkeleton from './ProfilePageSkeleton';
 
 const ProfilePage: React.FC = () => {
+    const { userId } = useParams<{ userId?: string }>();
     const { openDeleteAccount } = useModals();
     const { currentUser, userProfile: authUserProfile } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -41,19 +43,87 @@ const ProfilePage: React.FC = () => {
         favoriteGenres: [] as string[],
         profileImageFile: null as File | null
     });
+    const isOwnProfile = !userId || currentUser?.uid === userId;
+
+    const loadReadingLogBooks = async (logsData: ReadingLog[]) => {
+        if (logsData.length === 0) {
+            setReadingLogBooks(new Map());
+            return;
+        }
+
+        const isbns = [...new Set(logsData.map((log) => log.forumIsbn))];
+        const { data: books } = await supabase
+            .from('books')
+            .select('isbn, title, thumbnail, authors')
+            .in('isbn', isbns);
+
+        const bookMap = new Map<string, { title: string; thumbnail: string; authors: string[] }>();
+        (books as Array<{ isbn: string; title: string; thumbnail: string | null; authors: string[] }> | null)?.forEach((book) => {
+            bookMap.set(book.isbn, {
+                title: book.title,
+                thumbnail: book.thumbnail || '',
+                authors: book.authors || [],
+            });
+        });
+        setReadingLogBooks(bookMap);
+    };
 
     useEffect(() => {
-        if (currentUser) {
+        if (userId && !isOwnProfile) {
+            loadUserData();
+        } else if (currentUser) {
             loadUserData();
         }
-    }, [currentUser]);
+    }, [currentUser, isOwnProfile, userId]);
+
+    useEffect(() => {
+        if (!isOwnProfile) {
+            setIsEditing(false);
+            setDeleteStep(0);
+            setDeleteConfirmText('');
+            setSaveError(null);
+            if (activeTab === 'bookmarks') {
+                setActiveTab('stats');
+            }
+        }
+    }, [activeTab, isOwnProfile]);
 
     const loadUserData = async () => {
-        if (!currentUser) return;
-
         try {
             setLoading(true);
-            // users 테이블에서 실제 user_id 조회
+            if (userId && !isOwnProfile) {
+                const profileData = await UserService.getUserProfileByAuthId(userId);
+
+                if (!profileData) {
+                    setProfile(null);
+                    setPosts([]);
+                    setComments([]);
+                    setBookmarkedForums([]);
+                    setReadingLogs([]);
+                    setReadingStats({ reading: 0, completed: 0, wantToRead: 0 });
+                    setReadingLogBooks(new Map());
+                    return;
+                }
+
+                const [postsData, commentsData, logsData, statsData] = await Promise.all([
+                    UserService.getUserPosts(profileData.id),
+                    UserService.getUserComments(profileData.id),
+                    ReadingLogService.getReadingLogs(profileData.id),
+                    ReadingLogService.getReadingStats(profileData.id),
+                ]);
+
+                setProfile(profileData);
+                setPosts(postsData);
+                setComments(commentsData);
+                setBookmarkedForums([]);
+                setReadingLogs(logsData);
+                setReadingStats(statsData);
+                await loadReadingLogBooks(logsData);
+                return;
+            }
+
+            if (!currentUser) return;
+
             const { data: userData } = await supabase
                 .from('users')
                 .select('id')
@@ -77,27 +147,7 @@ const ProfilePage: React.FC = () => {
             setBookmarkedForums(bookmarksData);
             setReadingLogs(logsData);
             setReadingStats(statsData);
-
-            // 독서 로그의 책 정보 로드
-            if (logsData.length > 0) {
-                const isbns = logsData.map((log) => log.forumIsbn);
-                const { data: books } = await supabase
-                    .from('books')
-                    .select('isbn, title, thumbnail, authors')
-                    .in('isbn', isbns);
-
-                if (books) {
-                    const bookMap = new Map<string, { title: string; thumbnail: string; authors: string[] }>();
-                    (books as Array<{ isbn: string; title: string; thumbnail: string | null; authors: string[] }>).forEach((book) => {
-                        bookMap.set(book.isbn, {
-                            title: book.title,
-                            thumbnail: book.thumbnail || '',
-                            authors: book.authors || [],
-                        });
-                    });
-                    setReadingLogBooks(bookMap);
-                }
-            }
+            await loadReadingLogBooks(logsData);
 
             if (profileData) {
                 setEditForm({
@@ -201,7 +251,9 @@ const ProfilePage: React.FC = () => {
             <div className="min-h-screen bg-background p-3 sm:p-6 lg:p-8">
                 <div className="max-w-4xl mx-auto">
                     <div className="text-center p-8">
-                        <p className="text-surface-foreground">프로필을 찾을 수 없습니다.</p>
+                        <p className="text-surface-foreground">
+                            {userId ? '해당 유저를 찾을 수 없습니다.' : '프로필을 찾을 수 없습니다.'}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -213,12 +265,14 @@ const ProfilePage: React.FC = () => {
             <div className="max-w-4xl mx-auto">
                 {/* 헤더 */}
                 <div className="flex items-center justify-end mb-6">
-                    <button
-                        onClick={() => setIsEditing(!isEditing)}
-                        className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
-                    >
-                        {isEditing ? '취소' : '프로필 편집'}
-                    </button>
+                    {isOwnProfile && (
+                        <button
+                            onClick={() => setIsEditing(!isEditing)}
+                            className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
+                        >
+                            {isEditing ? '취소' : '프로필 편집'}
+                        </button>
+                    )}
                 </div>
 
                 {/* 프로필 정보 */}
@@ -235,7 +289,7 @@ const ProfilePage: React.FC = () => {
 
                         {/* 프로필 정보 */}
                         <div className="flex-1">
-                            {isEditing ? (
+                            {isOwnProfile && isEditing ? (
                                 <div className="space-y-6">
                                     {/* 프로필 이미지 */}
                                     <div>
@@ -384,7 +438,9 @@ const ProfilePage: React.FC = () => {
                                     <h1 className="text-2xl font-bold text-foreground mb-2">
                                         {profile.nickname || profile.displayName || profile.email?.split('@')[0] || '독자'}
                                     </h1>
-                                    <p className="text-muted-foreground mb-2">{profile.email}</p>
+                                    {isOwnProfile && profile.email && (
+                                        <p className="text-muted-foreground mb-2">{profile.email}</p>
+                                    )}
                                     {profile.bio && (
                                         <p className="text-surface-foreground mb-4 leading-relaxed">{profile.bio}</p>
                                     )}
@@ -441,15 +497,17 @@ const ProfilePage: React.FC = () => {
                     >
                         작성한 댓글 ({comments.length})
                     </button>
-                    <button
-                        onClick={() => setActiveTab('bookmarks')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'bookmarks'
-                            ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                            }`}
-                    >
-                        북마크한 살롱 ({bookmarkedForums.length})
-                    </button>
+                    {isOwnProfile && (
+                        <button
+                            onClick={() => setActiveTab('bookmarks')}
+                            className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'bookmarks'
+                                ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                                }`}
+                        >
+                            북마크한 살롱 ({bookmarkedForums.length})
+                        </button>
+                    )}
                     <button
                         onClick={() => setActiveTab('reading')}
                         className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'reading'
@@ -540,7 +598,7 @@ const ProfilePage: React.FC = () => {
                         </div>
                     )}
 
-                    {activeTab === 'bookmarks' && (
+                    {isOwnProfile && activeTab === 'bookmarks' && (
                         <div>
                             <h2 className="text-xl font-bold text-foreground mb-4">북마크한 살롱</h2>
                             {bookmarkedForums.length === 0 ? (
@@ -705,7 +763,7 @@ const ProfilePage: React.FC = () => {
                 </div>
 
                 {/* 위험 구역 */}
-                {(
+                {isOwnProfile && (
                     <div className="mt-8 border-t border-border pt-6">
                         <h2 className="text-sm font-semibold text-destructive mb-3 uppercase tracking-wide">위험 구역</h2>
                         {deleteStep === 0 && (

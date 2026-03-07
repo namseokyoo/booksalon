@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { CommentWithReplies } from '../lib/services/commentService';
 import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
@@ -118,16 +119,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
     <div className="bg-muted border border-border rounded-lg p-3">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center space-x-2">
-          <button
-            onClick={() => {
-              if (authorProfile && onUserClick) {
-                onUserClick(authorProfile);
-              }
-            }}
+          <Link
+            to={`/profile/${authorProfile?.uid || comment.author.uid}`}
             className="text-xs sm:text-sm font-semibold text-primary hover:text-primary-700 transition-colors"
           >
             {getDisplayName()}
-          </button>
+          </Link>
           <span className="text-xs text-muted-foreground">{formatRelativeDate(comment.createdAt)}</span>
         </div>
         {isOwner && (
