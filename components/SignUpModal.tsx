@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -14,8 +15,11 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'checking' | 'available' | 'duplicate' | 'invalid_format'>('idle');
   const { signup, loginWithGoogle, loginWithKakao } = useAuth();
   const modalRef = useRef<HTMLDivElement>(null);
+  const latestEmailValueRef = useRef('');
+  const emailCheckRequestIdRef = useRef(0);
 
   // ESC 키로 닫기 + 포커스 트래핑
   useEffect(() => {
@@ -52,9 +56,52 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  const checkEmailDuplicate = async (emailValue: string) => {
+    if (!emailValue) {
+      return;
+    }
+
+    const requestId = ++emailCheckRequestIdRef.current;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailValue)) {
+      if (latestEmailValueRef.current === emailValue && requestId === emailCheckRequestIdRef.current) {
+        setEmailStatus('invalid_format');
+      }
+      return;
+    }
+
+    setEmailStatus('checking');
+
+    try {
+      const { data, error: emailCheckError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', emailValue)
+        .maybeSingle();
+
+      if (latestEmailValueRef.current !== emailValue || requestId !== emailCheckRequestIdRef.current) {
+        return;
+      }
+
+      if (emailCheckError) {
+        setEmailStatus('idle');
+        return;
+      }
+
+      setEmailStatus(data ? 'duplicate' : 'available');
+    } catch {
+      if (latestEmailValueRef.current === emailValue && requestId === emailCheckRequestIdRef.current) {
+        setEmailStatus('idle');
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (emailStatus === 'checking' || emailStatus === 'duplicate' || emailStatus === 'invalid_format') {
+      return;
+    }
     if (password !== passwordConfirm) {
       return setError('비밀번호가 일치하지 않습니다.');
     }
@@ -146,8 +193,27 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
                 className="appearance-none rounded-lg relative block w-full px-3 py-2 border border-border bg-surface text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-primary text-sm"
                 placeholder="이메일"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  const nextEmail = e.target.value;
+                  latestEmailValueRef.current = nextEmail;
+                  emailCheckRequestIdRef.current += 1;
+                  setEmail(nextEmail);
+                  setEmailStatus('idle');
+                }}
+                onBlur={(e) => checkEmailDuplicate(e.target.value)}
               />
+              {emailStatus === 'checking' && (
+                <p className="text-xs text-muted-foreground mt-1">확인 중...</p>
+              )}
+              {emailStatus === 'available' && (
+                <p className="text-xs text-green-600 mt-1">사용 가능한 이메일입니다</p>
+              )}
+              {emailStatus === 'duplicate' && (
+                <p className="text-xs text-destructive mt-1">이미 사용 중인 이메일입니다</p>
+              )}
+              {emailStatus === 'invalid_format' && (
+                <p className="text-xs text-destructive mt-1">올바른 이메일 형식이 아닙니다</p>
+              )}
             </div>
             <div>
               <label htmlFor="signup-nickname" className="block text-sm font-medium text-foreground mb-1">닉네임</label>
@@ -243,7 +309,7 @@ const SignUpModal: React.FC<SignUpModalProps> = ({ onClose }) => {
         <div className="bg-muted px-3 sm:px-6 py-3 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-border">
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || emailStatus === 'checking' || emailStatus === 'duplicate' || emailStatus === 'invalid_format'}
             className="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-3 py-2 bg-cta text-sm sm:text-base font-medium text-cta-foreground hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
             {loading ? '가입 중...' : '가입하기'}
