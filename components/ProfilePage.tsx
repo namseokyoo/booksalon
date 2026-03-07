@@ -610,7 +610,7 @@ const ProfilePage: React.FC = () => {
                                     <button
                                         key={filter.value}
                                         onClick={() => setReadingFilter(filter.value)}
-                                        className={`px-3 py-1.5 text-xs rounded-full transition-colors duration-200 flex items-center gap-1 ${
+                                        className={`px-3 py-1.5 text-sm rounded-full transition-colors duration-200 flex items-center gap-1 ${
                                             readingFilter === filter.value
                                                 ? 'bg-primary text-primary-foreground'
                                                 : 'bg-muted text-muted-foreground hover:bg-muted'

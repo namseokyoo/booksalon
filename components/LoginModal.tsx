@@ -101,7 +101,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
       <form onSubmit={handleSubmit} className="bg-surface rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm">
         <div className="p-4 sm:p-6">
           <h2 id="login-modal-title" className="text-base sm:text-lg font-medium font-serif leading-6 text-foreground mb-3 sm:mb-4 text-center">반갑습니다</h2>
-          {error && <p className="bg-destructive/5 border border-destructive/20 text-destructive text-xs sm:text-sm p-2 sm:p-3 rounded-lg mb-3 sm:mb-4">{error}</p>}
+          {error && <p className="bg-destructive/5 border border-destructive/20 text-destructive text-sm p-2 sm:p-3 rounded-lg mb-3 sm:mb-4">{error}</p>}
           <div className="space-y-3 sm:space-y-4">
             <div>
               <label htmlFor="login-email" className="block text-sm font-medium text-foreground mb-1">이메일 주소</label>
