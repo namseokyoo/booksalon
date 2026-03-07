@@ -9,6 +9,7 @@ import type { BadgeStats } from '../lib/badges';
 import BadgeList from './BadgeList';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { MapPin, Globe, Target, BookOpen, CheckCircle, BookmarkPlus } from 'lucide-react';
 import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
 
 const ProfilePage: React.FC = () => {
@@ -400,9 +401,9 @@ const ProfilePage: React.FC = () => {
                                         </div>
                                     )}
                                     <div className="space-y-1 text-sm text-muted-foreground">
-                                        {profile.location && <p><span aria-hidden="true">📍</span> 지역: {profile.location}</p>}
-                                        {profile.website && <p><span aria-hidden="true">🌐</span> 웹사이트: <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.website}</a></p>}
-                                        {profile.readingGoal > 0 && <p><span aria-hidden="true">📚</span> 연간 독서 목표: {profile.readingGoal}권</p>}
+                                        {profile.location && <p className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 flex-shrink-0" /> 지역: {profile.location}</p>}
+                                        {profile.website && <p className="flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 flex-shrink-0" /> 웹사이트: <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{profile.website}</a></p>}
+                                        {profile.readingGoal > 0 && <p className="flex items-center gap-1.5"><Target className="w-3.5 h-3.5 flex-shrink-0" /> 연간 독서 목표: {profile.readingGoal}권</p>}
                                     </div>
                                     <div className="text-xs text-muted-foreground mt-4 pt-4 border-t border-border">
                                         <p>가입일: {formatDate(profile.createdAt)}</p>
@@ -427,7 +428,7 @@ const ProfilePage: React.FC = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('posts')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'posts'
+                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'posts'
                             ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
@@ -436,7 +437,7 @@ const ProfilePage: React.FC = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('comments')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'comments'
+                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'comments'
                             ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
@@ -445,7 +446,7 @@ const ProfilePage: React.FC = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('bookmarks')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'bookmarks'
+                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'bookmarks'
                             ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
@@ -454,7 +455,7 @@ const ProfilePage: React.FC = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('reading')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'reading'
+                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'reading'
                             ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
@@ -463,7 +464,7 @@ const ProfilePage: React.FC = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('badges')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'badges'
+                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'badges'
                             ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                             }`}
@@ -586,35 +587,36 @@ const ProfilePage: React.FC = () => {
                             <div className="grid grid-cols-3 gap-3 mb-6">
                                 <div className="bg-status-reading/10 border border-status-reading/20 rounded-xl p-3 text-center">
                                     <div className="text-2xl font-bold text-status-reading">{readingStats.reading}</div>
-                                    <div className="text-xs text-status-reading mt-0.5">{'\uD83D\uDCD6'} 읽는 중</div>
+                                    <div className="text-xs text-status-reading mt-0.5 flex items-center justify-center gap-1"><BookOpen className="w-3 h-3" /> 읽는 중</div>
                                 </div>
                                 <div className="bg-status-complete/10 border border-status-complete/20 rounded-xl p-3 text-center">
                                     <div className="text-2xl font-bold text-status-complete">{readingStats.completed}</div>
-                                    <div className="text-xs text-status-complete mt-0.5">{'\u2705'} 완독</div>
+                                    <div className="text-xs text-status-complete mt-0.5 flex items-center justify-center gap-1"><CheckCircle className="w-3 h-3" /> 완독</div>
                                 </div>
                                 <div className="bg-status-wishlist/10 border border-status-wishlist/20 rounded-xl p-3 text-center">
                                     <div className="text-2xl font-bold text-status-wishlist">{readingStats.wantToRead}</div>
-                                    <div className="text-xs text-status-wishlist mt-0.5">{'\uD83D\uDCCB'} 읽고 싶음</div>
+                                    <div className="text-xs text-status-wishlist mt-0.5 flex items-center justify-center gap-1"><BookmarkPlus className="w-3 h-3" /> 읽고 싶음</div>
                                 </div>
                             </div>
 
                             {/* 필터 */}
                             <div className="flex gap-2 mb-4">
                                 {([
-                                    { value: 'all' as const, label: '전체' },
-                                    { value: 'reading' as const, label: '\uD83D\uDCD6 읽는 중' },
-                                    { value: 'completed' as const, label: '\u2705 완독' },
-                                    { value: 'want_to_read' as const, label: '\uD83D\uDCCB 읽고 싶음' },
-                                ]).map((filter) => (
+                                    { value: 'all' as const, label: '전체', icon: null },
+                                    { value: 'reading' as const, label: '읽는 중', icon: <BookOpen className="w-3 h-3" /> },
+                                    { value: 'completed' as const, label: '완독', icon: <CheckCircle className="w-3 h-3" /> },
+                                    { value: 'want_to_read' as const, label: '읽고 싶음', icon: <BookmarkPlus className="w-3 h-3" /> },
+                                ] as { value: 'all' | 'reading' | 'completed' | 'want_to_read'; label: string; icon: React.ReactNode }[]).map((filter) => (
                                     <button
                                         key={filter.value}
                                         onClick={() => setReadingFilter(filter.value)}
-                                        className={`px-3 py-1.5 text-xs rounded-full transition-colors duration-200 ${
+                                        className={`px-3 py-1.5 text-xs rounded-full transition-colors duration-200 flex items-center gap-1 ${
                                             readingFilter === filter.value
                                                 ? 'bg-primary text-primary-foreground'
                                                 : 'bg-muted text-muted-foreground hover:bg-muted'
                                         }`}
                                     >
+                                        {filter.icon}
                                         {filter.label}
                                     </button>
                                 ))}
@@ -632,10 +634,10 @@ const ProfilePage: React.FC = () => {
                                         .filter((log) => readingFilter === 'all' || log.status === readingFilter)
                                         .map((log) => {
                                             const book = readingLogBooks.get(log.forumIsbn);
-                                            const statusLabel =
-                                                log.status === 'reading' ? '\uD83D\uDCD6 읽는 중' :
-                                                log.status === 'completed' ? '\u2705 완독' :
-                                                '\uD83D\uDCCB 읽고 싶음';
+                                            const statusLabel: React.ReactNode =
+                                                log.status === 'reading' ? <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" /> 읽는 중</span> :
+                                                log.status === 'completed' ? <span className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> 완독</span> :
+                                                <span className="flex items-center gap-1"><BookmarkPlus className="w-3 h-3" /> 읽고 싶음</span>;
                                             const statusColor =
                                                 log.status === 'reading' ? 'bg-status-reading/10 text-status-reading border-status-reading/20' :
                                                 log.status === 'completed' ? 'bg-status-complete/10 text-status-complete border-status-complete/20' :
