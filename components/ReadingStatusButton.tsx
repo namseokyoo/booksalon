@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { BookOpen, CheckCircle, BookmarkPlus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { ReadingLogService } from '../lib/services';
 import type { ReadingStatus } from '../lib/services/readingLogService';
@@ -8,10 +9,10 @@ interface ReadingStatusButtonProps {
   isbn: string;
 }
 
-const STATUS_OPTIONS: { value: ReadingStatus; label: string; icon: string }[] = [
-  { value: 'reading', label: '읽는 중', icon: '\uD83D\uDCD6' },
-  { value: 'completed', label: '완독', icon: '\u2705' },
-  { value: 'want_to_read', label: '읽고 싶음', icon: '\uD83D\uDCCB' },
+const STATUS_OPTIONS: { value: ReadingStatus; label: string; icon: React.ReactNode }[] = [
+  { value: 'reading', label: '읽는 중', icon: <BookOpen className="w-4 h-4" /> },
+  { value: 'completed', label: '완독', icon: <CheckCircle className="w-4 h-4" /> },
+  { value: 'want_to_read', label: '읽고 싶음', icon: <BookmarkPlus className="w-4 h-4" /> },
 ];
 
 const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
@@ -81,7 +82,7 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
       await ReadingLogService.upsertReadingLog(userId, isbn, status);
       setCurrentStatus(status);
       const option = STATUS_OPTIONS.find((o) => o.value === status);
-      setMessage(`${option?.icon} ${option?.label}(으)로 설정되었습니다`);
+      setMessage(`${option?.label}(으)로 설정되었습니다`);
     } catch (error) {
       console.error('독서 상태 변경 실패:', error);
       setMessage('상태 변경에 실패했습니다');
@@ -127,9 +128,9 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
         ) : currentOption ? (
-          <span>{currentOption.icon} {currentOption.label}</span>
+          <span className="flex items-center gap-1.5">{currentOption.icon} {currentOption.label}</span>
         ) : (
-          <span>📚 독서 상태</span>
+          <span className="flex items-center gap-1.5"><BookOpen className="w-4 h-4" /> 독서 상태</span>
         )}
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -148,8 +149,10 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
                   : 'text-surface-foreground hover:bg-muted'
               }`}
             >
-              <span>{option.icon}</span>
-              <span>{option.label}</span>
+              <span className="flex items-center gap-1.5">
+                {option.icon}
+                {option.label}
+              </span>
               {currentStatus === option.value && (
                 <svg className="h-4 w-4 ml-auto text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

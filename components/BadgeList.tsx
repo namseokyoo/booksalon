@@ -1,10 +1,24 @@
 import React from 'react';
+import type { LucideIcon } from 'lucide-react';
+import { BookOpen, Bug, Library, Trophy, PenLine, Pen, MessageCircle, Search, Zap, Lock } from 'lucide-react';
 import { BADGES, getEarnedBadges, getProgress } from '../lib/badges';
 import type { BadgeStats } from '../lib/badges';
 
 interface BadgeListProps {
     stats: BadgeStats;
 }
+
+const LUCIDE_ICONS: Record<string, LucideIcon> = {
+    BookOpen,
+    Bug,
+    Library,
+    Trophy,
+    PenLine,
+    Pen,
+    MessageCircle,
+    Search,
+    Zap,
+};
 
 const BadgeList: React.FC<BadgeListProps> = ({ stats }) => {
     const earnedBadges = getEarnedBadges(stats);
@@ -53,8 +67,15 @@ const BadgeList: React.FC<BadgeListProps> = ({ stats }) => {
                                         title={earned ? `${badge.name} - ${badge.description}` : `${badge.description} (${current}/${goal})`}
                                     >
                                         {/* 아이콘 */}
-                                        <div className={`text-3xl mb-1.5 ${earned ? '' : 'grayscale'}`}>
-                                            {earned ? badge.icon : '\uD83D\uDD12'}
+                                        <div className={`mb-1.5 ${earned ? 'text-primary' : 'text-muted-foreground'}`}>
+                                            {earned ? (
+                                                (() => {
+                                                    const IconComponent = LUCIDE_ICONS[badge.icon];
+                                                    return IconComponent ? <IconComponent className="w-8 h-8" /> : null;
+                                                })()
+                                            ) : (
+                                                <Lock className="w-8 h-8" />
+                                            )}
                                         </div>
 
                                         {/* 배지 이름 */}

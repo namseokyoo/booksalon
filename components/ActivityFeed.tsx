@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { FileText, MessageCircle, Heart, Users, Bookmark, Pin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { SocialService } from '../lib/services';
@@ -53,20 +54,20 @@ const ActivityFeed: React.FC = () => {
         return formatDistanceToNow(date, { addSuffix: true, locale: ko });
     };
 
-    const getActivityIcon = (type: Activity['type']) => {
+    const getActivityIcon = (type: Activity['type']): React.ReactNode => {
         switch (type) {
             case 'post':
-                return '📝';
+                return <FileText className="w-4 h-4" />;
             case 'comment':
-                return '💬';
+                return <MessageCircle className="w-4 h-4" />;
             case 'like':
-                return '❤️';
+                return <Heart className="w-4 h-4" />;
             case 'follow':
-                return '👥';
+                return <Users className="w-4 h-4" />;
             case 'bookmark':
-                return '⭐';
+                return <Bookmark className="w-4 h-4" />;
             default:
-                return '📌';
+                return <Pin className="w-4 h-4" />;
         }
     };
 
@@ -164,7 +165,7 @@ const ActivityFeed: React.FC = () => {
                                     }}
                                 >
                                     <div className="flex items-start space-x-3">
-                                        <div className="text-2xl" aria-hidden="true">
+                                        <div className="flex h-8 w-8 items-center justify-center" aria-hidden="true">
                                             {getActivityIcon(activity.type)}
                                             <span className="sr-only">
                                                 {activity.type === 'post' && '게시물'}
