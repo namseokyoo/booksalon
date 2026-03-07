@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { AdminService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -126,7 +127,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
             <div className="bg-surface rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-xl font-bold text-foreground">🚨 신고하기</h2>
+                        <h2 className="text-xl font-bold text-foreground flex items-center gap-2"><AlertTriangle className="w-5 h-5 text-destructive" />신고하기</h2>
                         <button
                             onClick={onClose}
                             className="text-muted-foreground hover:text-foreground transition-colors"
