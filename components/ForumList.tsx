@@ -658,12 +658,12 @@ const ForumList: React.FC = () => {
           {/* 읽은 책 검색 폼 */}
           <div className="mt-5 max-w-lg mx-auto">
             <form onSubmit={handleSearch}>
-              <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden">
+              <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden focus-within:ring-2 focus-within:ring-ring">
                 <input
                   type="text"
                   name="isbn-search-hero"
                   id="isbn-search-hero"
-                  className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
+                  className="focus:outline-none block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
                   placeholder="읽은 책을 검색해보세요"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -692,12 +692,12 @@ const ForumList: React.FC = () => {
         /* 로그인 사용자: 검색바 + 통합 검색 진입 */
         <div className="mb-4 sm:mb-6">
           <form onSubmit={handleSearch}>
-            <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden">
+            <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden focus-within:ring-2 focus-within:ring-ring">
               <input
                 type="text"
                 name="isbn-search"
                 id="isbn-search"
-                className="focus:ring-2 focus:ring-ring focus:border-primary block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
+                className="focus:outline-none block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
                 placeholder="읽은 책을 검색해보세요"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
