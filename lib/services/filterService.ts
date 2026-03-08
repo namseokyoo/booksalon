@@ -1,36 +1,14 @@
-import type { Forum, Book } from '../../types';
+import type { Forum } from '../../types';
 
 export interface FilterOptions {
-    category?: string;
     sortBy?: 'recent' | 'popular' | 'posts' | 'title';
     searchTerm?: string;
 }
 
 export class FilterService {
-    // 카테고리 목록
-    static readonly CATEGORIES = [
-        '문학',
-        'SF/판타지',
-        '자기계발',
-        '역사',
-        '과학',
-        '경제/경영',
-        '예술',
-        '철학',
-        '종교',
-        '기타'
-    ];
-
     // 포럼 필터링 및 정렬
     static filterAndSortForums(forums: Forum[], options: FilterOptions): Forum[] {
         let filteredForums = [...forums];
-
-        // 카테고리 필터링
-        if (options.category && options.category !== '전체') {
-            filteredForums = filteredForums.filter(forum =>
-                forum.category === options.category
-            );
-        }
 
         // 검색어 필터링
         if (options.searchTerm) {
@@ -75,57 +53,6 @@ export class FilterService {
         }
     }
 
-    // 책 카테고리 자동 분류
-    static categorizeBook(book: Book): string {
-        const title = book.title.toLowerCase();
-        const authors = book.authors.join(' ').toLowerCase();
-        const publisher = book.publisher.toLowerCase();
-        const contents = book.contents?.toLowerCase() || '';
-
-        // 키워드 기반 카테고리 분류
-        if (title.includes('해리포터') || title.includes('반지의 제왕') ||
-            title.includes('sf') || title.includes('판타지') ||
-            title.includes('우주') || title.includes('미래')) {
-            return 'SF/판타지';
-        }
-
-        if (title.includes('성공') || title.includes('리더십') ||
-            title.includes('경영') || title.includes('투자') ||
-            title.includes('자기계발') || title.includes('습관')) {
-            return '자기계발';
-        }
-
-        if (title.includes('역사') || title.includes('조선') ||
-            title.includes('고려') || title.includes('삼국') ||
-            title.includes('전쟁') || title.includes('문화사')) {
-            return '역사';
-        }
-
-        if (title.includes('과학') || title.includes('물리') ||
-            title.includes('화학') || title.includes('생물') ||
-            title.includes('수학') || title.includes('기술')) {
-            return '과학';
-        }
-
-        if (title.includes('경제') || title.includes('경영') ||
-            title.includes('비즈니스') || title.includes('마케팅') ||
-            title.includes('재무')) {
-            return '경제/경영';
-        }
-
-        if (title.includes('예술') || title.includes('미술') ||
-            title.includes('음악') || title.includes('디자인') ||
-            title.includes('건축')) {
-            return '예술';
-        }
-
-        if (title.includes('철학') || title.includes('윤리') ||
-            title.includes('사상') || title.includes('종교')) {
-            return '철학';
-        }
-
-        return '문학'; // 기본값
-    }
     // 인기도 점수 계산
     static calculatePopularity(forum: Forum): number {
         const postCount = forum.postCount || 0;

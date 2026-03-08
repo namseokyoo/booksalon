@@ -479,11 +479,6 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
                                                     <p className="text-sm font-semibold text-foreground truncate">
                                                         <HighlightText text={forum.book.title} highlight={searchedTerm} />
                                                     </p>
-                                                    {forum.category && (
-                                                        <span className="text-xs text-primary-700 bg-primary-50 border border-primary-200 rounded-full px-2 py-0.5 ml-2">
-                                                            {forum.category}
-                                                        </span>
-                                                    )}
                                                 </div>
                                                 <p className="text-xs text-muted-foreground truncate mt-1">
                                                     <HighlightText text={forum.book.authors.join(', ')} highlight={searchedTerm} />

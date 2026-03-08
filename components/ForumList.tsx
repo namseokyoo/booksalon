@@ -8,8 +8,6 @@ import {
   searchBookByTitle,
   UserService,
   BookmarkService,
-  FilterService,
-  type FilterOptions,
 } from '../lib/services';
 import CreateForumModal from './CreateForumModal';
 import { SearchIcon, BookOpenIcon } from './icons';
@@ -56,7 +54,6 @@ const ForumList: React.FC = () => {
   const [bookmarkedForums, setBookmarkedForums] = useState<Forum[]>([]);
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
   const [bookmarkError, setBookmarkError] = useState<string | null>(null);
-  const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
   const [filteredForums, setFilteredForums] = useState<Forum[]>([]);
   const [searchPage, setSearchPage] = useState(1);
   const [searchIsEnd, setSearchIsEnd] = useState(true);
@@ -73,7 +70,6 @@ const ForumList: React.FC = () => {
     forumsData: Array<{
       isbn: string;
       post_count: number;
-      category: string | null;
       popularity: number;
       average_rating: number;
       total_ratings: number;
@@ -107,7 +103,6 @@ const ForumList: React.FC = () => {
         contents: '',
       },
       postCount: forum.post_count,
-      category: forum.category || undefined,
       popularity: forum.popularity,
       averageRating: forum.average_rating,
       totalRatings: forum.total_ratings,
@@ -237,7 +232,6 @@ const ForumList: React.FC = () => {
           .select(`
             isbn,
             post_count,
-            category,
             popularity,
             average_rating,
             total_ratings,
@@ -326,7 +320,6 @@ const ForumList: React.FC = () => {
           .select(`
             isbn,
             post_count,
-            category,
             popularity,
             average_rating,
             total_ratings,
@@ -364,7 +357,6 @@ const ForumList: React.FC = () => {
           .select(`
             isbn,
             post_count,
-            category,
             popularity,
             average_rating,
             total_ratings,
@@ -412,7 +404,6 @@ const ForumList: React.FC = () => {
         .select(`
           isbn,
           post_count,
-          category,
           popularity,
           average_rating,
           total_ratings,
@@ -457,9 +448,8 @@ const ForumList: React.FC = () => {
 
   // 필터링 적용
   useEffect(() => {
-    const filtered = FilterService.filterAndSortForums(forums, filterOptions);
-    setFilteredForums(filtered);
-  }, [forums, filterOptions]);
+    setFilteredForums(forums);
+  }, [forums]);
 
   // 북마크 데이터 로드
   useEffect(() => {
@@ -586,8 +576,6 @@ const ForumList: React.FC = () => {
   };
 
   const handleCreateForum = async (book: Book) => {
-    const category = FilterService.categorizeBook(book);
-
     // 책 정보 먼저 upsert
     const { error: bookError } = await supabase
       .from('books')
@@ -611,7 +599,6 @@ const ForumList: React.FC = () => {
       .insert({
         isbn: book.isbn,
         post_count: 0,
-        category,
         popularity: 0,
         last_activity_at: new Date().toISOString(),
       });
@@ -630,31 +617,12 @@ const ForumList: React.FC = () => {
       isbn: book.isbn,
       book,
       postCount: 0,
-      category,
       lastActivityAt: new Date(),
       popularity: 0,
     };
 
     setSearchResult(null);
     navigate(`/forum/${newForum.isbn}`, { state: { forum: newForum } });
-  };
-
-  const handleSelectCategory = useCallback((category?: string) => {
-    setFilterOptions(prev => ({
-      ...prev,
-      category: category === '전체' ? undefined : category,
-    }));
-  }, []);
-
-  const handleResetFilters = useCallback(() => {
-    setFilterOptions({});
-  }, []);
-
-  // 필터 변경 시 hasMoreForums도 재계산 (필터링은 프론트엔드에서 수행되므로 전체 데이터 기준)
-  // 참고: 필터링은 이미 로드된 forums 배열에 대해 수행되므로 페이지네이션은 DB 로드 기준으로 유지
-
-  const hasActiveFilters = () => {
-    return !!(filterOptions.category || filterOptions.sortBy);
   };
 
   if (isLoadingInitial) {
@@ -1079,11 +1047,6 @@ const ForumList: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start md:items-center gap-1.5 md:gap-2 flex-wrap md:flex-nowrap">
                       <h3 className="font-semibold text-sm text-foreground truncate min-w-0">{forum.book.title}</h3>
-                      {forum.category && (
-                        <span className="flex-shrink-0 px-1.5 py-0.5 text-xs bg-primary-50 text-primary-700 border border-primary-200 rounded-full font-medium whitespace-nowrap">
-                          {forum.category}
-                        </span>
-                      )}
                     </div>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
                   </div>
@@ -1135,16 +1098,10 @@ const ForumList: React.FC = () => {
             <div className="flex flex-col items-center text-center py-8 sm:py-10 px-4 border-2 border-dashed border-border rounded-xl bg-muted">
               <BookOpenIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
               <p className="text-sm sm:text-base text-surface-foreground">
-                {Object.keys(filterOptions).length > 0
-                  ? '필터 조건에 맞는 살롱이 없습니다.'
-                  : '아직 열린 살롱이 없네요.'
-                }
+                아직 열린 살롱이 없네요.
               </p>
               <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                {Object.keys(filterOptions).length > 0
-                  ? '다른 필터 조건을 시도해보세요.'
-                  : '첫 번째 살롱을 열어보는 건 어떨까요.'
-                }
+                첫 번째 살롱을 열어보는 건 어떨까요.
               </p>
             </div>
           )}

@@ -9,9 +9,7 @@ export function useCreateForum() {
 
   const createForum = useCallback(async (book: Book) => {
     const { supabase } = await import('../lib/supabase');
-    const { FilterService, UserService } = await import('../lib/services');
-
-    const category = FilterService.categorizeBook(book);
+    const { UserService } = await import('../lib/services');
 
     // 1. books 테이블에 도서 정보 upsert
     const { error: bookError } = await supabase
@@ -35,7 +33,6 @@ export function useCreateForum() {
       .from('forums')
       .upsert({
         isbn: book.isbn,
-        category: category,
         popularity: 0,
         post_count: 0,
         average_rating: 0,
@@ -62,7 +59,6 @@ export function useCreateForum() {
       isbn: book.isbn,
       book,
       postCount: 0,
-      category,
       lastActivityAt: new Date(),
       popularity: 0,
     };

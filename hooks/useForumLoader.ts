@@ -40,7 +40,7 @@ export function useForumLoader(isbn: string | undefined): UseForumLoaderResult {
         // forums 테이블에서 포럼 메타데이터 조회
         const { data: forumData } = await supabase
           .from('forums')
-          .select('isbn, category, popularity, post_count, average_rating, total_ratings, last_activity_at')
+          .select('isbn, popularity, post_count, average_rating, total_ratings, last_activity_at')
           .eq('isbn', isbn)
           .single();
 
@@ -56,7 +56,6 @@ export function useForumLoader(isbn: string | undefined): UseForumLoaderResult {
               contents: bookData.contents || '',
             },
             postCount: forumData?.post_count || 0,
-            category: forumData?.category || undefined,
             lastActivityAt: forumData?.last_activity_at || undefined,
             popularity: forumData?.popularity || 0,
             averageRating: forumData?.average_rating || undefined,

@@ -32,7 +32,6 @@ export interface Forum {
   }
   postCount: number
   lastActivityAt?: string
-  category?: string
   popularity?: number
   averageRating?: number
   totalRatings?: number
@@ -55,7 +54,6 @@ function transformToForum(
     },
     postCount: forum.post_count,
     lastActivityAt: forum.last_activity_at,
-    category: forum.category || undefined,
     popularity: forum.popularity,
     averageRating: forum.average_rating,
     totalRatings: forum.total_ratings,
