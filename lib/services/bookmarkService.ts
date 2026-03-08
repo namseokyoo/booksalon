@@ -15,7 +15,6 @@ type BookmarkRow = Database['public']['Tables']['bookmarks']['Row']
 type BookmarkInsert = Database['public']['Tables']['bookmarks']['Insert']
 type ForumRow = Database['public']['Tables']['forums']['Row']
 type BookRow = Database['public']['Tables']['books']['Row']
-type ForumTagRow = Database['public']['Tables']['forum_tags']['Row']
 type NotificationSettingsRow = Database['public']['Tables']['user_notification_settings']['Row']
 type NotificationSettingsInsert = Database['public']['Tables']['user_notification_settings']['Insert']
 type NotificationSettingsUpdate = Database['public']['Tables']['user_notification_settings']['Update']
@@ -34,7 +33,6 @@ export interface Forum {
   postCount: number
   lastActivityAt?: string
   category?: string
-  tags?: string[]
   popularity?: number
   averageRating?: number
   totalRatings?: number
@@ -43,8 +41,7 @@ export interface Forum {
 // Supabase 포럼 데이터를 기존 Forum 형식으로 변환
 function transformToForum(
   forum: ForumRow,
-  book: BookRow,
-  tags?: ForumTagRow[]
+  book: BookRow
 ): Forum {
   return {
     isbn: forum.isbn,
@@ -59,7 +56,6 @@ function transformToForum(
     postCount: forum.post_count,
     lastActivityAt: forum.last_activity_at,
     category: forum.category || undefined,
-    tags: tags?.map((t) => t.tag_name) || [],
     popularity: forum.popularity,
     averageRating: forum.average_rating,
     totalRatings: forum.total_ratings,
@@ -152,14 +148,6 @@ export class BookmarkService {
       return []
     }
 
-    // 태그 조회
-    const { data: allTags } = await supabase
-      .from('forum_tags')
-      .select('*')
-      .in('forum_isbn', forumIsbns)
-
-    const tagData = (allTags || []) as ForumTagRow[]
-
     // 데이터 변환
     const forumMap = new Map(forumData.map((f) => [f.isbn, f]))
     const bookMap = new Map(bookData.map((b) => [b.isbn, b]))
@@ -169,8 +157,7 @@ export class BookmarkService {
       .map((isbn) => {
         const forum = forumMap.get(isbn)!
         const book = bookMap.get(isbn)!
-        const tags = tagData.filter((t) => t.forum_isbn === isbn)
-        return transformToForum(forum, book, tags)
+        return transformToForum(forum, book)
       })
   }
 

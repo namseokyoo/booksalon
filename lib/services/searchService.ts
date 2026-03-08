@@ -15,7 +15,6 @@ type BookRow = Database['public']['Tables']['books']['Row']
 type ForumRow = Database['public']['Tables']['forums']['Row']
 type PostRow = Database['public']['Tables']['posts']['Row']
 type CommentRow = Database['public']['Tables']['comments']['Row']
-type ForumTagRow = Database['public']['Tables']['forum_tags']['Row']
 
 // 검색 결과 인터페이스 (기존 types.ts 호환)
 export interface CommunitySearchResult {
@@ -37,7 +36,6 @@ export interface ForumSearchResult {
   postCount: number
   lastActivityAt?: string
   category?: string
-  tags?: string[]
   popularity?: number
   averageRating?: number
   totalRatings?: number
@@ -221,14 +219,6 @@ export class SearchService {
 
     const forumData = (forums || []) as ForumRow[]
 
-    // 태그 조회
-    const { data: allTags } = await supabase
-      .from('forum_tags')
-      .select('*')
-      .in('forum_isbn', bookIsbns)
-
-    const tagData = (allTags || []) as ForumTagRow[]
-
     // 결과 조합
     const forumMap = new Map(forumData.map((f) => [f.isbn, f]))
     const bookMap = new Map(bookData.map((b) => [b.isbn, b]))
@@ -238,7 +228,6 @@ export class SearchService {
       .map((isbn) => {
         const forum = forumMap.get(isbn)!
         const book = bookMap.get(isbn)!
-        const tags = tagData.filter((t) => t.forum_isbn === isbn)
 
         return {
           isbn: forum.isbn,
@@ -253,7 +242,6 @@ export class SearchService {
           postCount: forum.post_count,
           lastActivityAt: forum.last_activity_at,
           category: forum.category || undefined,
-          tags: tags.map((t) => t.tag_name),
           popularity: forum.popularity,
           averageRating: forum.average_rating,
           totalRatings: forum.total_ratings,
@@ -386,109 +374,56 @@ export class SearchService {
    */
   static async searchByTag(
     tagName: string,
-    type: 'forum' | 'post',
+    type: 'post',
     limitCount: number = 50
-  ): Promise<ForumSearchResult[] | PostSearchResult[]> {
-    if (type === 'forum') {
-      // 포럼 태그 검색
-      const { data: forumTags } = await supabase
-        .from('forum_tags')
-        .select('forum_isbn')
-        .eq('tag_name', tagName)
-        .limit(limitCount)
+  ): Promise<PostSearchResult[]> {
+    void type
 
-      const tagData = (forumTags || []) as Pick<ForumTagRow, 'forum_isbn'>[]
-      const forumIsbns = tagData.map((t) => t.forum_isbn)
+    type PostTagData = { post_id: string; tag_name: string }
+    const { data: postTags } = await supabase
+      .from('post_tags')
+      .select('post_id')
+      .eq('tag_name', tagName)
+      .limit(limitCount)
 
-      if (forumIsbns.length === 0) {
-        return []
-      }
+    const tagData = (postTags || []) as Pick<PostTagData, 'post_id'>[]
+    const postIds = tagData.map((t) => t.post_id)
 
-      // 포럼 및 책 정보 조회
-      const { data: forums } = await supabase
-        .from('forums')
-        .select('*')
-        .in('isbn', forumIsbns)
-
-      const forumData = (forums || []) as ForumRow[]
-
-      const { data: books } = await supabase
-        .from('books')
-        .select('*')
-        .in('isbn', forumIsbns)
-
-      const bookData = (books || []) as BookRow[]
-      const bookMap = new Map(bookData.map((b) => [b.isbn, b]))
-
-      return forumData.map((forum) => {
-        const book = bookMap.get(forum.isbn)
-
-        return {
-          isbn: forum.isbn,
-          book: {
-            isbn: book?.isbn || forum.isbn,
-            title: book?.title || '',
-            authors: book?.authors || [],
-            publisher: book?.publisher || '',
-            thumbnail: book?.thumbnail || '',
-            contents: book?.contents || '',
-          },
-          postCount: forum.post_count,
-          lastActivityAt: forum.last_activity_at,
-          category: forum.category || undefined,
-          popularity: forum.popularity,
-          averageRating: forum.average_rating,
-          totalRatings: forum.total_ratings,
-        }
-      })
-    } else {
-      // 게시물 태그 검색
-      type PostTagData = { post_id: string; tag_name: string }
-      const { data: postTags } = await supabase
-        .from('post_tags')
-        .select('post_id')
-        .eq('tag_name', tagName)
-        .limit(limitCount)
-
-      const tagData = (postTags || []) as Pick<PostTagData, 'post_id'>[]
-      const postIds = tagData.map((t) => t.post_id)
-
-      if (postIds.length === 0) {
-        return []
-      }
-
-      // 게시물 정보 조회
-      const { data: posts } = await supabase
-        .from('posts')
-        .select('*')
-        .in('id', postIds)
-
-      const postData = (posts || []) as PostRow[]
-
-      // 포럼 ISBN 목록
-      const forumIsbns = [...new Set(postData.map((p) => p.forum_isbn))]
-
-      // 책 정보 조회
-      const { data: books } = await supabase
-        .from('books')
-        .select('isbn, title')
-        .in('isbn', forumIsbns)
-
-      const bookData = (books || []) as Pick<BookRow, 'isbn' | 'title'>[]
-      const bookMap = new Map(bookData.map((b) => [b.isbn, b.title]))
-
-      return postData.map((post) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        authorId: post.author_id,
-        forumIsbn: post.forum_isbn,
-        forumTitle: bookMap.get(post.forum_isbn) || '',
-        createdAt: post.created_at,
-        commentCount: post.comment_count,
-        likeCount: post.like_count,
-      }))
+    if (postIds.length === 0) {
+      return []
     }
+
+    // 게시물 정보 조회
+    const { data: posts } = await supabase
+      .from('posts')
+      .select('*')
+      .in('id', postIds)
+
+    const postData = (posts || []) as PostRow[]
+
+    // 포럼 ISBN 목록
+    const forumIsbns = [...new Set(postData.map((p) => p.forum_isbn))]
+
+    // 책 정보 조회
+    const { data: books } = await supabase
+      .from('books')
+      .select('isbn, title')
+      .in('isbn', forumIsbns)
+
+    const bookData = (books || []) as Pick<BookRow, 'isbn' | 'title'>[]
+    const bookMap = new Map(bookData.map((b) => [b.isbn, b.title]))
+
+    return postData.map((post) => ({
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      authorId: post.author_id,
+      forumIsbn: post.forum_isbn,
+      forumTitle: bookMap.get(post.forum_isbn) || '',
+      createdAt: post.created_at,
+      commentCount: post.comment_count,
+      likeCount: post.like_count,
+    }))
   }
 
   /**

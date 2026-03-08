@@ -16,18 +16,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
         });
     };
 
-    const handleTagToggle = (tag: string) => {
-        const currentTags = currentOptions.tags || [];
-        const newTags = currentTags.includes(tag)
-            ? currentTags.filter(t => t !== tag)
-            : [...currentTags, tag];
-
-        onFilterChange({
-            ...currentOptions,
-            tags: newTags.length > 0 ? newTags : undefined
-        });
-    };
-
     const handleSortChange = (sortBy: FilterOptions['sortBy']) => {
         onFilterChange({
             ...currentOptions,
@@ -47,7 +35,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
     };
 
     const hasActiveFilters = currentOptions.category ||
-        (currentOptions.tags && currentOptions.tags.length > 0) ||
         currentOptions.sortBy ||
         currentOptions.searchTerm;
 
@@ -78,7 +65,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                 <label className="block text-sm font-medium text-muted-foreground mb-2">검색</label>
                 <input
                     type="text"
-                    placeholder="제목, 저자, 출판사, 태그로 검색..."
+                    placeholder="제목, 저자, 출판사로 검색..."
                     className="w-full px-3 py-2 bg-muted border border-border rounded-md text-surface-foreground text-sm focus:ring-ring focus:border-primary focus:outline-none"
                     value={currentOptions.searchTerm || ''}
                     onChange={(e) => handleSearchChange(e.target.value)}
@@ -134,25 +121,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ onFilterChange, currentOption
                                         }`}
                                 >
                                     {category}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* 태그 */}
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-muted-foreground mb-2">태그</label>
-                        <div className="flex flex-wrap gap-2">
-                            {FilterService.POPULAR_TAGS.map((tag) => (
-                                <button
-                                    key={tag}
-                                    onClick={() => handleTagToggle(tag)}
-                                    className={`px-3 py-1.5 text-sm rounded transition-colors duration-200 ${currentOptions.tags?.includes(tag)
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'bg-muted text-surface-foreground hover:bg-muted'
-                                        }`}
-                                >
-                                    {tag}
                                 </button>
                             ))}
                         </div>

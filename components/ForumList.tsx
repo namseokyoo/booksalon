@@ -8,7 +8,6 @@ import {
   searchBookByTitle,
   UserService,
   BookmarkService,
-  TagService,
   FilterService,
   type FilterOptions,
 } from '../lib/services';
@@ -88,8 +87,7 @@ const ForumList: React.FC = () => {
         thumbnail: string;
         contents: string;
       } | null;
-    }>,
-    tagsByForum: Map<string, string[]>
+    }>
   ): Forum[] => {
     return forumsData.map((forum) => ({
       isbn: forum.isbn,
@@ -110,27 +108,12 @@ const ForumList: React.FC = () => {
       },
       postCount: forum.post_count,
       category: forum.category || undefined,
-      tags: tagsByForum.get(forum.isbn) || [],
       popularity: forum.popularity,
       averageRating: forum.average_rating,
       totalRatings: forum.total_ratings,
       lastActivityAt: forum.last_activity_at ? new Date(forum.last_activity_at) : undefined,
       createdAt: forum.created_at ? new Date(forum.created_at) : undefined,
     }));
-  };
-
-  const fetchForumTags = async (): Promise<Map<string, string[]>> => {
-    const { data: forumTags } = await supabaseAnon
-      .from('forum_tags')
-      .select('forum_isbn, tag_name');
-
-    const tagsByForum = new Map<string, string[]>();
-    forumTags?.forEach((ft: { forum_isbn: string; tag_name: string }) => {
-      const tags = tagsByForum.get(ft.forum_isbn) || [];
-      tags.push(ft.tag_name);
-      tagsByForum.set(ft.forum_isbn, tags);
-    });
-    return tagsByForum;
   };
 
   // 베스트 게시물 로딩
@@ -289,9 +272,7 @@ const ForumList: React.FC = () => {
           throw new Error(queryError.message || '포럼 데이터 로드 실패');
         }
 
-        // Phase 1: forums + books 먼저 렌더링 (빈 태그 Map)
-        const emptyTags = new Map<string, string[]>();
-        const enrichedForums = enrichForumsData(forumsData || [], emptyTags);
+        const enrichedForums = enrichForumsData(forumsData || []);
 
         if (isCancelled) return;
 
@@ -300,12 +281,6 @@ const ForumList: React.FC = () => {
         setHasMoreForums((forumsData || []).length >= FORUMS_PAGE_SIZE);
         setIsLoadingInitial(false);
 
-        // Phase 2: 태그 비동기 후처리
-        fetchForumTags().then((tagsByForum) => {
-          if (isCancelled) return;
-          const enrichedWithTags = enrichForumsData(forumsData || [], tagsByForum);
-          setForums(enrichedWithTags);
-        });
       } catch (err) {
         clearTimeout(timeoutId);
         if (isCancelled) return;
@@ -370,8 +345,7 @@ const ForumList: React.FC = () => {
           .single();
 
         if (newForumData) {
-          const tagsByForum = await fetchForumTags();
-          const enriched = enrichForumsData([newForumData], tagsByForum);
+          const enriched = enrichForumsData([newForumData]);
           if (enriched.length > 0) {
             setForums(prev => {
               // 중복 방지
@@ -409,8 +383,7 @@ const ForumList: React.FC = () => {
           .range(0, currentTo);
 
         if (forumsData) {
-          const tagsByForum = await fetchForumTags();
-          const enrichedForums = enrichForumsData(forumsData, tagsByForum);
+          const enrichedForums = enrichForumsData(forumsData);
           setForums(enrichedForums);
         }
       })
@@ -466,8 +439,7 @@ const ForumList: React.FC = () => {
         setHasMoreForums(false);
       }
 
-      const tagsByForum = await fetchForumTags();
-      const enrichedForums = enrichForumsData(forumsData || [], tagsByForum);
+      const enrichedForums = enrichForumsData(forumsData || []);
 
       setForums(prev => {
         // 중복 제거
@@ -613,12 +585,8 @@ const ForumList: React.FC = () => {
     }
   };
 
-  const handleCreateForum = async (book: Book, customTags?: string[]) => {
+  const handleCreateForum = async (book: Book) => {
     const category = FilterService.categorizeBook(book);
-    // 사용자 지정 태그가 있으면 사용, 없으면 자동 생성
-    const tags = customTags && customTags.length > 0
-      ? customTags
-      : FilterService.generateTags(book);
 
     // 책 정보 먼저 upsert
     const { error: bookError } = await supabase
@@ -653,11 +621,6 @@ const ForumList: React.FC = () => {
       throw forumError;
     }
 
-    // 태그 통계 업데이트
-    if (tags && tags.length > 0) {
-      await TagService.addTagsToForum(book.isbn, tags);
-    }
-
     // 사용자 통계 업데이트
     if (currentUser) {
       await UserService.incrementStat(currentUser.uid, 'forum_count');
@@ -668,7 +631,6 @@ const ForumList: React.FC = () => {
       book,
       postCount: 0,
       category,
-      tags,
       lastActivityAt: new Date(),
       popularity: 0,
     };
@@ -684,17 +646,6 @@ const ForumList: React.FC = () => {
     }));
   }, []);
 
-  const handleToggleTag = useCallback((tag: string) => {
-    setFilterOptions(prev => {
-      const current = prev.tags || [];
-      const exists = current.includes(tag);
-      return {
-        ...prev,
-        tags: exists ? current.filter(t => t !== tag) : [...current, tag],
-      };
-    });
-  }, []);
-
   const handleResetFilters = useCallback(() => {
     setFilterOptions({});
   }, []);
@@ -703,7 +654,7 @@ const ForumList: React.FC = () => {
   // 참고: 필터링은 이미 로드된 forums 배열에 대해 수행되므로 페이지네이션은 DB 로드 기준으로 유지
 
   const hasActiveFilters = () => {
-    return !!(filterOptions.category || (filterOptions.tags && filterOptions.tags.length > 0) || filterOptions.sortBy);
+    return !!(filterOptions.category || filterOptions.sortBy);
   };
 
   if (isLoadingInitial) {
@@ -1135,20 +1086,6 @@ const ForumList: React.FC = () => {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
-                    {forum.tags && forum.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {forum.tags.slice(0, 3).map((tag, index) => (
-                          <span key={index} className="px-1.5 py-0.5 text-xs bg-muted text-surface-foreground border border-border rounded-full">
-                            #{tag}
-                          </span>
-                        ))}
-                        {forum.tags.length > 3 && (
-                          <span className="px-1.5 py-0.5 text-xs bg-muted text-muted-foreground border border-border rounded-full">
-                            +{forum.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
                   </div>
                   <span className="flex-shrink-0 font-bold text-sm text-foreground" aria-label="게시물 수">
                     {forum.postCount ?? 0}

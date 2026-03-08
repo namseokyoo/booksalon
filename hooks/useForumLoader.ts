@@ -44,12 +44,6 @@ export function useForumLoader(isbn: string | undefined): UseForumLoaderResult {
           .eq('isbn', isbn)
           .single();
 
-        // forum_tags 조회
-        const { data: tagsData } = await supabase
-          .from('forum_tags')
-          .select('tag_name')
-          .eq('forum_isbn', isbn);
-
         if (!cancelled) {
           const forum: Forum = {
             isbn: bookData.isbn,
@@ -63,7 +57,6 @@ export function useForumLoader(isbn: string | undefined): UseForumLoaderResult {
             },
             postCount: forumData?.post_count || 0,
             category: forumData?.category || undefined,
-            tags: tagsData?.map(t => t.tag_name) || [],
             lastActivityAt: forumData?.last_activity_at || undefined,
             popularity: forumData?.popularity || 0,
             averageRating: forumData?.average_rating || undefined,

@@ -12,7 +12,6 @@ export function useCreateForum() {
     const { FilterService, UserService } = await import('../lib/services');
 
     const category = FilterService.categorizeBook(book);
-    const tags = FilterService.generateTags(book);
 
     // 1. books 테이블에 도서 정보 upsert
     const { error: bookError } = await supabase
@@ -49,16 +48,7 @@ export function useCreateForum() {
       return;
     }
 
-    // 3. forum_tags 테이블에 태그 저장
-    if (tags && tags.length > 0) {
-      const tagInserts = tags.map(tag => ({
-        forum_isbn: book.isbn,
-        tag_name: tag,
-      }));
-      await supabase.from('forum_tags').upsert(tagInserts, { onConflict: 'forum_isbn,tag_name' });
-    }
-
-    // 4. 사용자 통계 업데이트
+    // 3. 사용자 통계 업데이트
     if (currentUser) {
       try {
         await UserService.incrementStat(currentUser.id, 'forum_count');
@@ -67,13 +57,12 @@ export function useCreateForum() {
       }
     }
 
-    // 5. Forum 객체 생성 후 navigate
+    // 4. Forum 객체 생성 후 navigate
     const newForum: Forum = {
       isbn: book.isbn,
       book,
       postCount: 0,
       category,
-      tags,
       lastActivityAt: new Date(),
       popularity: 0,
     };

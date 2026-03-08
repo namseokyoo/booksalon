@@ -1,20 +1,17 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { Book } from '../types';
 import BookInfo from './BookInfo';
-import TagInput from './TagInput';
 
 interface CreateForumModalProps {
   book: Book;
   onClose: () => void;
-  onCreate: (book: Book, tags?: string[]) => void;
+  onCreate: (book: Book) => void;
 }
 
 const CreateForumModal: React.FC<CreateForumModalProps> = ({ book, onClose, onCreate }) => {
-  const [tags, setTags] = useState<string[]>([]);
-
   const handleCreate = () => {
-    onCreate(book, tags.length > 0 ? tags : undefined);
+    onCreate(book);
   };
 
   return (
@@ -24,17 +21,6 @@ const CreateForumModal: React.FC<CreateForumModalProps> = ({ book, onClose, onCr
           <h3 className="text-base sm:text-lg font-medium leading-6 text-foreground text-center mb-2">새 살롱 만들기</h3>
           <p className="text-center text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">이 책에 대한 살롱이 없습니다. 새로운 살롱을 만드세요.</p>
           <BookInfo book={book} />
-
-          {/* 태그 입력 */}
-          <div className="mt-4 pt-4 border-t border-border">
-            <TagInput
-              tags={tags}
-              onChange={setTags}
-              maxTags={5}
-              type="forum"
-              placeholder="살롱 태그 추가 (선택)"
-            />
-          </div>
         </div>
         <div className="bg-muted px-3 sm:px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-xl border-t border-border">
           <button

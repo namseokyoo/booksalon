@@ -114,7 +114,6 @@ export interface Forum {
   postCount: number;
   lastActivityAt?: Timestamp;
   category?: string; // 카테고리 (문학, SF, 자기계발, 역사 등)
-  tags?: string[]; // 태그 목록
   popularity?: number; // 인기도 점수
   averageRating?: number; // 평균 평점 (1-5)
   totalRatings?: number; // 평가 수
