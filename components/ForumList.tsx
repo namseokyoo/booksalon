@@ -830,7 +830,7 @@ const ForumList: React.FC = () => {
             <h2 className="font-serif text-lg font-semibold text-foreground">북마크한 살롱</h2>
               <button
                 type="button"
-                onClick={() => navigate(`/profile/${userProfile?.id}?tab=bookmarks`)}
+                onClick={() => navigate('/profile?tab=bookmarks')}
                 className="text-sm text-primary hover:text-primary-700 cursor-pointer"
               >
                 더보기 &gt;
