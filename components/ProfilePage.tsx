@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { supabase } from '../lib/supabase';
@@ -19,6 +19,7 @@ import { BookmarkIcon } from './icons/BookmarkIcon';
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { userId } = useParams<{ userId?: string }>();
+    const [searchParams] = useSearchParams();
     const { openDeleteAccount } = useModals();
     const { currentUser, userProfile: authUserProfile } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -31,6 +32,8 @@ const ProfilePage: React.FC = () => {
     const [readingFilter, setReadingFilter] = useState<ReadingStatus | 'all'>('all');
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'posts' | 'comments' | 'stats' | 'bookmarks' | 'reading' | 'badges'>('stats');
+    const [bookmarkDisplayCount, setBookmarkDisplayCount] = useState(10);
+    const loadMoreBookmarksRef = useRef<HTMLDivElement>(null);
     const [deleteStep, setDeleteStep] = useState<0 | 1 | 2>(0);
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
@@ -91,6 +94,14 @@ const ProfilePage: React.FC = () => {
     }, [currentUser, isOwnProfile, userId]);
 
     useEffect(() => {
+        const tabParam = searchParams.get('tab');
+        if (tabParam === 'bookmarks' || tabParam === 'posts' || tabParam === 'comments' ||
+            tabParam === 'stats' || tabParam === 'reading' || tabParam === 'badges') {
+            setActiveTab(tabParam);
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
         if (!isOwnProfile) {
             setIsEditing(false);
             setDeleteStep(0);
@@ -101,6 +112,21 @@ const ProfilePage: React.FC = () => {
             }
         }
     }, [activeTab, isOwnProfile]);
+
+    // 북마크 무한 스크롤 IntersectionObserver
+    useEffect(() => {
+        if (!loadMoreBookmarksRef.current) return;
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && bookmarkDisplayCount < bookmarkedForums.length) {
+                    setBookmarkDisplayCount(prev => prev + 10);
+                }
+            },
+            { threshold: 0.1 }
+        );
+        observer.observe(loadMoreBookmarksRef.current);
+        return () => observer.disconnect();
+    }, [bookmarkDisplayCount, bookmarkedForums.length]);
 
     const loadUserData = async () => {
         try {
@@ -622,7 +648,7 @@ const ProfilePage: React.FC = () => {
                                 </div>
                             ) : (
                                 <div className="space-y-2">
-                                    {bookmarkedForums.map((forum) => (
+                                    {bookmarkedForums.slice(0, bookmarkDisplayCount).map((forum) => (
                                         <div
                                             key={forum.isbn}
                                             onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
@@ -678,6 +704,12 @@ const ProfilePage: React.FC = () => {
                                             </button>
                                         </div>
                                     ))}
+                                    {/* 무한 스크롤 트리거 */}
+                                    {bookmarkDisplayCount < bookmarkedForums.length && (
+                                        <div ref={loadMoreBookmarksRef} className="py-4 flex justify-center">
+                                            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>

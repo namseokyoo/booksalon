@@ -307,6 +307,31 @@ const ForumList: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [retryCount, authLoading]);
 
+  // 브라우저 탭 복귀 시 데이터 재로드
+  useEffect(() => {
+    let hiddenAt: number | null = null;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        hiddenAt = Date.now();
+      } else if (document.visibilityState === 'visible') {
+        const hiddenDuration = hiddenAt ? Date.now() - hiddenAt : 0;
+        // 데이터가 없고 로딩 중이 아닌 경우 (에러/빈 상태) → 항상 재시도
+        // 30초 이상 백그라운드에 있었고 로딩 중이었으면 → 리셋 후 재시도
+        if (forums.length === 0 && !isLoadingInitial) {
+          setRetryCount(prev => prev + 1);
+        } else if (isLoadingInitial && hiddenDuration > 30000) {
+          setIsLoadingInitial(true);
+          setRetryCount(prev => prev + 1);
+        }
+        hiddenAt = null;
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [forums.length, isLoadingInitial]);
+
   useEffect(() => {
     if (authLoading) return; // Auth 초기화 중이면 대기
 
@@ -801,9 +826,20 @@ const ForumList: React.FC = () => {
       {/* 북마크한 살롱 표시 — 검색 중이 아닐 때만 표시 */}
       {bookmarkedForums.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
         <div className="mb-6">
-          <h2 className="font-serif text-lg font-semibold text-foreground mb-4">북마크한 살롱</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-serif text-lg font-semibold text-foreground">북마크한 살롱</h2>
+            {bookmarkedForums.length > 5 && (
+              <button
+                type="button"
+                onClick={() => navigate(`/profile/${userProfile?.id}?tab=bookmarks`)}
+                className="text-sm text-primary hover:text-primary-700 cursor-pointer"
+              >
+                더보기 &gt;
+              </button>
+            )}
+          </div>
           <div className="space-y-3 sm:space-y-4">
-            {bookmarkedForums.map((forum) => (
+            {bookmarkedForums.slice(0, 5).map((forum) => (
               <div
                 key={forum.isbn}
                 onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
