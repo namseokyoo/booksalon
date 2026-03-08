@@ -818,22 +818,10 @@ const ForumList: React.FC = () => {
                   width={48}
                   height={72}
                 />
-                <div className="flex-grow min-w-0">
+                <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
                   <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{forum.book.authors.join(', ')}</p>
                   <p className="text-xs text-muted-foreground mt-1">{forum.book.publisher}</p>
-                </div>
-                <div className="text-right flex-shrink-0 flex flex-col items-end space-y-2">
-                  <button
-                    onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="p-2.5 hover:bg-cta/5 rounded-lg transition-colors duration-200 active:scale-90"
-                    title="북마크 해제"
-                  >
-                    <BookmarkIcon
-                      className="h-4 w-4 text-cta"
-                      filled={true}
-                    />
-                  </button>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                     <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
                       {forum.postCount ?? 0}
@@ -845,6 +833,16 @@ const ForumList: React.FC = () => {
                     )}
                   </div>
                 </div>
+                <button
+                  onClick={(e) => handleToggleBookmark(forum.isbn, e)}
+                  className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                  title="북마크 해제"
+                >
+                  <BookmarkIcon
+                    className="h-4 w-4 text-cta"
+                    filled={true}
+                  />
+                </button>
               </div>
             ))}
           </div>
