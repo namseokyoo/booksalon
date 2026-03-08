@@ -142,18 +142,6 @@ CREATE POLICY "Admins can delete forums"
 ON forums FOR DELETE
 USING (is_admin());
 
--- forum_tags
-ALTER TABLE forum_tags ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can view forum tags"
-ON forum_tags FOR SELECT
-USING (true);
-
-CREATE POLICY "Authenticated users can manage forum tags"
-ON forum_tags FOR ALL
-USING (auth.role() = 'authenticated')
-WITH CHECK (auth.role() = 'authenticated');
-
 -- =====================================================
 -- 5. Posts RLS
 -- =====================================================

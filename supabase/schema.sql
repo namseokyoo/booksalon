@@ -109,7 +109,6 @@ CREATE INDEX IF NOT EXISTS idx_books_authors ON books USING gin(authors);
 -- 포럼 (살롱) 테이블
 CREATE TABLE IF NOT EXISTS forums (
     isbn VARCHAR(20) PRIMARY KEY REFERENCES books(isbn) ON DELETE CASCADE,
-    category VARCHAR(50),
     popularity INTEGER DEFAULT 0,
     post_count INTEGER DEFAULT 0,
     average_rating DECIMAL(2, 1) DEFAULT 0,
@@ -119,23 +118,9 @@ CREATE TABLE IF NOT EXISTS forums (
 );
 
 -- 포럼 인덱스
-CREATE INDEX IF NOT EXISTS idx_forums_category ON forums(category);
 CREATE INDEX IF NOT EXISTS idx_forums_popularity ON forums(popularity DESC);
 CREATE INDEX IF NOT EXISTS idx_forums_last_activity ON forums(last_activity_at DESC);
 CREATE INDEX IF NOT EXISTS idx_forums_average_rating ON forums(average_rating DESC);
-
--- 포럼 태그 연결 테이블 (다대다)
-CREATE TABLE IF NOT EXISTS forum_tags (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    forum_isbn VARCHAR(20) NOT NULL REFERENCES forums(isbn) ON DELETE CASCADE,
-    tag_name VARCHAR(50) NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-
-    CONSTRAINT forum_tags_unique UNIQUE (forum_isbn, tag_name)
-);
-
-CREATE INDEX IF NOT EXISTS idx_forum_tags_forum_isbn ON forum_tags(forum_isbn);
-CREATE INDEX IF NOT EXISTS idx_forum_tags_tag_name ON forum_tags(tag_name);
 
 -- =====================================================
 -- 3. Posts & Comments 테이블

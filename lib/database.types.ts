@@ -344,39 +344,9 @@ export type Database = {
           },
         ]
       }
-      forum_tags: {
-        Row: {
-          created_at: string | null
-          forum_isbn: string
-          id: string
-          tag_name: string
-        }
-        Insert: {
-          created_at?: string | null
-          forum_isbn: string
-          id?: string
-          tag_name: string
-        }
-        Update: {
-          created_at?: string | null
-          forum_isbn?: string
-          id?: string
-          tag_name?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_tags_forum_isbn_fkey"
-            columns: ["forum_isbn"]
-            isOneToOne: false
-            referencedRelation: "forums"
-            referencedColumns: ["isbn"]
-          },
-        ]
-      }
       forums: {
         Row: {
           average_rating: number | null
-          category: string | null
           created_at: string | null
           isbn: string
           last_activity_at: string | null
@@ -386,7 +356,6 @@ export type Database = {
         }
         Insert: {
           average_rating?: number | null
-          category?: string | null
           created_at?: string | null
           isbn: string
           last_activity_at?: string | null
@@ -396,7 +365,6 @@ export type Database = {
         }
         Update: {
           average_rating?: number | null
-          category?: string | null
           created_at?: string | null
           isbn?: string
           last_activity_at?: string | null
