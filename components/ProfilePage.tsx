@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { supabase } from '../lib/supabase';
@@ -13,8 +13,11 @@ import { ko } from 'date-fns/locale';
 import { MapPin, Globe, Target, BookOpen, CheckCircle, BookmarkPlus } from 'lucide-react';
 import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
 import ProfilePageSkeleton from './ProfilePageSkeleton';
+import StarRating from './StarRating';
+import { BookmarkIcon } from './icons/BookmarkIcon';
 
 const ProfilePage: React.FC = () => {
+    const navigate = useNavigate();
     const { userId } = useParams<{ userId?: string }>();
     const { openDeleteAccount } = useModals();
     const { currentUser, userProfile: authUserProfile } = useAuth();
@@ -44,6 +47,17 @@ const ProfilePage: React.FC = () => {
         profileImageFile: null as File | null
     });
     const isOwnProfile = !userId || currentUser?.uid === userId;
+
+    const handleToggleBookmarkInProfile = async (isbn: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!currentUser || !authUserProfile) return;
+        try {
+            await BookmarkService.toggleBookmark(authUserProfile.id, isbn);
+            setBookmarkedForums(prev => prev.filter(f => f.isbn !== isbn));
+        } catch (error) {
+            console.error('북마크 토글 오류:', error);
+        }
+    };
 
     const loadReadingLogBooks = async (logsData: ReadingLog[]) => {
         if (logsData.length === 0) {
@@ -607,28 +621,61 @@ const ProfilePage: React.FC = () => {
                                     <p className="text-muted-foreground text-center">아직 간직한 살롱이 없네요.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                     {bookmarkedForums.map((forum) => (
-                                        <div key={forum.isbn} className="bg-muted border border-border rounded-xl p-4 hover:shadow-md hover:border-primary-300 transition-all cursor-pointer">
-                                            <div className="flex items-start space-x-4">
+                                        <div
+                                            key={forum.isbn}
+                                            onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
+                                            className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3"
+                                        >
+                                            <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">
                                                 <img
                                                     src={forum.book.thumbnail}
                                                     alt={forum.book.title}
-                                                    className="w-16 h-auto rounded-lg flex-shrink-0 shadow-sm"
+                                                    className="w-full h-auto object-contain"
                                                     loading="lazy"
                                                     decoding="async"
+                                                    width={48}
+                                                    height={72}
                                                 />
-                                                <div className="flex-grow min-w-0">
-                                                    <h3 className="font-semibold text-foreground text-lg mb-2">{forum.book.title}</h3>
-                                                    <p className="text-muted-foreground text-sm mb-1">{forum.book.authors.join(', ')}</p>
-                                                    <p className="text-muted-foreground text-xs mb-2">{forum.book.publisher}</p>
-                                                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                                                        <span className="font-bold text-base text-foreground" aria-label="게시물 수">
-                                                            {forum.postCount ?? 0}
-                                                        </span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-semibold text-sm text-foreground truncate">{forum.book.title}</h3>
+                                                <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
+                                                <p className="text-xs text-muted-foreground">{forum.book.publisher}</p>
+                                                {forum.averageRating && forum.averageRating > 0 && (
+                                                    <div className="flex items-center gap-1 mt-1">
+                                                        <StarRating value={forum.averageRating} readonly size="sm" allowHalf />
+                                                        <span className="text-xs text-rating font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
+                                                        {forum.totalRatings && (
+                                                            <span className="text-xs text-muted-foreground">({forum.totalRatings})</span>
+                                                        )}
                                                     </div>
+                                                )}
+                                                <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                                                    <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
+                                                        {forum.postCount ?? 0}
+                                                    </span>
+                                                    {forum.memberCount && (
+                                                        <span aria-label="참여자 수">
+                                                            {forum.memberCount}명
+                                                        </span>
+                                                    )}
+                                                    {forum.postCount === 0 && (
+                                                        <span className="text-primary-600 font-medium">첫 토론을 시작해보세요</span>
+                                                    )}
                                                 </div>
                                             </div>
+                                            <button
+                                                onClick={(e) => handleToggleBookmarkInProfile(forum.isbn, e)}
+                                                className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
+                                                title="북마크 해제"
+                                            >
+                                                <BookmarkIcon
+                                                    className="h-4 w-4"
+                                                    filled={true}
+                                                />
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
