@@ -807,20 +807,22 @@ const ForumList: React.FC = () => {
               <div
                 key={forum.isbn}
                 onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
-                className="bg-surface border border-border p-3 sm:p-4 md:p-5 rounded-xl shadow-sm hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 flex items-start sm:items-center space-x-3 sm:space-x-4 md:space-x-5 border-l-4 border-l-cta"
+                className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3 border-l-4 border-l-cta"
               >
-                <img
-                  src={forum.book.thumbnail}
-                  alt={forum.book.title}
-                  className="w-10 h-auto sm:w-12 sm:h-auto rounded-lg flex-shrink-0 shadow-sm"
-                  loading="lazy"
-                  decoding="async"
-                  width={48}
-                  height={72}
-                />
+                <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">
+                  <img
+                    src={forum.book.thumbnail}
+                    alt={forum.book.title}
+                    className="w-full h-auto object-contain"
+                    loading="lazy"
+                    decoding="async"
+                    width={48}
+                    height={72}
+                  />
+                </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm sm:text-base text-foreground truncate">{forum.book.title}</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">{forum.book.authors.join(', ')}</p>
+                  <h3 className="font-semibold text-sm text-foreground truncate">{forum.book.title}</h3>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
                   <p className="text-xs text-muted-foreground mt-1">{forum.book.publisher}</p>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                     <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
