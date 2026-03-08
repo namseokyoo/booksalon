@@ -623,7 +623,9 @@ const ProfilePage: React.FC = () => {
                                                     <p className="text-muted-foreground text-sm mb-1">{forum.book.authors.join(', ')}</p>
                                                     <p className="text-muted-foreground text-xs mb-2">{forum.book.publisher}</p>
                                                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                                                        <span>게시물 {forum.postCount || 0}개</span>
+                                                        <span className="font-bold text-base text-foreground" aria-label="게시물 수">
+                                                            {forum.postCount ?? 0}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>

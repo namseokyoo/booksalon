@@ -53,6 +53,7 @@ const ForumList: React.FC = () => {
   const [existingForums, setExistingForums] = useState<Forum[]>([]);
   const [bookmarkedForums, setBookmarkedForums] = useState<Forum[]>([]);
   const [bookmarks, setBookmarks] = useState<Set<string>>(new Set());
+  const [bookmarkLoading, setBookmarkLoading] = useState<Set<string>>(new Set());
   const [bookmarkError, setBookmarkError] = useState<string | null>(null);
   const [filteredForums, setFilteredForums] = useState<Forum[]>([]);
   const [searchPage, setSearchPage] = useState(1);
@@ -476,20 +477,45 @@ const ForumList: React.FC = () => {
   };
 
   const handleToggleBookmark = useCallback(async (isbn: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // 포럼 클릭 이벤트 방지
+    e.stopPropagation();
+    e.preventDefault();
 
     if (!currentUser || !userProfile?.id) {
       openLogin();
       return;
     }
 
-    setBookmarkError(null);
-    try {
-      const isBookmarked = await BookmarkService.toggleBookmark(userProfile.id, isbn);
+    // 중복 클릭 방지
+    if (bookmarkLoading.has(isbn)) return;
 
-      if (isBookmarked) {
+    setBookmarkLoading(prev => new Set([...prev, isbn]));
+    setBookmarkError(null);
+
+    // 낙관적 업데이트: 즉시 UI 변경
+    const wasBookmarked = bookmarks.has(isbn);
+    if (wasBookmarked) {
+      setBookmarks(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(isbn);
+        return newSet;
+      });
+      setBookmarkedForums(prev => prev.filter(f => f.isbn !== isbn));
+    } else {
+      setBookmarks(prev => new Set([...prev, isbn]));
+      const forum = forums.find(f => f.isbn === isbn);
+      if (forum) {
+        setBookmarkedForums(prev => [...prev, forum]);
+      }
+    }
+
+    try {
+      await BookmarkService.toggleBookmark(userProfile.id, isbn);
+    } catch (error) {
+      // 실패 시 롤백
+      console.error('북마크 토글 실패:', error);
+      setBookmarkError('북마크 처리 중 오류가 발생했습니다.');
+      if (wasBookmarked) {
         setBookmarks(prev => new Set([...prev, isbn]));
-        // 북마크한 포럼 목록에 추가
         const forum = forums.find(f => f.isbn === isbn);
         if (forum) {
           setBookmarkedForums(prev => [...prev, forum]);
@@ -502,11 +528,14 @@ const ForumList: React.FC = () => {
         });
         setBookmarkedForums(prev => prev.filter(f => f.isbn !== isbn));
       }
-    } catch (error) {
-      console.error('북마크 토글 실패:', error);
-      setBookmarkError('북마크 처리 중 오류가 발생했습니다.');
+    } finally {
+      setBookmarkLoading(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(isbn);
+        return newSet;
+      });
     }
-  }, [currentUser, forums, openLogin]);
+  }, [currentUser, forums, openLogin, bookmarks, bookmarkLoading]);
 
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -805,9 +834,15 @@ const ForumList: React.FC = () => {
                       filled={true}
                     />
                   </button>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-2">
-                    <span>{forum.postCount ? `게시물 ${forum.postCount}개` : '첫 토론을 시작해보세요'}</span>
-                    {forum.memberCount && <span>참여 {forum.memberCount}명</span>}
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                    <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
+                      {forum.postCount ?? 0}
+                    </span>
+                    {forum.memberCount && (
+                      <span aria-label="참여자 수">
+                        {forum.memberCount}명
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
