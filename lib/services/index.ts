@@ -28,7 +28,6 @@ export {
 export {
   TagService,
   type TagStats,
-  type Forum as TagForum,
   type Post as TagPost,
 } from './tagService'
 
