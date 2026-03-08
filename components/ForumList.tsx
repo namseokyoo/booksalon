@@ -828,7 +828,6 @@ const ForumList: React.FC = () => {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-serif text-lg font-semibold text-foreground">북마크한 살롱</h2>
-            {bookmarkedForums.length > 5 && (
               <button
                 type="button"
                 onClick={() => navigate(`/profile/${userProfile?.id}?tab=bookmarks`)}
@@ -836,7 +835,6 @@ const ForumList: React.FC = () => {
               >
                 더보기 &gt;
               </button>
-            )}
           </div>
           <div className="space-y-3 sm:space-y-4">
             {bookmarkedForums.slice(0, 5).map((forum) => (
