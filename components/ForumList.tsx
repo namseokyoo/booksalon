@@ -821,20 +821,14 @@ const ForumList: React.FC = () => {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm text-foreground truncate">{forum.book.title}</h3>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{forum.book.publisher}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                    <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
-                      {forum.postCount ?? 0}
-                    </span>
-                    {forum.memberCount && (
-                      <span aria-label="참여자 수">
-                        {forum.memberCount}명
-                      </span>
-                    )}
+                  <div className="flex items-start md:items-center gap-1.5 md:gap-2 flex-wrap md:flex-nowrap">
+                    <h3 className="font-semibold text-sm text-foreground truncate min-w-0">{forum.book.title}</h3>
                   </div>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
                 </div>
+                <span className="flex-shrink-0 font-bold text-sm text-foreground" aria-label="게시물 수">
+                  {forum.postCount ?? 0}
+                </span>
                 <button
                   onClick={(e) => handleToggleBookmark(forum.isbn, e)}
                   className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
