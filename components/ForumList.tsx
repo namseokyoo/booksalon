@@ -690,17 +690,17 @@ const ForumList: React.FC = () => {
 
   return (
     <div data-testid="forum-list-loaded" className="max-w-4xl mx-auto px-4 py-3 sm:px-6 sm:py-4 lg:px-8 safe-area-pad">
-      {/* 비로그인: 통합 히어로+검색 */}
-      {!currentUser ? (
-        <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-5 py-6 sm:px-10 sm:py-10 text-center">
-          <BookOpenIcon className="h-7 w-7 sm:h-9 sm:w-9 text-primary mx-auto mb-3 opacity-70" />
-          <h2 className="font-serif text-xl sm:text-2xl font-bold text-primary leading-snug">
-            당신의 마침표가 누군가의 물음표와 만나는 곳
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-muted-foreground">
-            책을 읽고, 생각을 나누고, 다음 책을 발견하세요
-          </p>
-          {!currentUser && (
+      {/* 히어로 섹션: 비로그인/로그인 공통 래퍼, 내부 텍스트만 분기 */}
+      <section className="mb-6 sm:mb-8 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl px-5 py-6 sm:px-10 sm:py-10 text-center">
+        <BookOpenIcon className="h-7 w-7 sm:h-9 sm:w-9 text-primary mx-auto mb-3 opacity-70" />
+        {!currentUser ? (
+          <>
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-primary leading-snug">
+              당신의 마침표가 누군가의 물음표와 만나는 곳
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-muted-foreground">
+              책을 읽고, 생각을 나누고, 다음 책을 발견하세요
+            </p>
             <div className="mt-4">
               <button
                 type="button"
@@ -710,49 +710,20 @@ const ForumList: React.FC = () => {
                 지금 살롱 입장하기
               </button>
             </div>
-          )}
-          {/* 읽은 책 검색 폼 */}
-          <div className="mt-5 max-w-lg mx-auto">
-            <form onSubmit={handleSearch}>
-              <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden focus-within:ring-2 focus-within:ring-ring">
-                <input
-                  type="text"
-                  name="isbn-search-hero"
-                  id="isbn-search-hero"
-                  className="focus:outline-none block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
-                  placeholder="읽은 책을 검색해보세요"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button
-                  type="submit"
-                  className="inline-flex items-center flex-shrink-0 gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 text-sm font-medium rounded-r-full text-cta-foreground bg-cta hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-ring transition-colors duration-200"
-                  disabled={isLoading}
-                  aria-label="책 검색"
-                >
-                  {isLoading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cta-foreground"></div>
-                  ) : (
-                    <>
-                      <SearchIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                      <span className="hidden sm:inline">검색</span>
-                    </>
-                  )}
-                </button>
-              </div>
-              {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
-            </form>
-          </div>
-        </section>
-      ) : (
-        /* 로그인 사용자: 검색바 + 통합 검색 진입 */
-        <div className="mb-4 sm:mb-6">
+          </>
+        ) : (
+          <h2 className="font-serif text-xl sm:text-2xl font-bold text-primary leading-snug">
+            {userProfile?.nickname || userProfile?.displayName || currentUser?.email?.split('@')[0] || '독자'}님, 오늘은 어떤 책에 대해 이야기 나눠볼까요?
+          </h2>
+        )}
+        {/* 읽은 책 검색 폼 — 비로그인/로그인 공통 */}
+        <div className="mt-5 max-w-lg mx-auto">
           <form onSubmit={handleSearch}>
             <div className="flex rounded-full shadow-sm bg-surface border border-border overflow-hidden focus-within:ring-2 focus-within:ring-ring">
               <input
                 type="text"
-                name="isbn-search"
-                id="isbn-search"
+                name="isbn-search-hero"
+                id="isbn-search-hero"
                 className="focus:outline-none block w-full flex-1 min-w-0 border-0 bg-transparent rounded-none text-foreground pl-3 sm:pl-5 text-sm sm:text-sm py-2.5"
                 placeholder="읽은 책을 검색해보세요"
                 value={searchTerm}
@@ -777,7 +748,7 @@ const ForumList: React.FC = () => {
             {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
           </form>
         </div>
-      )}
+      </section>
 
 
       {/* 인기 게시물 섹션 — 검색 중이 아닐 때만 표시 */}
