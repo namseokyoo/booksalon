@@ -4,9 +4,11 @@ import type { CommentWithReplies } from '../lib/services/commentService';
 import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import { UserService, SocialService } from '../lib/services';
 import { LikeIcon } from './icons/LikeIcon';
 import type { UserProfile } from '../types';
+import LoginRequiredPopup from './LoginRequiredPopup';
 
 interface ReplyItemProps {
   comment: CommentWithReplies;
@@ -28,7 +30,9 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [likeError, setLikeError] = useState<string | null>(null);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { currentUser } = useAuth();
+  const { openLogin } = useModals();
 
   useEffect(() => {
     const loadAuthorProfile = async () => {
@@ -74,7 +78,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
 
   const handleToggleLike = async () => {
     if (!currentUser) {
-      setLikeError('좋아요하려면 로그인이 필요합니다.');
+      setShowLoginPopup(true);
       return;
     }
     setLikeError(null);
@@ -209,6 +213,12 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
       </div>
       {likeError && <p className="text-destructive text-xs mt-1">{likeError}</p>}
       {deleteError && <p className="text-destructive text-xs mt-1">{deleteError}</p>}
+      <LoginRequiredPopup
+        message="좋아요를 누르려면 로그인이 필요합니다."
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        onLogin={openLogin}
+      />
     </div>
   );
 };

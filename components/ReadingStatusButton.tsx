@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { ReadingLogService } from '../lib/services';
 import type { ReadingStatus } from '../lib/services/readingLogService';
 import { supabase } from '../lib/supabase';
+import LoginRequiredPopup from './LoginRequiredPopup';
 
 interface ReadingStatusButtonProps {
   isbn: string;
@@ -23,6 +24,7 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, onLogin
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // users 테이블에서 id 조회
@@ -115,8 +117,7 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, onLogin
       <button
         onClick={() => {
           if (!currentUser) {
-            if (onLoginRequired) onLoginRequired();
-            setMessage('로그인하면 독서 상태를 수정할 수 있습니다.');
+            setShowLoginPopup(true);
             return;
           }
           setIsOpen(!isOpen);
@@ -185,6 +186,13 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, onLogin
           {message}
         </div>
       )}
+
+      <LoginRequiredPopup
+        message="독서 상태를 변경하려면 로그인이 필요합니다."
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        onLogin={() => { if (onLoginRequired) onLoginRequired(); }}
+      />
     </div>
   );
 };

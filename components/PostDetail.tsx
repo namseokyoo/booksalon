@@ -8,10 +8,12 @@ import { MessageCircleIcon } from './icons';
 import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import { UserService, PostImageService, SocialService, ViewCountService, CommentService } from '../lib/services';
 import type { CommentWithReplies } from '../lib/services';
 import { NotificationService } from '../lib/services/notificationService';
 import { LikeIcon } from './icons/LikeIcon';
+import LoginRequiredPopup from './LoginRequiredPopup';
 
 interface PostDetailProps {
     post: Post;
@@ -40,7 +42,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
     const [showMentionList, setShowMentionList] = useState(false);
     const [mentionSearch, setMentionSearch] = useState('');
     const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
+    const [showLikeLoginPopup, setShowLikeLoginPopup] = useState(false);
+    const [showCommentLoginPopup, setShowCommentLoginPopup] = useState(false);
     const { currentUser } = useAuth();
+    const { openLogin } = useModals();
 
     useEffect(() => {
         const loadAuthorProfile = async () => {
@@ -123,7 +128,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
     const handleToggleLike = async () => {
         if (!currentUser) {
-            onShowToast?.('좋아요를 누르려면 로그인이 필요합니다', 'info');
+            setShowLikeLoginPopup(true);
             return;
         }
 
@@ -611,7 +616,22 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                             </form>
                         </div>
                     ) : (
-                        <p className="text-muted-foreground text-sm">로그인 후 댓글을 작성할 수 있습니다.</p>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="text"
+                                placeholder="댓글을 작성하려면 로그인하세요"
+                                className="flex-1 p-3 border border-border rounded-lg bg-muted/50 text-muted-foreground text-sm cursor-pointer"
+                                readOnly
+                                onClick={() => setShowCommentLoginPopup(true)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowCommentLoginPopup(true)}
+                                className="px-4 py-3 bg-muted text-muted-foreground rounded-lg text-sm"
+                            >
+                                등록
+                            </button>
+                        </div>
                     )}
                 </div>
             </div>
@@ -623,6 +643,18 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                     onSendMessage={onSendMessage ? () => onSendMessage(selectedUser.id) : undefined}
                 />
             )}
+            <LoginRequiredPopup
+                message="좋아요를 누르려면 로그인이 필요합니다."
+                isOpen={showLikeLoginPopup}
+                onClose={() => setShowLikeLoginPopup(false)}
+                onLogin={openLogin}
+            />
+            <LoginRequiredPopup
+                message="댓글을 작성하려면 로그인이 필요합니다."
+                isOpen={showCommentLoginPopup}
+                onClose={() => setShowCommentLoginPopup(false)}
+                onLogin={openLogin}
+            />
         </div>
     );
 };

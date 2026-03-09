@@ -8,6 +8,7 @@ import UserMenu from './UserMenu';
 import UserProfilePreview from './UserProfilePreview';
 import CreatePostModal from './CreatePostModal';
 import ForumViewSkeleton from './ForumViewSkeleton';
+import LoginRequiredPopup from './LoginRequiredPopup';
 import type { ImagePreview } from './ImageUploader';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -34,6 +35,7 @@ const ForumView: React.FC = () => {
   const initialPostId = searchParams.get('post') || undefined;
   const [initialPostLoading, setInitialPostLoading] = useState(!!initialPostId);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showWriteLoginPopup, setShowWriteLoginPopup] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -536,7 +538,7 @@ const ForumView: React.FC = () => {
           onLoginRequired={openLogin}
           onWriteClick={() => {
             if (!currentUser) {
-              openLogin();
+              setShowWriteLoginPopup(true);
             } else {
               setIsModalOpen(true);
             }
@@ -606,6 +608,13 @@ const ForumView: React.FC = () => {
           onClose={handleCloseUserProfile}
         />
       )}
+
+      <LoginRequiredPopup
+        message="글을 쓰려면 로그인이 필요합니다."
+        isOpen={showWriteLoginPopup}
+        onClose={() => setShowWriteLoginPopup(false)}
+        onLogin={openLogin}
+      />
     </div>
   );
 };

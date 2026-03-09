@@ -8,8 +8,10 @@ import { ChatBubbleIcon } from './icons';
 import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import { UserService, SocialService } from '../lib/services';
 import { LikeIcon } from './icons/LikeIcon';
+import LoginRequiredPopup from './LoginRequiredPopup';
 
 interface PostItemProps {
   post: Post;
@@ -26,7 +28,9 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
   const [likeCount, setLikeCount] = useState(post.likeCount || 0);
   const [commentCount, setCommentCount] = useState(post.commentCount || 0);
   const [commentError, setCommentError] = useState<string | null>(null);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { currentUser } = useAuth();
+  const { openLogin } = useModals();
 
   useEffect(() => {
     const checkLikeStatus = async () => {
@@ -52,7 +56,7 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
 
   const handleToggleLike = async () => {
     if (!currentUser) {
-      onShowToast?.('좋아요를 누르려면 로그인이 필요합니다', 'info');
+      setShowLoginPopup(true);
       return;
     }
 
@@ -346,6 +350,13 @@ const PostItem: React.FC<PostItemProps> = React.memo(({ post, isbn, onShowToast 
           </div>
         </div>
       )}
+
+      <LoginRequiredPopup
+        message="좋아요를 누르려면 로그인이 필요합니다."
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        onLogin={openLogin}
+      />
     </div>
   );
 });

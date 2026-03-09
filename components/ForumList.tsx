@@ -20,6 +20,7 @@ import SalonCard from './SalonCard';
 import SectionHeader from './SectionHeader';
 import ForumListSkeleton from './ForumListSkeleton';
 import ForumListError from './ForumListError';
+import LoginRequiredPopup from './LoginRequiredPopup';
 import { formatRelativeDate } from '../lib/dateUtils';
 
 // 베스트 게시물 타입
@@ -1038,27 +1039,12 @@ const ForumList: React.FC = () => {
         </div>
       )}
 
-      {showBookmarkLoginPopup && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-             onClick={() => setShowBookmarkLoginPopup(false)}>
-          <div className="bg-surface rounded-xl shadow-xl p-6 max-w-xs w-full text-center"
-               onClick={(e) => e.stopPropagation()}>
-            <p className="text-sm text-foreground mb-4">
-              북마크하려면 로그인이 필요합니다.
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button onClick={() => setShowBookmarkLoginPopup(false)}
-                className="px-4 py-2 text-sm text-muted-foreground border border-border rounded-lg hover:bg-muted transition-colors">
-                취소
-              </button>
-              <button onClick={() => { openLogin(); setShowBookmarkLoginPopup(false); }}
-                className="px-4 py-2 text-sm font-medium text-cta-foreground bg-cta rounded-lg hover:bg-cta-700 transition-colors">
-                로그인
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <LoginRequiredPopup
+        message="북마크하려면 로그인이 필요합니다."
+        isOpen={showBookmarkLoginPopup}
+        onClose={() => setShowBookmarkLoginPopup(false)}
+        onLogin={openLogin}
+      />
     </div>
   );
 };

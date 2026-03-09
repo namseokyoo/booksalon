@@ -5,10 +5,12 @@ import type { CommentWithReplies } from '../lib/services/commentService';
 import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import { UserService, SocialService } from '../lib/services';
 import { LikeIcon } from './icons/LikeIcon';
 import ReplyInput from './ReplyInput';
 import ReplyItem from './ReplyItem';
+import LoginRequiredPopup from './LoginRequiredPopup';
 
 interface CommentItemProps {
   comment: Comment;
@@ -34,7 +36,9 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
   const { currentUser } = useAuth();
+  const { openLogin } = useModals();
 
   useEffect(() => {
     const loadAuthorProfile = async () => {
@@ -80,7 +84,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
 
   const handleToggleLike = async () => {
     if (!currentUser) {
-      setLikeError('좋아요하려면 로그인이 필요합니다.');
+      setShowLoginPopup(true);
       return;
     }
 
@@ -329,6 +333,13 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
           ))}
         </div>
       )}
+
+      <LoginRequiredPopup
+        message="좋아요를 누르려면 로그인이 필요합니다."
+        isOpen={showLoginPopup}
+        onClose={() => setShowLoginPopup(false)}
+        onLogin={openLogin}
+      />
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FileText, MessageCircle, Heart, Users, Bookmark, Pin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useModals } from '../contexts/ModalContext';
 import { SocialService } from '../lib/services';
 import type { Activity } from '../types';
 import { formatDistanceToNow } from 'date-fns';
@@ -12,6 +13,7 @@ import TabBar from './TabBar';
 const ActivityFeed: React.FC = () => {
     const navigate = useNavigate();
     const { currentUser, userProfile } = useAuth();
+    const { openLogin } = useModals();
     const [activities, setActivities] = useState<Activity[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'following' | 'my'>('following');
@@ -99,7 +101,13 @@ const ActivityFeed: React.FC = () => {
             <div className="min-h-screen bg-background text-foreground">
                 <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
                     <div className="text-center py-8">
-                        <p className="text-muted-foreground">로그인이 필요합니다.</p>
+                        <p className="text-muted-foreground mb-4">활동 피드를 보려면 로그인이 필요합니다.</p>
+                        <button
+                            onClick={openLogin}
+                            className="px-4 py-2 text-sm font-medium text-cta-foreground bg-cta rounded-lg hover:bg-cta-700 transition-colors"
+                        >
+                            로그인
+                        </button>
                     </div>
                 </div>
             </div>
