@@ -490,15 +490,15 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                         <p className="text-destructive text-sm mb-2">{editError}</p>
                     )}
 
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground mb-4">
                         <Link
                             to={`/profile/${authorProfile?.uid || post.author.uid}`}
-                            className="hover:text-primary transition-colors font-medium"
+                            className="hover:text-primary transition-colors font-medium truncate max-w-[120px]"
                         >
                             {getDisplayName()}
                         </Link>
                         <span className="text-muted-foreground">{formatRelativeDate(post.createdAt)}</span>
-                        <div className="flex items-center space-x-4">
+                        <div className="shrink-0 flex items-center space-x-4">
                             <div>
                             <button
                                 onClick={handleToggleLike}

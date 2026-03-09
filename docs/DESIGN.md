@@ -947,3 +947,146 @@ border-border
 | 최대 너비 | `max-w-md` (모바일 전체폭) |
 | 오버레이 | `bg-black/50 backdrop-blur-sm` |
 | 버튼 배치 | `flex flex-col-reverse sm:flex-row sm:justify-end gap-2` |
+
+---
+
+## 12. 모바일 반응형 디자인 규칙
+
+> 근거: 2026-03-09 전수 점검 — 20건의 모바일 레이아웃 잠재 문제 발견
+> 원칙: **모바일 우선(Mobile-First)** — 좁은 화면에서 먼저 정상 동작을 보장하고, 넓은 화면에서 확장
+
+### 12.1 버튼 텍스트 줄바꿈 방지 (필수)
+
+**규칙**: 모든 버튼의 텍스트는 줄바꿈되지 않아야 한다.
+
+| 패턴 | 필수 클래스 | 설명 |
+|------|-----------|------|
+| flex 컨테이너 안의 button | `shrink-0 whitespace-nowrap` | 입력폼+버튼, 제목+액션 버튼 등 |
+| 단독 button | `whitespace-nowrap` | 버튼 텍스트가 2글자 이상일 때 |
+
+```tsx
+// 올바른 패턴
+<div className="flex gap-2">
+  <input className="flex-1 min-w-0 ..." />
+  <button className="shrink-0 whitespace-nowrap px-4 py-2 ...">등록</button>
+</div>
+
+// 금지 패턴
+<div className="flex gap-2">
+  <input className="flex-1 ..." />
+  <button className="px-4 py-2 ...">등록</button>  {/* shrink-0, whitespace-nowrap 없음 */}
+</div>
+```
+
+### 12.2 flex 컨테이너 고정 요소 보호 (필수)
+
+**규칙**: flex 레이아웃에서 크기가 고정되어야 하는 요소는 `shrink-0`을 반드시 적용한다.
+
+| 대상 | 필수 클래스 |
+|------|-----------|
+| 아이콘 버튼 | `shrink-0` |
+| 날짜/시간 텍스트 | `shrink-0` |
+| 좋아요/댓글/조회수 그룹 | `shrink-0` |
+| 액션 버튼 그룹 | `shrink-0` |
+
+가변 길이 요소(사용자 이름, 제목 등)는 `flex-1 min-w-0`을 적용하여 축소 허용.
+
+```tsx
+// 올바른 패턴
+<div className="flex items-center gap-2">
+  <span className="flex-1 min-w-0 truncate">{userName}</span>
+  <div className="shrink-0 flex items-center gap-2">
+    <span>좋아요 {likeCount}</span>
+    <span>댓글 {commentCount}</span>
+  </div>
+</div>
+```
+
+### 12.3 최소 터치 영역 (필수)
+
+**규칙**: 모바일에서 탭 가능한 모든 인터랙티브 요소는 최소 44×44px 터치 영역을 확보한다.
+
+> 근거: Apple HIG 44pt, Google Material Design 48dp (44px는 공통 최소 기준)
+
+| 요소 유형 | 필수 클래스 |
+|----------|-----------|
+| 아이콘 전용 버튼 (닫기, 좋아요 등) | `min-h-[44px] min-w-[44px] flex items-center justify-center` |
+| 텍스트 버튼 | `min-h-[44px]` (너비는 텍스트에 맡김) |
+| 링크/탭 요소 | `min-h-[44px]` 또는 충분한 패딩 |
+
+```tsx
+// 올바른 패턴 — 아이콘 전용 버튼
+<button className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center">
+  <XIcon className="w-5 h-5" />
+</button>
+
+// 금지 패턴 — 아이콘만 있고 터치 영역 미확보
+<button className="text-muted-foreground">
+  <XIcon className="w-6 h-6" />  {/* 24×24px, 터치 불가 */}
+</button>
+```
+
+### 12.4 텍스트 오버플로우 처리 (필수)
+
+**규칙**: 사용자 입력 또는 동적 텍스트가 표시되는 곳은 반드시 오버플로우를 처리한다.
+
+| 텍스트 유형 | 권장 처리 |
+|------------|----------|
+| 사용자 닉네임 | `truncate max-w-[120px]` 또는 `max-w-[40%]` |
+| 게시글 제목 (한 줄) | `truncate` |
+| 게시글 내용 (미리보기) | `line-clamp-2` 또는 `line-clamp-3` |
+| 이메일 주소 | `truncate` |
+| 알림 제목 | `flex-1 min-w-0` + `truncate` |
+| 살롱(포럼) 이름 | `truncate` |
+
+```tsx
+// 올바른 패턴 — 가변 텍스트 + 고정 액션
+<div className="flex items-center justify-between">
+  <h3 className="flex-1 min-w-0 truncate font-semibold">{title}</h3>
+  <div className="shrink-0 flex items-center gap-2">
+    <button>읽음</button>
+    <button>삭제</button>
+  </div>
+</div>
+
+// 금지 패턴 — 오버플로우 미처리
+<div className="flex items-center justify-between">
+  <h3 className="font-semibold">{title}</h3>  {/* 긴 제목이 버튼을 밀어냄 */}
+  <button>삭제</button>
+</div>
+```
+
+### 12.5 반응형 패딩/마진 (권장)
+
+**규칙**: 24px 이상의 패딩/마진은 모바일 분기(`sm:`)를 적용한다.
+
+| 값 범위 | 처리 |
+|---------|------|
+| `p-1` ~ `p-3` (4~12px) | 반응형 분기 불필요 |
+| `p-4` ~ `p-6` (16~24px) | `p-3 sm:p-4` 또는 `p-4 sm:p-6` 권장 |
+| `p-8` 이상 (32px+) | 반드시 `p-4 sm:p-8` 등 반응형 분기 |
+
+시맨틱 토큰 사용 시 이미 반응형이 내장된 경우 추가 분기 불필요:
+- `p-(--spacing-card-padding) sm:p-(--spacing-card-padding-sm)` ← 이미 반응형
+
+### 12.6 모바일 체크리스트 (개발 시 참조)
+
+새 컴포넌트 개발 또는 기존 컴포넌트 수정 시 아래 체크리스트를 확인:
+
+- [ ] flex 안의 button에 `shrink-0 whitespace-nowrap` 적용했는가?
+- [ ] 아이콘 전용 버튼에 44×44px 터치 영역이 확보되었는가?
+- [ ] 사용자 이름/제목 등 가변 텍스트에 `truncate` 또는 `line-clamp` 적용했는가?
+- [ ] `justify-between` 사용 시 좌측에 `flex-1 min-w-0`, 우측에 `shrink-0` 적용했는가?
+- [ ] 24px 이상 패딩에 `sm:` 반응형 분기가 있는가?
+
+### 12.7 양호 사례 (벤치마크)
+
+현재 코드베이스에서 올바르게 적용된 사례:
+
+| 컴포넌트 | 패턴 | 적용 |
+|----------|------|------|
+| `Header.tsx` 햄버거 메뉴 | 터치 영역 | `min-h-[44px] min-w-[44px]` |
+| `TabBar.tsx` | 텍스트 줄바꿈 방지 | `whitespace-nowrap` + `overflow-x-auto` |
+| `PostDetail.tsx` 댓글 등록 | 버튼 보호 | `shrink-0 whitespace-nowrap` |
+| `SalonCard.tsx` | 오버플로우 | `flex-1 min-w-0` + `truncate` |
+| `ForumList.tsx` 히어로 검색 | 버튼 보호 | `flex-shrink-0` |

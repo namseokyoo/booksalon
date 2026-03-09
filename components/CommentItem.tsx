@@ -238,7 +238,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
           <div className="flex gap-2">
             <button
               onClick={handleEditComment}
-              className="px-3 py-1 bg-cta text-cta-foreground rounded-lg text-sm hover:bg-cta-700 font-medium"
+              className="shrink-0 px-3 py-1 bg-cta text-cta-foreground rounded-lg text-sm hover:bg-cta-700 font-medium"
             >
               저장
             </button>
@@ -248,7 +248,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
                 setEditContent(displayContent);
                 setEditError(null);
               }}
-              className="px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-gray-300 font-medium"
+              className="shrink-0 px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-muted font-medium"
             >
               취소
             </button>
@@ -261,7 +261,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, isbn, onUser
       <div className="flex items-center space-x-3 mt-2">
         <button
           onClick={handleToggleLike}
-          className={`flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'
+          className={`min-h-[36px] px-2 flex items-center space-x-1 text-xs transition-colors ${isLiked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'
             }`}
         >
           <LikeIcon className="w-4 h-4" filled={isLiked} />

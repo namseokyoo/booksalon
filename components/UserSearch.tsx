@@ -79,10 +79,10 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
                                     </span>
                                 </div>
                                 <div>
-                                    <h4 className="text-foreground font-medium">
+                                    <h4 className="text-foreground font-medium truncate">
                                         {user.nickname || user.displayName}
                                     </h4>
-                                    <p className="text-muted-foreground text-sm">{user.email}</p>
+                                    <p className="text-muted-foreground text-sm truncate">{user.email}</p>
                                 </div>
                             </div>
                         </div>

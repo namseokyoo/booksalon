@@ -64,7 +64,7 @@ const UserProfilePreview: React.FC<UserProfilePreviewProps> = ({ user, onClose, 
                         <h2 className="text-xl font-bold">프로필</h2>
                         <button
                             onClick={onClose}
-                            className="text-muted-foreground hover:text-foreground transition-colors"
+                            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

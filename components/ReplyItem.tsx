@@ -182,7 +182,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
           <div className="flex gap-2">
             <button
               onClick={handleEditSubmit}
-              className="px-3 py-1 bg-cta text-cta-foreground rounded-lg text-sm hover:bg-cta-700 font-medium"
+              className="shrink-0 px-3 py-1 bg-cta text-cta-foreground rounded-lg text-sm hover:bg-cta-700 font-medium"
             >
               저장
             </button>
@@ -192,7 +192,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({ comment, onEdit, onDelete, onLike
                 setEditContent(displayContent);
                 setEditError(null);
               }}
-              className="px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-gray-300 font-medium"
+              className="shrink-0 px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-muted font-medium"
             >
               취소
             </button>

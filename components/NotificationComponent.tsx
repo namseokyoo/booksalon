@@ -121,7 +121,7 @@ const NotificationComponent: React.FC = () => {
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllAsRead}
-                                className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors text-sm"
+                                className="shrink-0 whitespace-nowrap px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors text-sm"
                             >
                                 모두 읽음 처리
                             </button>
@@ -180,10 +180,10 @@ const NotificationComponent: React.FC = () => {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between">
-                                                <h3 className={`font-semibold ${!notification.isRead ? 'text-foreground' : 'text-surface-foreground'}`}>
+                                                <h3 className={`truncate font-semibold ${!notification.isRead ? 'text-foreground' : 'text-surface-foreground'}`}>
                                                     {notification.title}
                                                 </h3>
-                                                <div className="flex items-center gap-3">
+                                                <div className="shrink-0 flex items-center gap-3">
                                                     <span className="text-muted-foreground text-sm">
                                                         {formatNotificationTime(notification.createdAt)}
                                                     </span>

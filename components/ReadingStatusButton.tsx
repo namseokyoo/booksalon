@@ -123,7 +123,7 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, onLogin
           setIsOpen(!isOpen);
         }}
         disabled={isLoading}
-        className={`flex items-center space-x-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors duration-200 ${
+        className={`whitespace-nowrap flex items-center space-x-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors duration-200 ${
           currentStatus
             ? 'bg-primary-50 border-primary-200 text-primary-700 hover:bg-primary-100'
             : 'bg-surface border-border text-surface-foreground hover:bg-muted'

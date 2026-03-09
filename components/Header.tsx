@@ -54,7 +54,7 @@ const Header: React.FC = () => {
                         {/* 통합 검색 버튼 */}
                         <button
                             onClick={openSearch}
-                            className="p-2.5 text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
+                            className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-surface-foreground hover:bg-muted rounded-md transition-colors duration-200"
                             aria-label="통합 검색 열기"
                         >
                             <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

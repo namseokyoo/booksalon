@@ -309,7 +309,7 @@ const ProfilePage: React.FC = () => {
                     {isOwnProfile && (
                         <button
                             onClick={() => setIsEditing(!isEditing)}
-                            className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
+                            className="min-h-[44px] px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
                         >
                             {isEditing ? '취소' : '프로필 편집'}
                         </button>
@@ -459,13 +459,13 @@ const ProfilePage: React.FC = () => {
                                         <button
                                             onClick={handleSaveProfile}
                                             disabled={isSaving}
-                                            className="px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="shrink-0 px-4 py-2 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             {isSaving ? '저장 중...' : '저장'}
                                         </button>
                                         <button
                                             onClick={() => { setIsEditing(false); setSaveError(null); }}
-                                            className="px-4 py-2 bg-muted text-surface-foreground rounded-lg hover:bg-muted transition-colors font-medium"
+                                            className="shrink-0 px-4 py-2 bg-muted text-surface-foreground rounded-lg hover:bg-muted transition-colors font-medium"
                                         >
                                             취소
                                         </button>

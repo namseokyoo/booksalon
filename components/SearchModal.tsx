@@ -301,7 +301,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
                     <h2 id="search-modal-title" className="text-lg sm:text-xl font-semibold text-foreground">통합 검색</h2>
                     <button
                         onClick={onClose}
-                        className="text-muted-foreground hover:text-muted-foreground transition-colors"
+                        className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                         aria-label="검색 모달 닫기"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -355,7 +355,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
                             />
                             <button
                                 type="submit"
-                                className="px-4 py-2 bg-cta text-cta-foreground rounded-lg text-sm font-medium hover:bg-cta-700 focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+                                className="shrink-0 px-4 py-2 bg-cta text-cta-foreground rounded-lg text-sm font-medium hover:bg-cta-700 focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
                                 disabled={isLoading || !searchTerm.trim()}
                                 aria-label="검색 실행"
                             >

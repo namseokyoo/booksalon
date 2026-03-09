@@ -95,7 +95,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                 </div>
                 <button
                     onClick={onClose}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -146,7 +146,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
                     <button
                         type="submit"
                         disabled={!newMessage.trim()}
-                        className="px-4 py-3 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                        className="shrink-0 whitespace-nowrap px-4 py-3 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
                         전송
                     </button>

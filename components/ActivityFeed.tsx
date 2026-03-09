@@ -134,7 +134,7 @@ const ActivityFeed: React.FC = () => {
                 </div>
 
                 {/* 활동 목록 */}
-                <div className="bg-surface rounded-lg p-6">
+                <div className="bg-surface rounded-lg p-4 sm:p-6">
                     {loading ? (
                         <ActivityFeedSkeleton />
                     ) : activities.length === 0 ? (
@@ -174,7 +174,7 @@ const ActivityFeed: React.FC = () => {
                                         </div>
                                         <div className="flex-grow">
                                             <div className="flex items-center space-x-2 mb-1">
-                                                <span className="font-semibold text-foreground">{activity.userName}</span>
+                                                <span className="font-semibold text-foreground truncate max-w-[120px]">{activity.userName}</span>
                                                 <span className="text-xs text-muted-foreground">{formatDate(activity.createdAt)}</span>
                                             </div>
                                             <p className="text-surface-foreground text-sm">{getActivityText(activity)}</p>
