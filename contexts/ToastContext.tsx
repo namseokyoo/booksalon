@@ -3,11 +3,16 @@ import React, { createContext, useContext, useState, useCallback, ReactNode } fr
 interface ToastState {
   message: string;
   type: 'info' | 'error';
+  action?: { label: string; onClick: () => void };
 }
 
 interface ToastContextType {
   toast: ToastState | null;
-  showToast: (message: string, type?: 'info' | 'error') => void;
+  showToast: (
+    message: string,
+    type?: 'info' | 'error',
+    action?: { label: string; onClick: () => void }
+  ) => void;
   clearToast: () => void;
 }
 
@@ -16,8 +21,12 @@ const ToastContext = createContext<ToastContextType | null>(null);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<ToastState | null>(null);
 
-  const showToast = useCallback((message: string, type: 'info' | 'error' = 'info') => {
-    setToast({ message, type });
+  const showToast = useCallback((
+    message: string,
+    type: 'info' | 'error' = 'info',
+    action?: { label: string; onClick: () => void }
+  ) => {
+    setToast({ message, type, action });
   }, []);
 
   const clearToast = useCallback(() => setToast(null), []);

@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 
 interface ReadingStatusButtonProps {
   isbn: string;
+  onLoginRequired?: () => void;
 }
 
 const STATUS_OPTIONS: { value: ReadingStatus; label: string; icon: React.ReactNode }[] = [
@@ -15,7 +16,7 @@ const STATUS_OPTIONS: { value: ReadingStatus; label: string; icon: React.ReactNo
   { value: 'want_to_read', label: '읽고 싶음', icon: <BookmarkPlus className="w-4 h-4" /> },
 ];
 
-const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
+const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn, onLoginRequired }) => {
   const { currentUser } = useAuth();
   const [currentStatus, setCurrentStatus] = useState<ReadingStatus | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -72,8 +73,6 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
     }
   }, [message]);
 
-  if (!currentUser) return null;
-
   const handleStatusChange = async (status: ReadingStatus) => {
     if (!userId || isLoading) return;
 
@@ -114,7 +113,14 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!currentUser) {
+            if (onLoginRequired) onLoginRequired();
+            setMessage('로그인하면 독서 상태를 수정할 수 있습니다.');
+            return;
+          }
+          setIsOpen(!isOpen);
+        }}
         disabled={isLoading}
         className={`flex items-center space-x-1.5 px-3 py-1.5 text-sm rounded-lg border transition-colors duration-200 ${
           currentStatus
@@ -137,7 +143,7 @@ const ReadingStatusButton: React.FC<ReadingStatusButtonProps> = ({ isbn }) => {
         </svg>
       </button>
 
-      {isOpen && (
+      {isOpen && currentUser && (
         <div className="absolute top-full left-0 mt-1 w-48 bg-surface border border-border rounded-xl shadow-lg z-20 overflow-hidden">
           {STATUS_OPTIONS.map((option) => (
             <button

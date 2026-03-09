@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import type { Book, Forum, RatingDistribution as RatingDistributionType } from '../types';
-import { RatingService } from '../lib/services';
-import { useAuth } from '../contexts/AuthContext';
-import StarRating from './StarRating';
-import RatingDistribution from './RatingDistribution';
-import RatingModal from './RatingModal';
+import React from 'react';
+import type { Book, Forum } from '../types';
+// import { RatingService } from '../lib/services';
+// import { useAuth } from '../contexts/AuthContext';
+// import StarRating from './StarRating';
+// import RatingDistribution from './RatingDistribution';
+// import RatingModal from './RatingModal';
 import ReadingStatusButton from './ReadingStatusButton';
+import { PlusIcon } from './icons';
 
 interface BookInfoProps {
   book: Book;
   forum?: Forum;
   isbn?: string;
   onLoginClick?: () => void;
+  onLoginRequired?: () => void;
+  onWriteClick?: () => void;
 }
 
-const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) => {
+const BookInfo: React.FC<BookInfoProps> = ({
+  book,
+  forum,
+  isbn,
+  onLoginClick,
+  onLoginRequired,
+  onWriteClick,
+}) => {
+  /*
   const [myRating, setMyRating] = useState<number | null>(null);
   const [averageRating, setAverageRating] = useState<number>(0);
   const [totalRatings, setTotalRatings] = useState<number>(0);
@@ -30,7 +41,9 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ratingError, setRatingError] = useState<string | null>(null);
   const { currentUser, userProfile } = useAuth();
+  */
 
+  /*
   useEffect(() => {
     const loadRatings = async () => {
       if (!forum?.isbn) return;
@@ -60,7 +73,9 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
 
     loadRatings();
   }, [forum?.isbn, currentUser]);
+  */
 
+  /*
   const handleRatingSubmit = async (rating: number, comment?: string) => {
     if (!currentUser || !forum?.isbn) {
       if (onLoginClick) {
@@ -93,6 +108,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
       setIsSubmitting(false);
     }
   };
+  */
 
   return (
     <div className="bg-surface border border-border rounded-xl p-3 sm:p-4 shadow-sm">
@@ -111,7 +127,8 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
           </p>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">{book.publisher}</p>
 
-          {/* 평점 요약 (클릭하면 분포 토글) */}
+          {/*
+          평점 요약 (클릭하면 분포 토글)
           {totalRatings > 0 && (
             <button
               type="button"
@@ -145,8 +162,10 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
               </svg>
             </button>
           )}
+          */}
 
-          {/* 평점 분포 차트 (토글) */}
+          {/*
+          평점 분포 차트 (토글)
           {showDistribution && totalRatings > 0 && (
             <div className="mt-3">
               <RatingDistribution
@@ -156,6 +175,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
               />
             </div>
           )}
+          */}
 
           <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3 line-clamp-2 sm:line-clamp-3">
             {book.contents}
@@ -163,7 +183,8 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
         </div>
       </div>
 
-      {/* 내 평점 섹션 */}
+      {/*
+      내 평점 섹션
       {currentUser && (
         <div className="mt-4 pt-4 border-t border-border">
           {myRating ? (
@@ -199,33 +220,27 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
           )}
         </div>
       )}
+      */}
 
       {/* 독서 상태 드롭다운 — 카드 하단 배치 */}
       {isbn && (
-        <div className="mt-4 pt-4 border-t border-border">
-          <ReadingStatusButton isbn={isbn} />
-        </div>
-      )}
-
-      {/* 비로그인 사용자 */}
-      {!currentUser && (
-        <div className="mt-4 pt-4 border-t border-border text-center">
-          <p className="text-sm text-muted-foreground mb-2">
-            로그인하면 평점을 남길 수 있습니다.
-          </p>
-          {onLoginClick && (
+        <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+          <ReadingStatusButton isbn={isbn} onLoginRequired={onLoginRequired ?? onLoginClick} />
+          {onWriteClick && (
             <button
               type="button"
-              onClick={onLoginClick}
-              className="text-sm text-primary hover:text-primary-700 underline"
+              onClick={onWriteClick}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors duration-200"
             >
-              로그인하기
+              <PlusIcon className="w-4 h-4" />
+              글쓰기
             </button>
           )}
         </div>
       )}
 
-      {/* 평점 입력 모달 */}
+      {/*
+      평점 입력 모달
       {showRatingModal && (
         <RatingModal
           currentRating={myRating}
@@ -235,6 +250,7 @@ const BookInfo: React.FC<BookInfoProps> = ({ book, forum, isbn, onLoginClick }) 
           isLoading={isSubmitting}
         />
       )}
+      */}
     </div>
   );
 };

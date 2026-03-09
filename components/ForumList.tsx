@@ -14,6 +14,7 @@ import { SearchIcon, BookOpenIcon } from './icons';
 import { supabase, supabaseAnon } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
+import { useToast } from '../contexts/ToastContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
 import SalonCard from './SalonCard';
@@ -42,6 +43,7 @@ const FORUMS_PAGE_SIZE = 20;
 const ForumList: React.FC = () => {
   const navigate = useNavigate();
   const { openLogin } = useModals();
+  const { showToast } = useToast();
   const [forums, setForums] = useState<Forum[]>([]);
   const [bestPosts, setBestPosts] = useState<BestPost[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -508,7 +510,10 @@ const ForumList: React.FC = () => {
     e.preventDefault();
 
     if (!currentUser || !userProfile?.id) {
-      openLogin();
+      showToast('북마크하려면 로그인이 필요합니다.', 'info', {
+        label: '로그인',
+        onClick: openLogin,
+      });
       return;
     }
 
@@ -562,7 +567,7 @@ const ForumList: React.FC = () => {
         return newSet;
       });
     }
-  }, [currentUser, forums, openLogin, bookmarks, bookmarkLoading]);
+  }, [bookmarkLoading, bookmarks, currentUser, forums, openLogin, showToast, userProfile?.id]);
 
 
   const handleSearch = async (e: React.FormEvent) => {

@@ -9,7 +9,6 @@ import UserProfilePreview from './UserProfilePreview';
 import CreatePostModal from './CreatePostModal';
 import ForumViewSkeleton from './ForumViewSkeleton';
 import type { ImagePreview } from './ImageUploader';
-import { PlusIcon } from './icons';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
@@ -530,10 +529,22 @@ const ForumView: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="p-3 sm:p-6 lg:p-8">
-        <BookInfo book={forum.book} forum={forum} isbn={forum.isbn} />
+        <BookInfo
+          book={forum.book}
+          forum={forum}
+          isbn={forum.isbn}
+          onLoginRequired={openLogin}
+          onWriteClick={() => {
+            if (!currentUser) {
+              openLogin();
+            } else {
+              setIsModalOpen(true);
+            }
+          }}
+        />
       </div>
 
-      <div className="px-3 sm:px-6 lg:px-8 pb-20">
+      <div className="px-3 sm:px-6 lg:px-8 pb-6">
         <PostList
           posts={posts}
           onPostClick={handlePostClick}
@@ -562,20 +573,6 @@ const ForumView: React.FC = () => {
           </div>
         )}
       </div>
-
-      <button
-        onClick={() => {
-          if (!currentUser) {
-            openLogin();
-          } else {
-            setIsModalOpen(true);
-          }
-        }}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-cta text-cta-foreground rounded-full p-3 sm:p-4 shadow-lg hover:bg-cta-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-ring z-30 transition-colors duration-200"
-        aria-label={!currentUser ? "로그인이 필요합니다" : "새로운 글 작성"}
-      >
-        <PlusIcon className="h-5 w-5 sm:h-6 sm:w-6" />
-      </button>
 
       {submitError && (
         <div className="fixed bottom-20 right-4 sm:right-6 z-30 bg-destructive/5 border border-destructive/20 rounded-lg px-4 py-2 shadow-md">

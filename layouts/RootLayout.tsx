@@ -35,6 +35,7 @@ export default function RootLayout() {
         <Toast
           message={toast.message}
           type={toast.type}
+          action={toast.action}
           onClose={clearToast}
         />
       )}
