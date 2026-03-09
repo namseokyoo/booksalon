@@ -3,6 +3,9 @@ import { BarChart2, Users, BookOpen, AlertTriangle } from 'lucide-react';
 import { AdminService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Report } from '../types';
+import TabBar from './TabBar';
+import SectionHeader from './SectionHeader';
+import Spinner from './Spinner';
 
 const AdminDashboard: React.FC = () => {
     const [isAdmin, setIsAdmin] = useState(false);
@@ -112,7 +115,7 @@ const AdminDashboard: React.FC = () => {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64 bg-background">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <Spinner size="lg" />
             </div>
         );
     }
@@ -142,24 +145,17 @@ const AdminDashboard: React.FC = () => {
                 </div>
 
                 {/* 탭 네비게이션 */}
-                <div className="flex space-x-2 mb-6 border-b border-border">
-                    {[
-                        { id: 'dashboard', label: '대시보드', icon: <BarChart2 className="w-4 h-4" /> },
-                        { id: 'users', label: '사용자 관리', icon: <Users className="w-4 h-4" /> },
-                        { id: 'forums', label: '포럼 관리', icon: <BookOpen className="w-4 h-4" /> },
-                        { id: 'reports', label: '신고 관리', icon: <AlertTriangle className="w-4 h-4" /> }
-                    ].map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as 'dashboard' | 'users' | 'forums' | 'reports')}
-                            className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-colors ${activeTab === tab.id
-                                    ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                                }`}
-                        >
-                            <span className="flex items-center gap-1.5">{tab.icon} {tab.label}</span>
-                        </button>
-                    ))}
+                <div className="mb-6">
+                    <TabBar
+                        tabs={[
+                            { id: 'dashboard', label: '대시보드', icon: <BarChart2 className="w-4 h-4" /> },
+                            { id: 'users', label: '사용자 관리', icon: <Users className="w-4 h-4" /> },
+                            { id: 'forums', label: '포럼 관리', icon: <BookOpen className="w-4 h-4" /> },
+                            { id: 'reports', label: '신고 관리', icon: <AlertTriangle className="w-4 h-4" /> },
+                        ]}
+                        activeTab={activeTab}
+                        onTabChange={(id) => setActiveTab(id as typeof activeTab)}
+                    />
                 </div>
 
                 {/* 탭 내용 */}
@@ -225,7 +221,7 @@ const AdminDashboard: React.FC = () => {
 
                 {activeTab === 'users' && (
                     <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-                        <h2 className="text-xl font-bold text-foreground mb-4">사용자 관리</h2>
+                        <SectionHeader title="사용자 관리" />
                         <div className="space-y-3">
                             {users.map((user) => (
                                 <div key={user.uid} className="flex items-center justify-between p-4 bg-muted border border-border rounded-xl hover:shadow-md transition-shadow">
@@ -267,7 +263,7 @@ const AdminDashboard: React.FC = () => {
 
                 {activeTab === 'forums' && (
                     <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-                        <h2 className="text-xl font-bold text-foreground mb-4">포럼 관리</h2>
+                        <SectionHeader title="포럼 관리" />
                         <div className="space-y-3">
                             {forums.map((forum) => (
                                 <div key={forum.isbn} className="flex items-center justify-between p-4 bg-muted border border-border rounded-xl hover:shadow-md transition-shadow">
@@ -297,7 +293,7 @@ const AdminDashboard: React.FC = () => {
 
                 {activeTab === 'reports' && (
                     <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
-                        <h2 className="text-xl font-bold text-foreground mb-4">신고 관리</h2>
+                        <SectionHeader title="신고 관리" />
                         <div className="space-y-3">
                             {reports.map((report) => (
                                 <div key={report.id} className="p-4 bg-muted border border-border rounded-xl">

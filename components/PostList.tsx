@@ -123,7 +123,7 @@ const PostList: React.FC<PostListProps> = ({ posts, onPostClick, onUserClick }) 
     }
 
     return (
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3 sm:gap-4">
             {posts.map(post => (
                 <PostListItem
                     key={post.id}

@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from './Spinner';
 
 interface SearchSuggestionsProps {
   recentSearches: string[];
@@ -31,7 +32,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     return (
       <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-lg shadow-lg z-50 p-4">
         <div className="flex items-center justify-center py-2">
-          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+          <Spinner size="md" />
           <span className="ml-2 text-sm text-muted-foreground">검색 중...</span>
         </div>
       </div>

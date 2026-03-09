@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import type { Message, ChatRoom, UserProfile } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import Spinner from './Spinner';
 
 interface ChatComponentProps {
     chatRoomId: string;
@@ -68,7 +69,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ chatRoomId, otherUser, on
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <Spinner size="lg" />
             </div>
         );
     }

@@ -786,3 +786,164 @@ border-border
 | 로고 유형 | 조합형 (심볼 + 워드마크), 심볼 단독 사용 가능하도록 |
 | 필수 산출물 | 조합형, 심볼 단독, 파비콘 전용, 가로 배치형, 다크모드, 모노크롬 |
 | 절대 금지 | 펼친 책, 돋보기, 전구, 그라데이션, 미용 연상 요소 |
+
+---
+
+## 10. 컴포넌트 디자인 룰
+
+### 10.1 공용 컴포넌트 카탈로그
+
+| 컴포넌트 | 용도 | 현재 상태 |
+|----------|------|----------|
+| `SalonCard` | 살롱(포럼) 카드 | ✅ 추출 완료 |
+| `TabBar` | 탭 네비게이션 | ❌ 미추출 |
+| `SectionHeader` | 섹션 제목 + 더보기 | ❌ 미추출 |
+| `CardContainer` | 범용 카드 컨테이너 | ❌ 미추출 |
+| `Spinner` | 로딩 스피너 | ❌ 미추출 |
+| `EmptyState` | 빈 상태 UI | ❌ 미추출 |
+| `ModalLayout` | 모달 공용 레이아웃 | ❌ 미추출 |
+| `SkeletonBlock` | 스켈레톤 빌딩블록 | ❌ 미추출 |
+
+### 10.2 카드 컨테이너 규격
+
+| 속성 | 규격 | 토큰 |
+|------|------|------|
+| 배경 | `bg-surface` | `--color-surface` |
+| 테두리 | `border border-border/60` | `--color-border` |
+| 모서리 | `rounded-xl` | `--radius-lg` (12px) |
+| 그림자 | `shadow-sm` (기본) / `hover:shadow-lg` (호버) | `--shadow-sm` / `--shadow-lg` |
+| 패딩 | `p-(--spacing-card-padding) sm:p-(--spacing-card-padding-sm)` | 12px / 16px |
+| 호버 | `hover:border-primary-300 hover:bg-primary-50/30 transition-all duration-300` | - |
+
+금지: `bg-muted`를 카드 배경으로 사용 (`bg-muted`는 비활성/보조 영역 전용)
+예외: 통계 카드, 인라인 하위 항목은 `bg-muted` 허용
+
+### 10.3 섹션 헤더 규격
+
+```
+[SectionHeader 컴포넌트]
+┌────────────────────────────────────────┐
+│ [제목]                        [더보기 >] │
+└────────────────────────────────────────┘
+```
+
+| 속성 | 규격 | Board Advisor 반영 |
+|------|------|-------------------|
+| 컨테이너 | `flex items-center justify-between mb-4` | - |
+| 제목 | `text-lg font-semibold text-foreground` | ✅ font-serif 제거 (세리프 과잉 방지) |
+| 더보기 | `text-sm text-primary hover:text-primary-700` | - |
+
+**font-serif 적용 범위 재확인** (Board Advisor 지적):
+- ✅ 허용: 히어로 제목, 인용문, 빈 살롱 안내, 책 제목, 페이지 타이틀
+- ❌ 금지: 섹션 헤더, 카드 내 소제목, 버튼, 일반 UI 요소
+
+### 10.4 탭 컴포넌트 규격
+
+```
+[TabBar 컴포넌트]
+┌──────┬──────┬──────┬──────┐
+│ 탭1  │ 탭2  │ 탭3  │ 탭4  │  ← 스크롤 가능 (overflow-x-auto)
+└──────┴──────┴──────┴──────┘
+```
+
+| 속성 | 활성 탭 | 비활성 탭 |
+|------|--------|----------|
+| 배경 | `bg-primary text-primary-foreground` | `bg-transparent text-muted-foreground` |
+| 모서리 | `rounded-full` | `rounded-full` |
+| 패딩 | `px-4 py-2` | `px-4 py-2` |
+| 전환 | `transition-colors duration-200` | `hover:bg-muted` |
+
+### 10.5 리스트 간격 규격
+
+| 속성 | 규격 | Board Advisor 반영 |
+|------|------|-------------------|
+| 카드 리스트 | `flex flex-col gap-(--spacing-card-gap) sm:gap-(--spacing-card-gap-sm)` | ✅ space-y 대신 gap + 토큰 사용 |
+| 인라인 요소 | `gap-(--spacing-inline-gap)` | 8px |
+| 섹션 간 | `gap-(--spacing-section-gap)` | 24px |
+
+금지: `space-y-2`, `space-y-3` 등 하드코딩 간격 → 토큰 사용 필수
+
+### 10.6 스피너 규격
+
+| 속성 | 규격 |
+|------|------|
+| 기본 | `animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent` |
+| 작은 | `h-4 w-4` |
+| 큰 | `h-8 w-8` |
+
+### 10.7 빈 상태 규격
+
+```
+[EmptyState 컴포넌트]
+┌────────────────────────────┐
+│         [아이콘]            │  ← text-primary opacity-30, w-12 h-12
+│                            │
+│     [메시지 텍스트]          │  ← text-muted-foreground, text-center
+│                            │
+│      [액션 버튼(선택)]       │  ← bg-cta 또는 text-primary
+└────────────────────────────┘
+```
+
+### 10.8 스켈레톤 규격 (Board Advisor 추가)
+
+| 속성 | 규격 |
+|------|------|
+| 블록 | `bg-muted rounded animate-pulse` |
+| 텍스트 라인 | `h-4 bg-muted rounded animate-pulse` |
+| 원형 | `rounded-full bg-muted animate-pulse` |
+| 이미지 | `bg-muted rounded-md animate-pulse` |
+
+### 10.9 아이콘 색상 규격 (Board Advisor 반영)
+
+| 용도 | 클래스 | 비고 |
+|------|--------|------|
+| 기본 | `text-foreground` | 네비게이션, 일반 UI |
+| 비활성 | `text-muted-foreground` | 비활성 탭, 보조 |
+| 강조 | `text-primary` | 선택된 탭, 활성 |
+| CTA | `text-cta` | 북마크 등 액션 아이콘 (임시, --icon-* 토큰 등록 후 교체) |
+
+---
+
+## 11. 레이아웃 규격
+
+### 11.1 페이지 레이아웃
+
+```
+[모바일]                          [데스크톱]
+┌─ px-3 (12px) ─────────────┐    ┌─ px-6 (24px) ── max-w-4xl mx-auto ──┐
+│ [Header]                   │    │ [Header]                             │
+│ [Content]                  │    │ [Content]                            │
+│ [Footer/BottomNav]         │    │ [Footer]                             │
+└────────────────────────────┘    └────────────────────────────────────────┘
+```
+
+| 속성 | 모바일 | sm (640px+) | lg (1024px+) |
+|------|--------|------------|-------------|
+| 좌우 패딩 | `px-(--spacing-page-x)` (12px) | `px-(--spacing-page-x-sm)` (24px) | `px-(--spacing-page-x-lg)` (32px) |
+| 최대 너비 | 없음 | 없음 | `max-w-4xl` (896px) |
+| 가운데 정렬 | 없음 | 없음 | `mx-auto` |
+
+### 11.2 섹션 레이아웃
+
+```
+┌────────────────────────────┐
+│ [SectionHeader]            │  ← mb-4
+│ [CardList]                 │  ← gap-(--spacing-card-gap)
+│                            │
+│           mb-6             │  ← 섹션 간 간격
+│                            │
+│ [SectionHeader]            │
+│ [CardList]                 │
+└────────────────────────────┘
+```
+
+### 11.3 모달 레이아웃
+
+| 속성 | 규격 |
+|------|------|
+| 배경 | `bg-surface` |
+| 모서리 | `rounded-xl` |
+| 패딩 | `p-(--spacing-modal-padding) sm:p-(--spacing-modal-padding-sm)` |
+| 최대 너비 | `max-w-md` (모바일 전체폭) |
+| 오버레이 | `bg-black/50 backdrop-blur-sm` |
+| 버튼 배치 | `flex flex-col-reverse sm:flex-row sm:justify-end gap-2` |

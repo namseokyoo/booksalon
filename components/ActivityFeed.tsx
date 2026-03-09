@@ -7,6 +7,7 @@ import type { Activity } from '../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import ActivityFeedSkeleton from './ActivityFeedSkeleton';
+import TabBar from './TabBar';
 
 const ActivityFeed: React.FC = () => {
     const navigate = useNavigate();
@@ -113,25 +114,15 @@ const ActivityFeed: React.FC = () => {
                 </div>
 
                 {/* 탭 */}
-                <div className="flex space-x-4 mb-6">
-                    <button
-                        onClick={() => setActiveTab('following')}
-                        className={`px-4 py-2.5 rounded-md font-medium transition-colors ${activeTab === 'following'
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-surface-foreground hover:bg-muted'
-                            }`}
-                    >
-                        팔로잉 활동
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('my')}
-                        className={`px-4 py-2.5 rounded-md font-medium transition-colors ${activeTab === 'my'
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-surface-foreground hover:bg-muted'
-                            }`}
-                    >
-                        내 활동
-                    </button>
+                <div className="mb-6">
+                    <TabBar
+                        tabs={[
+                            { id: 'following', label: '팔로잉 활동' },
+                            { id: 'my', label: '내 활동' },
+                        ]}
+                        activeTab={activeTab}
+                        onTabChange={(id) => setActiveTab(id as typeof activeTab)}
+                    />
                 </div>
 
                 {/* 활동 목록 */}
@@ -148,7 +139,7 @@ const ActivityFeed: React.FC = () => {
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="flex flex-col gap-3 sm:gap-4">
                             {activities.map((activity) => (
                                 <div
                                     key={activity.id}

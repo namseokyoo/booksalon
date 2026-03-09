@@ -17,6 +17,7 @@ import { useModals } from '../contexts/ModalContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
 import SalonCard from './SalonCard';
+import SectionHeader from './SectionHeader';
 import ForumListSkeleton from './ForumListSkeleton';
 import ForumListError from './ForumListError';
 import { formatRelativeDate } from '../lib/dateUtils';
@@ -782,17 +783,12 @@ const ForumList: React.FC = () => {
       {/* 인기 게시물 섹션 — 검색 중이 아닐 때만 표시 */}
       {bestPosts.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
         <section className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="font-serif text-lg font-semibold text-foreground">인기 게시물</h2>
-            <button
-              type="button"
-              onClick={() => navigate('/best-posts')}
-              className="text-sm text-primary hover:text-primary-700 font-medium"
-            >
-              더보기 →
-            </button>
-          </div>
-          <div className="space-y-2">
+          <SectionHeader
+            title="인기 게시물"
+            onMore={() => navigate('/best-posts')}
+            moreLabel="더보기 →"
+          />
+          <div className="flex flex-col gap-3 sm:gap-4">
             {bestPosts.slice(0, visibleBestPostsCount).map((post) => (
               <div
                 key={post.id}
@@ -827,17 +823,11 @@ const ForumList: React.FC = () => {
       {/* 북마크한 살롱 표시 — 검색 중이 아닐 때만 표시 */}
       {bookmarkedForums.length > 0 && !(searchResults.length > 0 || existingForums.length > 0) && (
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-serif text-lg font-semibold text-foreground">북마크한 살롱</h2>
-              <button
-                type="button"
-                onClick={() => navigate('/profile?tab=bookmarks')}
-                className="text-sm text-primary hover:text-primary-700 cursor-pointer"
-              >
-                더보기 &gt;
-              </button>
-          </div>
-          <div className="space-y-3 sm:space-y-4">
+          <SectionHeader
+            title="북마크한 살롱"
+            onMore={() => navigate('/profile?tab=bookmarks')}
+          />
+          <div className="flex flex-col gap-3 sm:gap-4">
             {bookmarkedForums.slice(0, 5).map((forum) => (
               <SalonCard
                 key={forum.isbn}
@@ -877,8 +867,8 @@ const ForumList: React.FC = () => {
       {/* 기존 살롱 검색 결과 표시 */}
       {existingForums.length > 0 && (
         <div className="mb-6">
-          <h2 className="font-serif text-lg font-semibold text-foreground mb-4">최근 개설된 살롱</h2>
-          <div className="space-y-1.5">
+          <SectionHeader title="최근 개설된 살롱" />
+          <div className="flex flex-col gap-3 sm:gap-4">
             {existingForums
               .sort((a, b) => {
                 const aTime = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt || 0);
@@ -902,8 +892,8 @@ const ForumList: React.FC = () => {
       {/* 새로운 도서 검색 결과 표시 */}
       {searchResults.length > 0 && (
         <div className="mb-6">
-          <h2 className="font-serif text-lg font-semibold text-foreground mb-4">새로운 도서 검색 결과</h2>
-          <div className="space-y-2">
+          <SectionHeader title="새로운 도서 검색 결과" />
+          <div className="flex flex-col gap-3 sm:gap-4">
             {searchResults.map((book, index) => {
               const existingForum = forums.find(forum => forum.isbn === book.isbn);
               const hasExistingForum = !!existingForum;
@@ -1009,10 +999,8 @@ const ForumList: React.FC = () => {
       {/* 최근 개설된 살롱 */}
       {!(searchResults.length > 0 || existingForums.length > 0) && (
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="font-serif text-lg font-semibold text-foreground">최근 개설된 살롱</h2>
-        </div>
-        <div className="space-y-2">
+        <SectionHeader title="최근 개설된 살롱" />
+        <div className="flex flex-col gap-3 sm:gap-4">
           {filteredForums.length > 0 ? (
             <>
               {filteredForums.slice(0, visibleForumsCount).map(forum => (

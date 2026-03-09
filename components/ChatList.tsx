@@ -168,7 +168,7 @@ const ChatList: React.FC<ChatListProps> = ({ onSelectChat }) => {
     }
 
     return (
-        <div className="space-y-2">
+        <div className="flex flex-col gap-3 sm:gap-4">
             {chatRooms.map((chatRoom) => {
                 const otherUserId = chatRoom.participants.find(id => id !== userProfile?.id);
                 if (!otherUserId) return null;

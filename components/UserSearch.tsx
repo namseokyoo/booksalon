@@ -3,6 +3,7 @@ import { MessagingService } from '../lib/services';
 import { UserService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserProfile } from '../types';
+import Spinner from './Spinner';
 
 interface UserSearchProps {
     onSelectUser: (user: UserProfile) => void;
@@ -45,7 +46,7 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
     };
 
     return (
-        <div className="space-y-4">
+        <div className="flex flex-col gap-3 sm:gap-4">
             <div>
                 <input
                     type="text"
@@ -58,12 +59,12 @@ const UserSearch: React.FC<UserSearchProps> = ({ onSelectUser }) => {
 
             {isSearching && (
                 <div className="flex items-center justify-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <Spinner size="md" />
                 </div>
             )}
 
             {searchResults.length > 0 && (
-                <div className="space-y-2">
+                <div className="flex flex-col gap-3 sm:gap-4">
                     <h3 className="text-foreground font-semibold">검색 결과</h3>
                     {searchResults.map((user) => (
                         <div

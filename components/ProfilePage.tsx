@@ -14,6 +14,8 @@ import { MapPin, Globe, Target, BookOpen, CheckCircle, BookmarkPlus } from 'luci
 import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
 import ProfilePageSkeleton from './ProfilePageSkeleton';
 import SalonCard from './SalonCard';
+import TabBar from './TabBar';
+import SectionHeader from './SectionHeader';
 
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
@@ -508,63 +510,19 @@ const ProfilePage: React.FC = () => {
                 </div>
 
                 {/* 탭 네비게이션 */}
-                <div className="flex gap-1 mb-6 border-b border-border overflow-x-auto">
-                    <button
-                        onClick={() => setActiveTab('stats')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'stats'
-                            ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                            }`}
-                    >
-                        활동 통계
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('posts')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'posts'
-                            ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                            }`}
-                    >
-                        작성한 글 ({posts.length})
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('comments')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'comments'
-                            ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                            }`}
-                    >
-                        작성한 댓글 ({comments.length})
-                    </button>
-                    {isOwnProfile && (
-                        <button
-                            onClick={() => setActiveTab('bookmarks')}
-                            className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'bookmarks'
-                                ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                                }`}
-                        >
-                            북마크한 살롱 ({bookmarkedForums.length})
-                        </button>
-                    )}
-                    <button
-                        onClick={() => setActiveTab('reading')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'reading'
-                            ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                            }`}
-                    >
-                        독서 로그 ({readingLogs.length})
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('badges')}
-                        className={`px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeTab === 'badges'
-                            ? 'bg-surface border-t border-x border-border text-primary border-b-2 border-b-primary -mb-px'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                            }`}
-                    >
-                        배지
-                    </button>
+                <div className="mb-6">
+                    <TabBar
+                        tabs={[
+                            { id: 'stats', label: '활동 통계' },
+                            { id: 'posts', label: '게시물', count: posts.length },
+                            { id: 'comments', label: '작성한 댓글', count: comments.length },
+                            ...(isOwnProfile ? [{ id: 'bookmarks', label: '북마크한 살롱', count: bookmarkedForums.length }] : []),
+                            { id: 'reading', label: '독서 로그', count: readingLogs.length },
+                            { id: 'badges', label: '뱃지' },
+                        ]}
+                        activeTab={activeTab}
+                        onTabChange={(id) => setActiveTab(id as typeof activeTab)}
+                    />
                 </div>
 
                 {/* 탭 콘텐츠 */}
@@ -591,14 +549,14 @@ const ProfilePage: React.FC = () => {
 
                     {activeTab === 'posts' && (
                         <div>
-                            <h2 className="text-xl font-bold text-foreground mb-4">작성한 글</h2>
+                            <SectionHeader title="내 게시물" />
                             {posts.length === 0 ? (
                                 <div className="flex flex-col items-center py-8">
                                     <FileTextIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
                                     <p className="text-muted-foreground text-center">아직 남긴 이야기가 없네요.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="flex flex-col gap-3 sm:gap-4">
                                     {posts.map((post) => (
                                         <div key={post.id} className="bg-muted border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                                             <h3 className="text-lg font-semibold text-foreground mb-2">{post.title}</h3>
@@ -616,14 +574,14 @@ const ProfilePage: React.FC = () => {
 
                     {activeTab === 'comments' && (
                         <div>
-                            <h2 className="text-xl font-bold text-foreground mb-4">작성한 댓글</h2>
+                            <SectionHeader title="작성한 댓글" />
                             {comments.length === 0 ? (
                                 <div className="flex flex-col items-center py-8">
                                     <MessageCircleIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
                                     <p className="text-muted-foreground text-center">아직 남긴 생각이 없네요.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="flex flex-col gap-3 sm:gap-4">
                                     {comments.map((comment) => (
                                         <div key={comment.id} className="bg-muted border border-border rounded-xl p-4 shadow-sm">
                                             <p className="text-surface-foreground mb-2">{comment.content}</p>
@@ -639,14 +597,14 @@ const ProfilePage: React.FC = () => {
 
                     {isOwnProfile && activeTab === 'bookmarks' && (
                         <div>
-                            <h2 className="text-xl font-bold text-foreground mb-4">북마크한 살롱</h2>
+                            <SectionHeader title="북마크한 살롱" />
                             {bookmarkedForums.length === 0 ? (
                                 <div className="flex flex-col items-center py-8">
                                     <BookmarkOutlineIcon className="w-12 h-12 text-primary opacity-30 mb-3" />
                                     <p className="text-muted-foreground text-center">아직 간직한 살롱이 없네요.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-2">
+                                <div className="flex flex-col gap-3 sm:gap-4">
                                     {bookmarkedForums.slice(0, bookmarkDisplayCount).map((forum) => (
                                         <SalonCard
                                             key={forum.isbn}
@@ -669,7 +627,7 @@ const ProfilePage: React.FC = () => {
 
                     {activeTab === 'reading' && (
                         <div>
-                            <h2 className="text-xl font-bold text-foreground mb-4">독서 로그</h2>
+                            <SectionHeader title="독서 로그" />
 
                             {/* 통계 요약 */}
                             <div className="grid grid-cols-3 gap-3 mb-6">
@@ -717,7 +675,7 @@ const ProfilePage: React.FC = () => {
                                     <p className="text-muted-foreground text-center">아직 기록된 독서가 없네요.</p>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
+                                <div className="flex flex-col gap-3 sm:gap-4">
                                     {readingLogs
                                         .filter((log) => readingFilter === 'all' || log.status === readingFilter)
                                         .map((log) => {
