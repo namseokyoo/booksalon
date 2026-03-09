@@ -45,7 +45,7 @@ const ReplyInput: React.FC<ReplyInputProps> = ({ parentId, onSubmit, onCancel, i
           type="button"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="min-h-[36px] px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-gray-300 font-medium disabled:opacity-50"
+          className="min-h-[36px] px-3 py-1 bg-muted text-surface-foreground rounded-lg text-sm hover:bg-muted font-medium disabled:opacity-50"
         >
           취소
         </button>
