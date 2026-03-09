@@ -609,7 +609,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                                 </div>
                                 <button
                                     type="submit"
-                                    className="px-4 py-3 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
+                                    className="shrink-0 whitespace-nowrap px-4 py-3 bg-cta text-cta-foreground rounded-lg hover:bg-cta-700 transition-colors font-medium"
                                 >
                                     등록
                                 </button>
@@ -627,7 +627,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
                             <button
                                 type="button"
                                 onClick={() => setShowCommentLoginPopup(true)}
-                                className="px-4 py-3 bg-muted text-muted-foreground rounded-lg text-sm"
+                                className="shrink-0 whitespace-nowrap px-4 py-3 bg-muted text-muted-foreground rounded-lg text-sm"
                             >
                                 등록
                             </button>
