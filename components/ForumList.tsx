@@ -16,6 +16,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import StarRating from './StarRating';
+import SalonCard from './SalonCard';
 import ForumListSkeleton from './ForumListSkeleton';
 import ForumListError from './ForumListError';
 import { formatRelativeDate } from '../lib/dateUtils';
@@ -838,42 +839,14 @@ const ForumList: React.FC = () => {
           </div>
           <div className="space-y-3 sm:space-y-4">
             {bookmarkedForums.slice(0, 5).map((forum) => (
-              <div
+              <SalonCard
                 key={forum.isbn}
+                forum={forum}
+                isBookmarked={true}
+                onToggleBookmark={(isbn, e) => handleToggleBookmark(isbn, e)}
                 onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
-                className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3 border-l-4 border-l-cta"
-              >
-                <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">
-                  <img
-                    src={forum.book.thumbnail}
-                    alt={forum.book.title}
-                    className="w-full h-auto object-contain"
-                    loading="lazy"
-                    decoding="async"
-                    width={48}
-                    height={72}
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start md:items-center gap-1.5 md:gap-2 flex-wrap md:flex-nowrap">
-                    <h3 className="font-semibold text-sm text-foreground truncate min-w-0">{forum.book.title}</h3>
-                  </div>
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
-                </div>
-                <span className="flex-shrink-0 font-bold text-sm text-foreground" aria-label="게시물 수">
-                  {forum.postCount ?? 0}
-                </span>
-                <button
-                  onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                  className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
-                  title="북마크 해제"
-                >
-                  <BookmarkIcon
-                    className="h-4 w-4 text-cta"
-                    filled={true}
-                  />
-                </button>
-              </div>
+                showBorderAccent={true}
+              />
             ))}
           </div>
         </div>
@@ -908,67 +881,19 @@ const ForumList: React.FC = () => {
           <div className="space-y-1.5">
             {existingForums
               .sort((a, b) => {
-                // createdAt 기준으로 정렬 (최신순)
                 const aTime = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt || 0);
                 const bTime = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt || 0);
                 return bTime.getTime() - aTime.getTime();
               })
-              .slice(0, 5) // 최대 5개만 표시
+              .slice(0, 5)
               .map((forum) => (
-                <div
+                <SalonCard
                   key={forum.isbn}
+                  forum={forum}
+                  isBookmarked={bookmarks.has(forum.isbn)}
+                  onToggleBookmark={(isbn, e) => handleToggleBookmark(isbn, e)}
                   onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3"
-                >
-                  <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">
-                    <img
-                      src={forum.book.thumbnail}
-                      alt={forum.book.title}
-                      className="w-full h-auto object-contain"
-                      loading="lazy"
-                      decoding="async"
-                      width={48}
-                      height={72}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm text-foreground truncate">{forum.book.title}</h3>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
-                    <p className="text-xs text-muted-foreground">{forum.book.publisher}</p>
-                    {forum.averageRating && forum.averageRating > 0 && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <StarRating value={forum.averageRating} readonly size="sm" allowHalf />
-                        <span className="text-xs text-rating font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
-                        {forum.totalRatings && (
-                          <span className="text-xs text-muted-foreground">({forum.totalRatings})</span>
-                        )}
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                      <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
-                        {forum.postCount ?? 0}
-                      </span>
-                      {forum.memberCount && (
-                        <span aria-label="참여자 수">
-                          {forum.memberCount}명
-                        </span>
-                      )}
-                      {forum.postCount === 0 && (
-                        <span className="text-primary-600 font-medium">첫 토론을 시작해보세요</span>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
-                    title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
-                  >
-                    <BookmarkIcon
-                      className="h-4 w-4"
-                      filled={bookmarks.has(forum.isbn)}
-                    />
-                  </button>
-                </div>
+                />
               ))}
           </div>
         </div>

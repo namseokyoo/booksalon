@@ -112,7 +112,9 @@ export interface Forum {
   isbn: string;
   book: Book;
   postCount: number;
+  memberCount?: number;
   lastActivityAt?: Timestamp;
+  createdAt?: Timestamp;
   popularity?: number; // 인기도 점수
   averageRating?: number; // 평균 평점 (1-5)
   totalRatings?: number; // 평가 수
