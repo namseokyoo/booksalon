@@ -900,7 +900,7 @@ border-border
 | 기본 | `text-foreground` | 네비게이션, 일반 UI |
 | 비활성 | `text-muted-foreground` | 비활성 탭, 보조 |
 | 강조 | `text-primary` | 선택된 탭, 활성 |
-| CTA | `text-cta` | 북마크 등 액션 아이콘 (임시, --icon-* 토큰 등록 후 교체) |
+| CTA | `text-cta` | 북마크 등 액션 아이콘 (등록 완료: --color-icon-cta) |
 
 ---
 

@@ -63,6 +63,12 @@
   --color-highlight: oklch(0.92 0.12 90);
   --color-highlight-foreground: oklch(0.25 0.05 60);
 
+  /* 아이콘 시맨틱 색상 */
+  --color-icon-default: oklch(0.22 0.02 60);      /* foreground와 동일 */
+  --color-icon-muted: oklch(0.45 0.015 60);        /* muted-foreground와 동일 */
+  --color-icon-primary: oklch(0.42 0.06 155);      /* primary와 동일 */
+  --color-icon-cta: oklch(0.75 0.14 65);           /* cta와 동일 */
+
   /* UI 요소 */
   --color-border: oklch(0.90 0.008 80);
   --color-input: oklch(0.90 0.008 80);
@@ -182,6 +188,12 @@
     /* 검색 하이라이트 */
     --color-highlight: oklch(0.35 0.08 90);
     --color-highlight-foreground: oklch(0.90 0.05 60);
+
+    /* 아이콘 시맨틱 색상 (다크) */
+    --color-icon-default: oklch(0.92 0.01 80);       /* foreground (다크) */
+    --color-icon-muted: oklch(0.65 0.01 80);          /* muted-foreground (다크) */
+    --color-icon-primary: oklch(0.75 0.08 155);       /* primary (다크) */
+    --color-icon-cta: oklch(0.75 0.08 155);           /* cta (다크) */
 
     /* UI 요소 */
     --color-border: oklch(0.30 0.01 155);

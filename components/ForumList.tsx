@@ -1004,42 +1004,13 @@ const ForumList: React.FC = () => {
           {filteredForums.length > 0 ? (
             <>
               {filteredForums.slice(0, visibleForumsCount).map(forum => (
-                <div
+                <SalonCard
                   key={forum.isbn}
+                  forum={forum}
+                  isBookmarked={bookmarks.has(forum.isbn)}
+                  onToggleBookmark={(isbn, e) => handleToggleBookmark(isbn, e)}
                   onClick={() => navigate(`/forum/${forum.isbn}`, { state: { forum } })}
-                  className="relative bg-surface border border-border/60 rounded-xl shadow-sm hover:shadow-lg hover:border-primary-300 hover:bg-primary-50/30 cursor-pointer transition-all duration-300 flex flex-row items-center gap-3 p-3"
-                >
-                  <div className="flex-shrink-0 w-12 overflow-hidden rounded-md bg-muted/30">
-                    <img
-                      src={forum.book.thumbnail}
-                      alt={forum.book.title}
-                      className="w-full h-auto object-contain"
-                      loading="lazy"
-                      decoding="async"
-                      width={48}
-                      height={72}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start md:items-center gap-1.5 md:gap-2 flex-wrap md:flex-nowrap">
-                      <h3 className="font-semibold text-sm text-foreground truncate min-w-0">{forum.book.title}</h3>
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
-                  </div>
-                  <span className="flex-shrink-0 font-bold text-sm text-foreground" aria-label="게시물 수">
-                    {forum.postCount ?? 0}
-                  </span>
-                  <button
-                    onClick={(e) => handleToggleBookmark(forum.isbn, e)}
-                    className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
-                    title={bookmarks.has(forum.isbn) ? "북마크 해제" : "북마크 추가"}
-                  >
-                    <BookmarkIcon
-                      className={`h-4 w-4 ${bookmarks.has(forum.isbn) ? 'text-cta' : 'text-muted-foreground'} hover:text-cta`}
-                      filled={bookmarks.has(forum.isbn)}
-                    />
-                  </button>
-                </div>
+                />
               ))}
               {(visibleForumsCount < filteredForums.length || hasMoreForums) && (
                 <div className="text-center pt-4">
