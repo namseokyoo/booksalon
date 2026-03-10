@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import type { Post, UserProfile } from '../types';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import { UserService } from '../lib/services';
-import { useAuth } from '../contexts/AuthContext';
+import { formatRelativeDate } from '../lib/dateUtils';
+import PostCard from './PostCard';
 import { FileTextIcon } from './icons';
 
 interface PostListProps {
@@ -13,105 +11,40 @@ interface PostListProps {
     onUserClick: (user: UserProfile) => void;
 }
 
-interface PostListItemProps {
-    post: Post;
-    onPostClick: (post: Post) => void;
-    onUserClick: (user: UserProfile) => void;
-}
-
-const PostListItem: React.FC<PostListItemProps> = ({ post, onPostClick, onUserClick }) => {
-    const [authorProfile, setAuthorProfile] = useState<UserProfile | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+const PostList: React.FC<PostListProps> = ({ posts, onPostClick, onUserClick: _onUserClick }) => {
+    const [authorMap, setAuthorMap] = useState<Map<string, string>>(new Map());
 
     useEffect(() => {
-        const loadAuthorProfile = async () => {
-            try {
-                const profile = await UserService.getUserProfileByAuthId(post.author.uid);
-                setAuthorProfile(profile);
-            } catch (error) {
-                console.error('작성자 프로필 로딩 실패:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        loadAuthorProfile();
-    }, [post.author.uid]);
-
-    const formatTime = (timestamp: string | Date | { toDate: () => Date } | null | undefined) => {
-        if (!timestamp) return '';
-        let date: Date;
-        if (typeof timestamp === 'string') {
-            date = new Date(timestamp);
-        } else if (timestamp instanceof Date) {
-            date = timestamp;
-        } else if ('toDate' in timestamp && typeof timestamp.toDate === 'function') {
-            date = timestamp.toDate();
-        } else {
-            date = new Date();
+        if (posts.length === 0) {
+            setAuthorMap(new Map());
+            return;
         }
-        return formatDistanceToNow(date, { addSuffix: true, locale: ko });
-    };
 
-    const getDisplayName = () => {
-        if (isLoading) return '로딩 중...';
-        return authorProfile?.nickname || authorProfile?.displayName || post.author.email?.split('@')[0] || '익명';
-    };
+        const uids: string[] = [];
+        for (const post of posts) {
+            const uid = String(post.author.uid);
+            if (!uids.includes(uid)) {
+                uids.push(uid);
+            }
+        }
 
-    if (isLoading) {
-        return (
-            <div className="bg-surface border border-border p-4 rounded-xl animate-pulse shadow-sm">
-                <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                <div className="h-3 bg-muted rounded w-1/2"></div>
-            </div>
-        );
-    }
+        Promise.all(uids.map((uid: string) => UserService.getUserProfileByAuthId(uid)))
+            .then(profiles => {
+                const map = new Map<string, string>();
+                profiles.forEach((profile, i) => {
+                    const uid = uids[i];
+                    if (profile && uid) {
+                        map.set(
+                            uid,
+                            profile.nickname || profile.displayName || profile.email?.split('@')[0] || '익명',
+                        );
+                    }
+                });
+                setAuthorMap(map);
+            })
+            .catch(err => console.error('작성자 배치 조회 실패:', err));
+    }, [posts]);
 
-    return (
-        <div
-            className="bg-surface border border-border p-4 rounded-xl hover:shadow-md hover:border-primary-300 cursor-pointer transition-all duration-200 shadow-sm"
-            onClick={() => onPostClick(post)}
-        >
-            <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-foreground truncate mb-2">
-                        {post.title}
-                    </h3>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <div className="relative">
-                            <Link
-                                to={`/profile/${authorProfile?.uid || post.author.uid}`}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                }}
-                                className="hover:text-primary transition-colors font-medium truncate max-w-[100px]"
-                            >
-                                {getDisplayName()}
-                            </Link>
-                        </div>
-                        <span className="text-muted-foreground">{formatTime(post.createdAt)}</span>
-                        <div className="shrink-0 flex items-center space-x-3">
-                            <span className="flex items-center space-x-1">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
-                                <span>{post.likeCount || 0}</span>
-                            </span>
-                            <span className="flex items-center space-x-1">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                </svg>
-                                <span>{post.commentCount || 0}</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-const PostList: React.FC<PostListProps> = ({ posts, onPostClick, onUserClick }) => {
     if (posts.length === 0) {
         return (
             <div className="flex flex-col items-center text-center py-8 px-4 border-2 border-dashed border-border rounded-lg">
@@ -125,11 +58,14 @@ const PostList: React.FC<PostListProps> = ({ posts, onPostClick, onUserClick }) 
     return (
         <div className="flex flex-col gap-3 sm:gap-4">
             {posts.map(post => (
-                <PostListItem
+                <PostCard
                     key={post.id}
-                    post={post}
-                    onPostClick={onPostClick}
-                    onUserClick={onUserClick}
+                    title={post.title}
+                    authorName={authorMap.get(post.author.uid) || post.author.email?.split('@')[0] || '익명'}
+                    likeCount={post.likeCount || 0}
+                    commentCount={post.commentCount || 0}
+                    formattedDate={formatRelativeDate(post.createdAt)}
+                    onClick={() => onPostClick(post)}
                 />
             ))}
         </div>

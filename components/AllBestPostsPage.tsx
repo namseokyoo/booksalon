@@ -3,7 +3,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabaseAnon } from '../lib/supabase';
 import AllBestPostsPageSkeleton from './AllBestPostsPageSkeleton';
-import BestPostCard from './BestPostCard';
+import PostCard from './PostCard';
+import { formatRelativeDate } from '../lib/dateUtils';
 
 interface BestPost {
   id: string;
@@ -27,17 +28,6 @@ const sortOptions: { value: SortType; label: string }[] = [
   { value: 'likes',    label: '좋아요순' },
   { value: 'comments', label: '댓글많은순' },
 ];
-
-function formatRelativeTime(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const min = Math.floor(diff / 60000);
-  if (min < 60) return `${min}분 전`;
-  const hour = Math.floor(min / 60);
-  if (hour < 24) return `${hour}시간 전`;
-  const day = Math.floor(hour / 24);
-  if (day < 7) return `${day}일 전`;
-  return new Date(dateStr).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
-}
 
 const PAGE_SIZE = 20;
 
@@ -202,13 +192,13 @@ const AllBestPostsPage: React.FC = () => {
       {!isLoading && posts.length > 0 && (
         <div className="space-y-2">
           {posts.map((post) => (
-            <BestPostCard
+            <PostCard
               key={post.id}
               title={post.title}
               bookTitle={post.book_title}
               likeCount={post.like_count}
               commentCount={post.comment_count}
-              formattedDate={formatRelativeTime(post.created_at)}
+              formattedDate={formatRelativeDate(post.created_at)}
               onClick={() => navigate(`/forum/${post.forum_isbn}?post=${post.id}`, {
                 state: {
                   forum: {

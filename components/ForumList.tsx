@@ -14,7 +14,7 @@ import { supabase, supabaseAnon } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
-import BestPostCard from './BestPostCard';
+import PostCard from './PostCard';
 import SalonCard from './SalonCard';
 import SectionHeader from './SectionHeader';
 import ForumListSkeleton from './ForumListSkeleton';
@@ -762,7 +762,7 @@ const ForumList: React.FC = () => {
           />
           <div className="flex flex-col gap-3 sm:gap-4">
             {bestPosts.slice(0, visibleBestPostsCount).map((post) => (
-              <BestPostCard
+              <PostCard
                 key={post.id}
                 title={post.title}
                 bookTitle={post.book_title}
