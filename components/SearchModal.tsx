@@ -11,7 +11,9 @@ import {
 import { SearchIcon, BookOpenIcon } from './icons';
 import SearchSuggestions from './SearchSuggestions';
 import HighlightText from './HighlightText';
+import PostCard from './PostCard';
 import { useCreateForum } from '../hooks/useCreateForum';
+import { formatRelativeDate } from '../lib/dateUtils';
 
 interface SearchModalProps {
     onClose: () => void;
@@ -495,9 +497,13 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
                                     </h3>
                                     <div className="space-y-2">
                                         {communityResults.posts.map(post => (
-                                            <div
+                                            <PostCard
                                                 key={post.id}
-                                                className="p-3 border border-border rounded-lg bg-muted cursor-pointer hover:border-primary-300 hover:shadow-sm transition-all"
+                                                title={post.title}
+                                                bookTitle={post.forumTitle}
+                                                likeCount={post.likeCount}
+                                                commentCount={post.commentCount}
+                                                formattedDate={formatRelativeDate(post.createdAt)}
                                                 onClick={() => {
                                                     const forum = communityResults.forums.find(f => f.isbn === post.forumIsbn);
                                                     if (forum) {
@@ -505,19 +511,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ onClose }) => {
                                                         onClose();
                                                     }
                                                 }}
-                                            >
-                                                <p className="text-sm font-semibold text-foreground truncate">
-                                                    <HighlightText text={post.title} highlight={searchedTerm} />
-                                                </p>
-                                                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                                                    <HighlightText text={post.content} highlight={searchedTerm} />
-                                                </p>
-                                                {post.forumTitle && (
-                                                    <p className="text-xs text-primary mt-2">
-                                                        살롱: {post.forumTitle}
-                                                    </p>
-                                                )}
-                                            </div>
+                                            />
                                         ))}
                                     </div>
                                 </div>

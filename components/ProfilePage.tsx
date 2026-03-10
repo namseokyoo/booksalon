@@ -13,6 +13,7 @@ import { ko } from 'date-fns/locale';
 import { MapPin, Globe, Target, BookOpen, CheckCircle, BookmarkPlus } from 'lucide-react';
 import { FileTextIcon, MessageCircleIcon, BookmarkOutlineIcon, BookOpenIcon } from './icons';
 import ProfilePageSkeleton from './ProfilePageSkeleton';
+import PostCard from './PostCard';
 import SalonCard from './SalonCard';
 import TabBar from './TabBar';
 import SectionHeader from './SectionHeader';
@@ -558,14 +559,14 @@ const ProfilePage: React.FC = () => {
                             ) : (
                                 <div className="flex flex-col gap-3 sm:gap-4">
                                     {posts.map((post) => (
-                                        <div key={post.id} className="bg-muted border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                                            <h3 className="text-lg font-semibold text-foreground mb-2">{post.title}</h3>
-                                            <p className="text-muted-foreground mb-2 line-clamp-2">{post.content}</p>
-                                            <div className="flex justify-between items-center text-sm text-muted-foreground">
-                                                <span>{formatDate(post.createdAt)}</span>
-                                                <span>댓글 {post.commentCount || 0}개</span>
-                                            </div>
-                                        </div>
+                                        <PostCard
+                                            key={post.id}
+                                            title={post.title}
+                                            likeCount={post.likeCount || 0}
+                                            commentCount={post.commentCount || 0}
+                                            formattedDate={formatDate(post.createdAt)}
+                                            onClick={() => {}}
+                                        />
                                     ))}
                                 </div>
                             )}
