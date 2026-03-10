@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle } from 'lucide-react';
 import type { Forum, Book } from '../types';
 import {
   searchBookByIsbn,
@@ -15,7 +14,7 @@ import { supabase, supabaseAnon } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { BookmarkIcon } from './icons/BookmarkIcon';
-import StarRating from './StarRating';
+import BestPostCard from './BestPostCard';
 import SalonCard from './SalonCard';
 import SectionHeader from './SectionHeader';
 import ForumListSkeleton from './ForumListSkeleton';
@@ -763,20 +762,15 @@ const ForumList: React.FC = () => {
           />
           <div className="flex flex-col gap-3 sm:gap-4">
             {bestPosts.slice(0, visibleBestPostsCount).map((post) => (
-              <div
+              <BestPostCard
                 key={post.id}
+                title={post.title}
+                bookTitle={post.book_title}
+                likeCount={post.like_count}
+                commentCount={post.comment_count}
+                formattedDate={formatRelativeDate(post.created_at)}
                 onClick={() => handleBestPostClick(post)}
-                className="bg-surface rounded-xl shadow-sm border border-border py-2.5 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200"
-              >
-                <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {post.book_title} · {formatRelativeDate(post.created_at)}
-                </p>
-                <div className="flex gap-2 text-xs text-muted-foreground mt-1.5">
-                  <span aria-label={`좋아요 ${post.like_count}개`} className="flex items-center gap-0.5"><Heart className="w-3.5 h-3.5" /> {post.like_count}</span>
-                  <span aria-label={`댓글 ${post.comment_count}개`} className="flex items-center gap-0.5"><MessageCircle className="w-3.5 h-3.5" /> {post.comment_count}</span>
-                </div>
-              </div>
+              />
             ))}
           </div>
           {visibleBestPostsCount < bestPosts.length && (
@@ -892,15 +886,6 @@ const ForumList: React.FC = () => {
                     <h3 className="font-semibold text-sm text-foreground truncate">{book.title}</h3>
                     <p className="text-xs text-muted-foreground truncate mt-0.5">{book.authors.join(', ')}</p>
                     <p className="text-xs text-muted-foreground">{book.publisher}</p>
-                    {hasExistingForum && existingForum!.averageRating && existingForum!.averageRating > 0 && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <StarRating value={existingForum!.averageRating} readonly size="sm" allowHalf />
-                        <span className="text-xs text-rating font-semibold ml-1">{existingForum!.averageRating.toFixed(1)}</span>
-                        {existingForum!.totalRatings && (
-                          <span className="text-xs text-muted-foreground">({existingForum!.totalRatings})</span>
-                        )}
-                      </div>
-                    )}
                     <div className="mt-1">
                       {hasExistingForum ? (
                         <>
@@ -936,7 +921,7 @@ const ForumList: React.FC = () => {
                     title={bookmarks.has(book.isbn) ? "북마크 해제" : "북마크 추가"}
                   >
                     <BookmarkIcon
-                      className="h-4 w-4"
+                      className="h-4 w-4 text-amber-500"
                       filled={bookmarks.has(book.isbn)}
                     />
                   </button>

@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabaseAnon } from '../lib/supabase';
-import { Heart, MessageCircle } from 'lucide-react';
 import AllBestPostsPageSkeleton from './AllBestPostsPageSkeleton';
+import BestPostCard from './BestPostCard';
 
 interface BestPost {
   id: string;
@@ -202,8 +202,13 @@ const AllBestPostsPage: React.FC = () => {
       {!isLoading && posts.length > 0 && (
         <div className="space-y-2">
           {posts.map((post) => (
-            <div
+            <BestPostCard
               key={post.id}
+              title={post.title}
+              bookTitle={post.book_title}
+              likeCount={post.like_count}
+              commentCount={post.comment_count}
+              formattedDate={formatRelativeTime(post.created_at)}
               onClick={() => navigate(`/forum/${post.forum_isbn}?post=${post.id}`, {
                 state: {
                   forum: {
@@ -213,17 +218,7 @@ const AllBestPostsPage: React.FC = () => {
                   },
                 },
               })}
-              className="bg-surface rounded-xl shadow-sm border border-border py-2.5 px-3 cursor-pointer hover:shadow-md hover:border-primary-300 transition-all duration-200"
-            >
-              <h3 className="font-medium text-foreground text-sm truncate">{post.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                {post.book_title} · {formatRelativeTime(post.created_at)}
-              </p>
-              <div className="flex gap-2 text-xs text-muted-foreground mt-1.5">
-                <span aria-label={`좋아요 ${post.like_count}개`} className="flex items-center gap-0.5"><Heart className="w-3.5 h-3.5" /> {post.like_count}</span>
-                <span aria-label={`댓글 ${post.comment_count}개`} className="flex items-center gap-0.5"><MessageCircle className="w-3.5 h-3.5" /> {post.comment_count}</span>
-              </div>
-            </div>
+            />
           ))}
         </div>
       )}

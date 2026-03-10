@@ -1,5 +1,4 @@
 import React from 'react';
-import StarRating from './StarRating';
 import { BookmarkIcon } from './icons/BookmarkIcon';
 import type { Forum } from '../types';
 
@@ -40,19 +39,7 @@ const SalonCard: React.FC<SalonCardProps> = ({
         <h3 className="font-semibold text-sm text-foreground truncate">{forum.book.title}</h3>
         <p className="text-xs text-muted-foreground truncate mt-0.5">{forum.book.authors.join(', ')}</p>
         <p className="text-xs text-muted-foreground">{forum.book.publisher}</p>
-        {forum.averageRating && forum.averageRating > 0 && (
-          <div className="flex items-center gap-1 mt-1">
-            <StarRating value={forum.averageRating} readonly size="sm" allowHalf />
-            <span className="text-xs text-rating font-semibold ml-1">{forum.averageRating.toFixed(1)}</span>
-            {forum.totalRatings && (
-              <span className="text-xs text-muted-foreground">({forum.totalRatings})</span>
-            )}
-          </div>
-        )}
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-          <span className="font-bold text-base text-foreground flex-shrink-0" aria-label="게시물 수">
-            {forum.postCount ?? 0}
-          </span>
           {forum.memberCount && (
             <span aria-label="참여자 수">
               {forum.memberCount}명
@@ -63,6 +50,9 @@ const SalonCard: React.FC<SalonCardProps> = ({
           )}
         </div>
       </div>
+      <span className="flex-shrink-0 text-sm font-bold text-foreground pr-1" aria-label="글 수">
+        {forum.postCount ?? 0}
+      </span>
       <button
         type="button"
         onClick={(e) => {
@@ -72,7 +62,7 @@ const SalonCard: React.FC<SalonCardProps> = ({
         className="flex-shrink-0 p-2 rounded-full hover:bg-primary-50 transition-colors duration-200 active:scale-90"
         title={isBookmarked ? '북마크 해제' : '북마크 추가'}
       >
-        <BookmarkIcon className="h-4 w-4 text-cta" filled={isBookmarked} />
+        <BookmarkIcon className="h-4 w-4 text-amber-500" filled={isBookmarked} />
       </button>
     </div>
   );
