@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import ChatList from '../components/ChatList';
 import ChatComponent from '../components/ChatComponent';
 import UserSearch from '../components/UserSearch';
@@ -11,6 +11,8 @@ import type { UserProfile } from '../types';
 
 const MessagingPage: React.FC = () => {
     const { userId: targetUserId } = useParams<{ userId: string }>();
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState<'chats' | 'search'>('chats');
     const [selectedChat, setSelectedChat] = useState<{
         chatRoomId: string;
@@ -34,6 +36,9 @@ const MessagingPage: React.FC = () => {
                 );
 
                 setSelectedChat({ chatRoomId: chatRoom.id, otherUser: targetProfile });
+                const newSearchParams = new URLSearchParams(window.location.search);
+                newSearchParams.set('chat', chatRoom.id);
+                navigate(`?${newSearchParams.toString()}`, { replace: true });
                 setActiveTab('chats');
             } catch (error) {
                 console.error('채팅 시작 실패:', error);
@@ -45,6 +50,9 @@ const MessagingPage: React.FC = () => {
 
     const handleSelectChat = (chatRoomId: string, otherUser: UserProfile) => {
         setSelectedChat({ chatRoomId, otherUser });
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.set('chat', chatRoomId);
+        navigate(`?${newSearchParams.toString()}`, { replace: false });
     };
 
     const handleSelectUser = async (user: UserProfile) => {
@@ -58,6 +66,9 @@ const MessagingPage: React.FC = () => {
             );
 
             setSelectedChat({ chatRoomId: chatRoom.id, otherUser: user });
+            const newSearchParams = new URLSearchParams(searchParams.toString());
+            newSearchParams.set('chat', chatRoom.id);
+            navigate(`?${newSearchParams.toString()}`, { replace: false });
             setActiveTab('chats');
         } catch (error) {
             console.error('채팅방 생성 실패:', error);
@@ -66,7 +77,19 @@ const MessagingPage: React.FC = () => {
 
     const handleCloseChat = () => {
         setSelectedChat(null);
+        const newSearchParams = new URLSearchParams(searchParams.toString());
+        newSearchParams.delete('chat');
+        const newSearch = newSearchParams.toString();
+        navigate(newSearch ? `?${newSearch}` : '.', { replace: true });
     };
+
+    // 브라우저 뒤로가기 시 ?chat= 파라미터 사라지면 selectedChat 해제
+    useEffect(() => {
+        const chatParam = searchParams.get('chat');
+        if (!chatParam && selectedChat) {
+            setSelectedChat(null);
+        }
+    }, [searchParams]);
 
     return (
         <div className="min-h-screen bg-background p-4">

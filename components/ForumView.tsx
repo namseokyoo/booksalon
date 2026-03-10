@@ -466,7 +466,10 @@ const ForumView: React.FC = () => {
 
   const handlePostClick = useCallback((post: Post) => {
     setSelectedPost(post);
-  }, []);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set('post', post.id);
+    navigate(`?${newSearchParams.toString()}`, { replace: false });
+  }, [navigate, searchParams]);
 
   const handleUserClick = useCallback((user: UserProfile) => {
     setSelectedUser(user);
@@ -494,7 +497,19 @@ const ForumView: React.FC = () => {
 
   const handleBackToList = useCallback(() => {
     setSelectedPost(null);
-  }, []);
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.delete('post');
+    const newSearch = newSearchParams.toString();
+    navigate(newSearch ? `?${newSearch}` : '.', { replace: true });
+  }, [navigate, searchParams]);
+
+  // 브라우저 뒤로가기 시 ?post= 파라미터 사라지면 selectedPost 해제
+  useEffect(() => {
+    const postParam = searchParams.get('post');
+    if (!postParam && selectedPost) {
+      setSelectedPost(null);
+    }
+  }, [searchParams]);
 
   // 딥링크: forum 데이터 로딩 중
   if (!forum && forumLoading) {
