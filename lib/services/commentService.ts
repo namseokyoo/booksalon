@@ -10,6 +10,8 @@
  */
 
 import { supabaseAnon, supabase } from '../supabase'
+import { NotificationService } from './notificationService'
+import { UserService } from './userService'
 
 export interface CommentAuthor {
   uid: string
@@ -54,6 +56,16 @@ interface UserRow {
 interface CommentLikeRow {
   comment_id: string
   user_id: string
+}
+
+interface CommentNotificationPostRow {
+  author_id: string | null
+  title: string | null
+  forum_isbn: string | null
+}
+
+interface ParentCommentAuthorRow {
+  author_id: string | null
 }
 
 export class CommentService {
@@ -190,7 +202,83 @@ export class CommentService {
       throw error
     }
 
-    return { id: (data as { id: string }).id }
+    const commentId = (data as { id: string }).id
+
+    void (async () => {
+      try {
+        const { data: post, error: postError } = await supabase
+          .from('posts')
+          .select('author_id, title, forum_isbn')
+          .eq('id', postId)
+          .single()
+
+        if (postError) {
+          throw postError
+        }
+
+        const postData = post as CommentNotificationPostRow | null
+        const postAuthorId = postData?.author_id
+
+        if (!postData || !postAuthorId) {
+          return
+        }
+
+        const senderProfile = await UserService.getUserProfileById(authorId)
+        const senderName = senderProfile?.nickname
+          || senderProfile?.displayName
+          || senderProfile?.email?.split('@')[0]
+          || '누군가'
+        const postTitle = postData.title || ''
+        const forumId = postData.forum_isbn || ''
+
+        if (authorId !== postAuthorId) {
+          NotificationService.createCommentNotification(
+            postAuthorId,
+            authorId,
+            senderName,
+            postTitle,
+            commentId,
+            postId,
+            forumId
+          ).catch(console.error)
+        }
+
+        if (parentId) {
+          const { data: parentComment, error: parentCommentError } = await supabase
+            .from('comments')
+            .select('author_id')
+            .eq('id', parentId)
+            .maybeSingle()
+
+          if (parentCommentError) {
+            throw parentCommentError
+          }
+
+          const parentCommentData = parentComment as ParentCommentAuthorRow | null
+          const parentAuthorId = parentCommentData?.author_id
+
+          if (
+            parentAuthorId
+            && parentAuthorId !== postAuthorId
+            && parentAuthorId !== authorId
+          ) {
+            NotificationService.createCommentNotification(
+              parentAuthorId,
+              authorId,
+              senderName,
+              postTitle,
+              commentId,
+              postId,
+              forumId
+            ).catch(console.error)
+          }
+        }
+      } catch (notificationError) {
+        console.error(notificationError)
+      }
+    })()
+
+    return { id: commentId }
   }
 
   /**

@@ -1034,7 +1034,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_comment_like_count: {
+        Args: { target_comment_id: string }
+        Returns: undefined
+      }
+      decrement_post_like_count: { Args: { target_post_id: string }; Returns: undefined }
+      decrement_user_stat: {
+        Args: { stat_name: string; target_auth_id: string }
+        Returns: undefined
+      }
       get_current_user_id: { Args: never; Returns: string }
+      increment_comment_like_count: {
+        Args: { target_comment_id: string }
+        Returns: undefined
+      }
+      increment_post_like_count: { Args: { target_post_id: string }; Returns: undefined }
+      increment_user_stat: {
+        Args: { stat_name: string; target_auth_id: string }
+        Returns: undefined
+      }
       increment_view_count: { Args: { post_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }

@@ -449,29 +449,14 @@ export class UserService {
     statField: 'post_count' | 'comment_count' | 'forum_count',
     increment: number = 1
   ): Promise<void> {
-    // 먼저 현재 사용자 정보 조회
-    const { data: user, error: selectError } = await supabase
-      .from('users')
-      .select('id, post_count, comment_count, forum_count')
-      .eq('auth_id', authId)
-      .single()
-
-    if (selectError || !user) {
-      throw new Error(`사용자 조회 실패: ${selectError?.message || '사용자를 찾을 수 없습니다'}`)
+    if (increment !== 1) {
+      throw new Error('증가량은 1만 지원됩니다.')
     }
 
-    // 통계 업데이트
-    const currentValue = (user as User)[statField] || 0
-    const newValue = currentValue + increment
-
-    const updateData: UserUpdate = {
-      [statField]: newValue,
-    }
-
-    const { error: updateError } = await supabase
-      .from('users')
-      .update(updateData )
-      .eq('auth_id', authId)
+    const { error: updateError } = await supabase.rpc('increment_user_stat', {
+      target_auth_id: authId,
+      stat_name: statField,
+    })
 
     if (updateError) {
       throw new Error(`통계 업데이트 실패: ${updateError.message}`)
@@ -483,10 +468,16 @@ export class UserService {
    */
   static async decrementStat(
     authId: string,
-    statField: 'post_count' | 'comment_count' | 'forum_count',
-    decrement: number = 1
+    statField: 'post_count' | 'comment_count' | 'forum_count'
   ): Promise<void> {
-    await this.incrementStat(authId, statField, -decrement)
+    const { error } = await supabase.rpc('decrement_user_stat', {
+      target_auth_id: authId,
+      stat_name: statField,
+    })
+
+    if (error) {
+      throw new Error(`통계 감소 실패: ${error.message}`)
+    }
   }
 }
 

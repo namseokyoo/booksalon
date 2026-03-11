@@ -97,6 +97,12 @@ export class SocialService {
 
       if (error) throw new Error(`팔로우 실패: ${error.message}`)
 
+      const senderName = currentUser?.nickname
+        || currentUser?.displayName
+        || currentUser?.email?.split('@')[0]
+        || '누군가'
+      NotificationService.createFollowNotification(targetUserId, senderName).catch(console.error)
+
       // 활동 기록 생성
       if (currentUser && targetUser) {
         await this.createActivity({
@@ -275,19 +281,12 @@ export class SocialService {
 
       if (error) throw new Error(`좋아요 취소 실패: ${error.message}`)
 
-      // 좋아요 수 감소
-      const { data: post } = await supabase
-        .from('posts')
-        .select('like_count')
-        .eq('id', postId)
-        .single()
+      const { error: decrementError } = await supabase.rpc('decrement_post_like_count', {
+        target_post_id: postId,
+      })
 
-      const postData = post as Pick<PostRow, 'like_count'> | null
-      if (postData) {
-        await supabase
-          .from('posts')
-          .update({ like_count: Math.max(0, (postData.like_count || 1) - 1) } )
-          .eq('id', postId)
+      if (decrementError) {
+        throw new Error(`좋아요 수 감소 실패: ${decrementError.message}`)
       }
 
       return false
@@ -302,16 +301,19 @@ export class SocialService {
       // 좋아요 수 증가
       const { data: post } = await supabase
         .from('posts')
-        .select('like_count, author_id, title, forum_isbn')
+        .select('author_id, title, forum_isbn')
         .eq('id', postId)
         .single()
 
-      const postData = post as Pick<PostRow, 'like_count' | 'author_id' | 'title' | 'forum_isbn'> | null
+      const postData = post as Pick<PostRow, 'author_id' | 'title' | 'forum_isbn'> | null
       if (postData) {
-        await supabase
-          .from('posts')
-          .update({ like_count: (postData.like_count || 0) + 1 } )
-          .eq('id', postId)
+        const { error: incrementError } = await supabase.rpc('increment_post_like_count', {
+          target_post_id: postId,
+        })
+
+        if (incrementError) {
+          throw new Error(`좋아요 수 증가 실패: ${incrementError.message}`)
+        }
 
         // 알림 트리거 (자기 자신 제외)
         const postAuthorId = postData.author_id
@@ -348,19 +350,12 @@ export class SocialService {
 
       if (error) throw new Error(`좋아요 취소 실패: ${error.message}`)
 
-      // 좋아요 수 감소
-      const { data: comment } = await supabase
-        .from('comments')
-        .select('like_count')
-        .eq('id', commentId)
-        .single()
+      const { error: decrementError } = await supabase.rpc('decrement_comment_like_count', {
+        target_comment_id: commentId,
+      })
 
-      const commentData = comment as Pick<CommentRow, 'like_count'> | null
-      if (commentData) {
-        await supabase
-          .from('comments')
-          .update({ like_count: Math.max(0, (commentData.like_count || 1) - 1) } )
-          .eq('id', commentId)
+      if (decrementError) {
+        throw new Error(`좋아요 수 감소 실패: ${decrementError.message}`)
       }
 
       return false
@@ -375,16 +370,19 @@ export class SocialService {
       // 좋아요 수 증가 및 알림 트리거
       const { data: comment } = await supabase
         .from('comments')
-        .select('like_count, author_id, post_id')
+        .select('author_id, post_id')
         .eq('id', commentId)
         .single()
 
-      const commentData = comment as Pick<CommentRow, 'like_count' | 'author_id' | 'post_id'> | null
+      const commentData = comment as Pick<CommentRow, 'author_id' | 'post_id'> | null
       if (commentData) {
-        await supabase
-          .from('comments')
-          .update({ like_count: (commentData.like_count || 0) + 1 } )
-          .eq('id', commentId)
+        const { error: incrementError } = await supabase.rpc('increment_comment_like_count', {
+          target_comment_id: commentId,
+        })
+
+        if (incrementError) {
+          throw new Error(`좋아요 수 증가 실패: ${incrementError.message}`)
+        }
 
         // 알림 트리거 (자기 자신 제외)
         const commentAuthorId = commentData.author_id

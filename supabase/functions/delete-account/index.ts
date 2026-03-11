@@ -43,6 +43,34 @@ Deno.serve(async (req) => {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     })
+
+    // Storage 삭제 (best-effort)
+    try {
+      const { data: postImageFiles } = await supabaseAdmin.storage
+        .from('post-images')
+        .list(authId, { limit: 1000 })
+
+      if (postImageFiles && postImageFiles.length > 0) {
+        const filePaths = postImageFiles.map((file) => `${authId}/${file.name}`)
+        await supabaseAdmin.storage.from('post-images').remove(filePaths)
+      }
+    } catch (storageError) {
+      console.error('post-images Storage 삭제 실패 (무시):', storageError)
+    }
+
+    try {
+      const { data: profileImageFiles } = await supabaseAdmin.storage
+        .from('profile-images')
+        .list(authId, { limit: 100 })
+
+      if (profileImageFiles && profileImageFiles.length > 0) {
+        const filePaths = profileImageFiles.map((file) => `${authId}/${file.name}`)
+        await supabaseAdmin.storage.from('profile-images').remove(filePaths)
+      }
+    } catch (storageError) {
+      console.error('profile-images Storage 삭제 실패 (무시):', storageError)
+    }
+
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(authId)
 
     if (deleteError) {
