@@ -397,33 +397,12 @@ const ForumView: React.FC = () => {
           }
         }
 
-        // 업로드된 이미지가 있으면 post_images 테이블에 저장
-        if (uploadedImages.length > 0) {
-          const imageInserts = uploadedImages.map((img, index) => ({
-            post_id: postId,
-            url: img.url,
-            thumbnail_url: img.thumbnailUrl || null,
-            width: img.width,
-            height: img.height,
-            display_order: index,
-          }));
-          await supabase.from('post_images').insert(imageInserts);
-        }
       }
 
-      // 포럼 게시물 수 업데이트
-      const { data: forumData } = await supabase
-        .from('forums')
-        .select('post_count')
-        .eq('isbn', forum.isbn)
-        .single();
-
+      // 포럼 마지막 활동 시각 업데이트 (post_count는 Trigger가 자동 처리)
       await supabase
         .from('forums')
-        .update({
-          post_count: ((forumData as { post_count: number } | null)?.post_count || 0) + 1,
-          last_activity_at: new Date().toISOString(),
-        })
+        .update({ last_activity_at: new Date().toISOString() })
         .eq('isbn', forum.isbn);
 
       // 태그 통계 업데이트

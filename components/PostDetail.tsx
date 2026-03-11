@@ -236,17 +236,6 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
             // 최상위 댓글일 때만 게시물 댓글 수 업데이트
             if (!parentId) {
-                const { data: postData } = await supabase
-                    .from('posts')
-                    .select('comment_count')
-                    .eq('id', post.id)
-                    .single();
-
-                await supabase
-                    .from('posts')
-                    .update({ comment_count: ((postData as { comment_count: number } | null)?.comment_count || 0) + 1 })
-                    .eq('id', post.id);
-
                 // 사용자 통계 업데이트
                 await UserService.incrementStat(currentUser.uid, 'comment_count');
             }
@@ -385,18 +374,6 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             if (deleteError) {
                 throw deleteError;
             }
-
-            // 포럼의 게시물 수 업데이트
-            const { data: forumData } = await supabase
-                .from('forums')
-                .select('post_count')
-                .eq('isbn', isbn)
-                .single();
-
-            await supabase
-                .from('forums')
-                .update({ post_count: Math.max(0, ((forumData as { post_count: number } | null)?.post_count || 1) - 1) })
-                .eq('isbn', isbn);
 
             // 사용자 통계 업데이트
             await UserService.decrementStat(currentUser.uid, 'post_count');

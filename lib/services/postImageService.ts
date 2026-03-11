@@ -110,8 +110,31 @@ export class PostImageService {
         .from(BUCKET_NAME)
         .getPublicUrl(filePath)
 
+      const insertResult: {
+        data: { id: string } | null
+        error: { message: string } | null
+      } = await supabase
+        .from('post_images')
+        .insert({
+          post_id: postId,
+          url: publicUrl,
+          width,
+          height,
+          display_order: order,
+        })
+        .select('id')
+        .single()
+
+      const { data: insertedImage, error: insertError } = insertResult
+
+      if (insertError || !insertedImage) {
+        console.error('이미지 메타데이터 저장 실패:', insertError)
+        await supabase.storage.from(BUCKET_NAME).remove([filePath])
+        throw new Error('이미지 메타데이터 저장에 실패했습니다.')
+      }
+
       const postImage: PostImage = {
-        id: imageId,
+        id: insertedImage.id,
         url: publicUrl,
         width,
         height,
