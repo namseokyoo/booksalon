@@ -306,25 +306,27 @@ export class MessagingService {
     const allParticipantData = (allParticipants || []) as ParticipantRow[]
 
     // 4. 각 room의 최근 메시지 조회
-    // room별로 최근 메시지 1건씩 가져오기
-    const lastMessagePromises = roomIds.map((roomId) =>
-      supabase
-        .from('messages')
-        .select('*')
-        .eq('chat_room_id', roomId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle()
-    )
+    // 모든 room의 메시지를 한 번에 가져온 뒤, room별 최신 1건만 유지
+    const { data: lastMessages } = await supabase
+      .from('messages')
+      .select('*')
+      .in('chat_room_id', roomIds)
+      .order('created_at', { ascending: false })
 
-    const lastMessageResults = await Promise.all(lastMessagePromises)
+    const lastMessageData = (lastMessages || []) as MessageRow[]
+    const lastMessageMap = new Map<string, MessageRow>()
+
+    lastMessageData.forEach((message) => {
+      if (!lastMessageMap.has(message.chat_room_id)) {
+        lastMessageMap.set(message.chat_room_id, message)
+      }
+    })
 
     // 5. ChatRoom 호환 객체로 변환
     const chatRooms: ChatRoom[] = roomData
-      .map((room, index) => {
+      .map((room) => {
         const roomParticipants = allParticipantData.filter((p) => p.chat_room_id === room.id)
-        const lastMsg = lastMessageResults.find((_, i) => roomIds[i] === room.id)
-        const lastMessage = lastMsg?.data as MessageRow | null
+        const lastMessage = lastMessageMap.get(room.id) || null
 
         return toChatRoom(room, roomParticipants, lastMessage)
       })
