@@ -1,3 +1,6 @@
+-- ⚠️ NOTE: 이 마이그레이션의 FK(auth.users)는 후속 마이그레이션 20260222100000_fix_rls_policies.sql에서
+-- public.users(id)로 수정 완료됨. 이 파일의 FK 참조는 최종 프로덕션 상태와 다름.
+-- 검토일: 2026-03-12, Board Advisor + Codex 감사 완료.
 -- Reading Logs 테이블: 사용자 독서 활동 기록
 -- Phase 3-1: 독서 로그 기능
 
