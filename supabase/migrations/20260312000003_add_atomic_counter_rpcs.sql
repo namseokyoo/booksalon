@@ -1,11 +1,15 @@
--- 좋아요/통계 카운터 원자적 갱신 RPC
+-- 좋아요/통계 카운터 원자적 갱신 RPC (보안 강화)
 
 CREATE OR REPLACE FUNCTION increment_post_like_count(target_post_id uuid)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
+  END IF;
   UPDATE posts
   SET like_count = COALESCE(like_count, 0) + 1
   WHERE id = target_post_id;
@@ -16,8 +20,12 @@ CREATE OR REPLACE FUNCTION decrement_post_like_count(target_post_id uuid)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
+  END IF;
   UPDATE posts
   SET like_count = GREATEST(0, COALESCE(like_count, 0) - 1)
   WHERE id = target_post_id;
@@ -28,8 +36,12 @@ CREATE OR REPLACE FUNCTION increment_comment_like_count(target_comment_id uuid)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
+  END IF;
   UPDATE comments
   SET like_count = COALESCE(like_count, 0) + 1
   WHERE id = target_comment_id;
@@ -40,8 +52,12 @@ CREATE OR REPLACE FUNCTION decrement_comment_like_count(target_comment_id uuid)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Authentication required';
+  END IF;
   UPDATE comments
   SET like_count = GREATEST(0, COALESCE(like_count, 0) - 1)
   WHERE id = target_comment_id;
@@ -52,8 +68,12 @@ CREATE OR REPLACE FUNCTION increment_user_stat(target_auth_id uuid, stat_name te
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
+  IF stat_name NOT IN ('post_count', 'comment_count', 'forum_count') THEN
+    RAISE EXCEPTION 'Invalid stat_name: %', stat_name;
+  END IF;
   UPDATE users
   SET
     post_count = CASE
@@ -76,8 +96,12 @@ CREATE OR REPLACE FUNCTION decrement_user_stat(target_auth_id uuid, stat_name te
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 BEGIN
+  IF stat_name NOT IN ('post_count', 'comment_count', 'forum_count') THEN
+    RAISE EXCEPTION 'Invalid stat_name: %', stat_name;
+  END IF;
   UPDATE users
   SET
     post_count = CASE
@@ -95,3 +119,22 @@ BEGIN
   WHERE auth_id = target_auth_id;
 END;
 $$;
+
+-- 권한 설정: authenticated 사용자만 실행 가능
+REVOKE ALL ON FUNCTION increment_post_like_count(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION increment_post_like_count(uuid) TO authenticated;
+
+REVOKE ALL ON FUNCTION decrement_post_like_count(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION decrement_post_like_count(uuid) TO authenticated;
+
+REVOKE ALL ON FUNCTION increment_comment_like_count(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION increment_comment_like_count(uuid) TO authenticated;
+
+REVOKE ALL ON FUNCTION decrement_comment_like_count(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION decrement_comment_like_count(uuid) TO authenticated;
+
+REVOKE ALL ON FUNCTION increment_user_stat(uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION increment_user_stat(uuid, text) TO authenticated;
+
+REVOKE ALL ON FUNCTION decrement_user_stat(uuid, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION decrement_user_stat(uuid, text) TO authenticated;

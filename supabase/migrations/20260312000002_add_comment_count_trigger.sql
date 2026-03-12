@@ -1,17 +1,21 @@
--- Keep posts.comment_count in sync with comments inserts and deletes
+-- Keep posts.comment_count in sync with TOP-LEVEL comments only
 CREATE OR REPLACE FUNCTION update_post_comment_count()
 RETURNS TRIGGER AS $$
 BEGIN
   IF TG_OP = 'INSERT' THEN
-    UPDATE posts
-    SET comment_count = COALESCE(comment_count, 0) + 1
-    WHERE id = NEW.post_id;
+    IF NEW.parent_id IS NULL THEN
+      UPDATE posts
+      SET comment_count = COALESCE(comment_count, 0) + 1
+      WHERE id = NEW.post_id;
+    END IF;
 
     RETURN NEW;
   ELSIF TG_OP = 'DELETE' THEN
-    UPDATE posts
-    SET comment_count = GREATEST(0, COALESCE(comment_count, 0) - 1)
-    WHERE id = OLD.post_id;
+    IF OLD.parent_id IS NULL THEN
+      UPDATE posts
+      SET comment_count = GREATEST(0, COALESCE(comment_count, 0) - 1)
+      WHERE id = OLD.post_id;
+    END IF;
 
     RETURN OLD;
   END IF;
@@ -32,4 +36,5 @@ SET comment_count = (
   SELECT COUNT(*)
   FROM comments
   WHERE post_id = posts.id
+    AND parent_id IS NULL
 );

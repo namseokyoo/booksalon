@@ -11,7 +11,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { UserService, PostImageService, SocialService, ViewCountService, CommentService } from '../lib/services';
 import type { CommentWithReplies } from '../lib/services';
-import { NotificationService } from '../lib/services/notificationService';
 import { LikeIcon } from './icons/LikeIcon';
 import LoginRequiredPopup from './LoginRequiredPopup';
 
@@ -238,46 +237,6 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             if (!parentId) {
                 // 사용자 통계 업데이트
                 await UserService.incrementStat(currentUser.uid, 'comment_count');
-            }
-
-            // 댓글 알림 트리거 (자기 자신 제외)
-            // 대댓글인 경우: 원댓글 작성자에게 알림
-            // 최상위 댓글인 경우: 게시물 작성자에게 알림
-            if (parentId) {
-                // 원댓글 작성자 찾기
-                const parentComment = comments.find(c => c.id === parentId);
-                if (parentComment && parentComment.author.uid !== currentUser.uid) {
-                    const { data: parentAuthorData } = await supabase
-                        .from('users')
-                        .select('id')
-                        .eq('auth_id', parentComment.author.uid)
-                        .single();
-                    if (parentAuthorData) {
-                        const senderProfile = await UserService.getUserProfileById(typedUserData.id);
-                        const senderName = senderProfile?.nickname || senderProfile?.displayName || senderProfile?.email?.split('@')[0] || '누군가';
-                        NotificationService.createCommentNotification(
-                            (parentAuthorData as { id: string }).id,
-                            typedUserData.id,
-                            senderName,
-                            post.title,
-                            insertedComment.id,
-                            post.id,
-                            isbn
-                        ).catch(console.error);
-                    }
-                }
-            } else if (authorProfile?.id && authorProfile.id !== typedUserData.id) {
-                const senderProfile = await UserService.getUserProfileById(typedUserData.id);
-                const senderName = senderProfile?.nickname || senderProfile?.displayName || senderProfile?.email?.split('@')[0] || '누군가';
-                NotificationService.createCommentNotification(
-                    authorProfile.id,
-                    typedUserData.id,
-                    senderName,
-                    post.title,
-                    insertedComment.id,
-                    post.id,
-                    isbn
-                ).catch(console.error);
             }
 
             // Realtime 구독이 loadComments를 재호출하므로 로컬 즉시 갱신은 생략.
