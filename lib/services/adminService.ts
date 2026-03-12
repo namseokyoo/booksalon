@@ -105,7 +105,7 @@ export class AdminService {
   /**
    * 관리자 역할 설정
    *
-   * @param userId - 사용자의 auth_id (currentUser.uid)
+   * @param userId - 사용자의 users.id (admins 테이블의 user_id)
    * @param role - 설정할 역할
    */
   static async setAdmin(userId: string, role: 'admin' | 'moderator'): Promise<void> {

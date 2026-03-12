@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useSearchParams, useLocation, useNavigate } from 'react-router-dom';
-import type { Forum, Post, UserProfile, PostImage } from '../types';
+import type { Forum, Post, UserProfile } from '../types';
 import BookInfo from './BookInfo';
 import PostList from './PostList';
 import PostDetail from './PostDetail';
@@ -15,7 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
 import { useToast } from '../contexts/ToastContext';
 import { useForumLoader } from '../hooks/useForumLoader';
-import { UserService, TagService, PostImageService } from '../lib/services';
+import { UserService, TagService, PostImageService, PostService } from '../lib/services';
 
 const POSTS_PAGE_SIZE = 20;
 
@@ -50,94 +50,6 @@ const ForumView: React.FC = () => {
   const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const { currentUser } = useAuth();
 
-  const enrichPostsData = async (postsData: Array<{
-    id: string;
-    title: string;
-    content: string;
-    author_id: string;
-    forum_isbn: string;
-    created_at: string;
-    updated_at: string | null;
-    comment_count: number;
-    like_count: number;
-    view_count: number | null;
-  }>): Promise<Post[]> => {
-    if (postsData.length === 0) return [];
-
-    const postIds = postsData.map(p => p.id);
-
-    // 배치 조회: 이미지, 작성자, 태그, 좋아요
-    const [postImagesResult, authorsResult, postTagsResult, postLikesResult] = await Promise.all([
-      supabase
-        .from('post_images')
-        .select('id, post_id, url, thumbnail_url, width, height, display_order')
-        .in('post_id', postIds),
-      supabase
-        .from('users')
-        .select('id, auth_id, email, display_name, nickname')
-        .in('id', [...new Set(postsData.map(p => p.author_id))]),
-      supabase
-        .from('post_tags')
-        .select('post_id, tag_name')
-        .in('post_id', postIds),
-      supabase
-        .from('post_likes')
-        .select('post_id, user_id')
-        .in('post_id', postIds),
-    ]);
-
-    const imagesByPost = new Map<string, PostImage[]>();
-    (postImagesResult.data || []).forEach((img: { id: string; post_id: string; url: string; thumbnail_url: string | null; width: number; height: number; display_order: number | null }) => {
-      const images = imagesByPost.get(img.post_id) || [];
-      images.push({
-        id: img.id,
-        url: img.url,
-        thumbnailUrl: img.thumbnail_url || undefined,
-        width: img.width,
-        height: img.height,
-        order: img.display_order || 0,
-      });
-      imagesByPost.set(img.post_id, images);
-    });
-
-    const authorMap = new Map((authorsResult.data || []).map((a: { id: string; auth_id: string; email: string; display_name: string | null; nickname: string | null }) => [a.id, a]));
-
-    const tagsByPost = new Map<string, string[]>();
-    (postTagsResult.data || []).forEach((pt: { post_id: string; tag_name: string }) => {
-      const tags = tagsByPost.get(pt.post_id) || [];
-      tags.push(pt.tag_name);
-      tagsByPost.set(pt.post_id, tags);
-    });
-
-    const likesByPost = new Map<string, string[]>();
-    (postLikesResult.data || []).forEach((pl: { post_id: string; user_id: string }) => {
-      const likes = likesByPost.get(pl.post_id) || [];
-      likes.push(pl.user_id);
-      likesByPost.set(pl.post_id, likes);
-    });
-
-    return postsData.map((post) => {
-      const author = authorMap.get(post.author_id);
-      return {
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        author: {
-          uid: author?.auth_id || post.author_id,
-          email: author?.email || '',
-        },
-        createdAt: post.created_at ? new Date(post.created_at) : new Date(),
-        updatedAt: post.updated_at ? new Date(post.updated_at) : undefined,
-        commentCount: post.comment_count,
-        likeCount: post.like_count,
-        viewCount: post.view_count || 0,
-        likes: likesByPost.get(post.id) || [],
-        tags: tagsByPost.get(post.id) || [],
-        images: imagesByPost.get(post.id) || [],
-      };
-    });
-  };
-
   useEffect(() => {
     if (!forum?.isbn) return;
 
@@ -145,33 +57,12 @@ const ForumView: React.FC = () => {
       const from = 0;
       const to = POSTS_PAGE_SIZE - 1;
 
-      const { data: postsData, error } = await supabase
-        .from('posts')
-        .select(`
-          id,
-          title,
-          content,
-          author_id,
-          forum_isbn,
-          created_at,
-          updated_at,
-          comment_count,
-          like_count,
-          view_count
-        `)
-        .eq('forum_isbn', forum.isbn)
-        .order('created_at', { ascending: false })
-        .range(from, to);
+      const postsData = await PostService.getPostsByForum(forum.isbn, { from, to });
 
-      if (error) {
-        console.error('게시물 로드 실패:', error);
-        return;
-      }
-
-      const enrichedPosts = await enrichPostsData(postsData || []);
+      const enrichedPosts = await PostService.enrichPosts(postsData);
       setPosts(enrichedPosts);
       setPostsPage(0);
-      setHasMorePosts((postsData || []).length >= POSTS_PAGE_SIZE);
+      setHasMorePosts(postsData.length >= POSTS_PAGE_SIZE);
 
       // initialPostId가 있으면 해당 포스트 자동 열기
       if (initialPostId) {
@@ -181,24 +72,9 @@ const ForumView: React.FC = () => {
           setInitialPostLoading(false);
         } else {
           // 첫 페이지에 없을 수 있으므로 단건 조회
-          const { data: singlePostData } = await supabase
-            .from('posts')
-            .select(`
-              id,
-              title,
-              content,
-              author_id,
-              forum_isbn,
-              created_at,
-              updated_at,
-              comment_count,
-              like_count,
-              view_count
-            `)
-            .eq('id', initialPostId)
-            .single();
+          const singlePostData = await PostService.getPostById(initialPostId);
           if (singlePostData) {
-            const enrichedSingle = await enrichPostsData([singlePostData]);
+            const enrichedSingle = await PostService.enrichPosts([singlePostData]);
             if (enrichedSingle.length > 0) {
               setSelectedPost(enrichedSingle[0]);
             }
@@ -216,25 +92,10 @@ const ForumView: React.FC = () => {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, async (payload) => {
         // 새 게시물을 조회하여 목록 상단에 추가
         const newPostId = (payload.new as { id: string }).id;
-        const { data: newPostData } = await supabase
-          .from('posts')
-          .select(`
-            id,
-            title,
-            content,
-            author_id,
-            forum_isbn,
-            created_at,
-            updated_at,
-            comment_count,
-            like_count,
-            view_count
-          `)
-          .eq('id', newPostId)
-          .single();
+        const newPostData = await PostService.getPostById(newPostId);
 
         if (newPostData) {
-          const enriched = await enrichPostsData([newPostData]);
+          const enriched = await PostService.enrichPosts([newPostData]);
           if (enriched.length > 0) {
             setPosts(prev => {
               const exists = prev.some(p => p.id === enriched[0].id);
@@ -247,26 +108,10 @@ const ForumView: React.FC = () => {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts', filter: `forum_isbn=eq.${forum.isbn}` }, async () => {
         // UPDATE 시 현재 로드된 범위만 리로드
         const currentTo = ((postsPageRef.current + 1) * POSTS_PAGE_SIZE) - 1;
-        const { data: postsData } = await supabase
-          .from('posts')
-          .select(`
-            id,
-            title,
-            content,
-            author_id,
-            forum_isbn,
-            created_at,
-            updated_at,
-            comment_count,
-            like_count,
-            view_count
-          `)
-          .eq('forum_isbn', forum.isbn)
-          .order('created_at', { ascending: false })
-          .range(0, currentTo);
+        const postsData = await PostService.getPostsByForum(forum.isbn, { from: 0, to: currentTo });
 
-        if (postsData) {
-          const enrichedPosts = await enrichPostsData(postsData);
+        if (postsData.length > 0) {
+          const enrichedPosts = await PostService.enrichPosts(postsData);
           setPosts(enrichedPosts);
         }
       })
@@ -291,34 +136,13 @@ const ForumView: React.FC = () => {
       const from = nextPage * POSTS_PAGE_SIZE;
       const to = from + POSTS_PAGE_SIZE - 1;
 
-      const { data: postsData, error } = await supabase
-        .from('posts')
-        .select(`
-          id,
-          title,
-          content,
-          author_id,
-          forum_isbn,
-          created_at,
-          updated_at,
-          comment_count,
-          like_count,
-          view_count
-        `)
-        .eq('forum_isbn', forum.isbn)
-        .order('created_at', { ascending: false })
-        .range(from, to);
+      const postsData = await PostService.getPostsByForum(forum.isbn, { from, to });
 
-      if (error) {
-        console.error('추가 게시물 로드 실패:', error);
-        return;
-      }
-
-      if ((postsData || []).length < POSTS_PAGE_SIZE) {
+      if (postsData.length < POSTS_PAGE_SIZE) {
         setHasMorePosts(false);
       }
 
-      const enrichedPosts = await enrichPostsData(postsData || []);
+      const enrichedPosts = await PostService.enrichPosts(postsData);
 
       setPosts(prev => {
         const existingIds = new Set(prev.map(p => p.id));
@@ -345,65 +169,36 @@ const ForumView: React.FC = () => {
 
     try {
       // 사용자 ID 조회 (auth_id로 users 테이블에서)
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('auth_id', currentUser.uid)
-        .single();
-
-      if (userError || !userData) {
-        throw new Error('사용자 정보를 찾을 수 없습니다.');
-      }
-
-      const typedUserData = userData as { id: string };
+      const userId = await UserService.getUserIdByAuthId(currentUser.uid);
 
       // 게시물 생성
-      const { data: newPost, error: postError } = await supabase
-        .from('posts')
-        .insert({
-          title,
-          content,
-          author_id: typedUserData.id,
-          forum_isbn: forum.isbn,
-          comment_count: 0,
-          like_count: 0,
-        })
-        .select('id')
-        .single();
-
-      if (postError || !newPost) {
-        throw postError || new Error('게시물 생성 실패');
-      }
-
-      const postId = (newPost as { id: string }).id;
+      const { id: postId } = await PostService.createPost({
+        title,
+        content,
+        authorId: userId,
+        forumIsbn: forum.isbn,
+      });
 
       // 이미지가 있으면 업로드
       if (imagePreviews && imagePreviews.length > 0) {
-        const uploadedImages: PostImage[] = [];
-
         for (let i = 0; i < imagePreviews.length; i++) {
           const imagePreview = imagePreviews[i];
           try {
-            const uploadedImage = await PostImageService.uploadImage(
+            await PostImageService.uploadImage(
               currentUser.uid,
               forum.isbn,
               postId,
               imagePreview.file,
               i
             );
-            uploadedImages.push(uploadedImage);
           } catch (error) {
             console.error(`이미지 ${i + 1} 업로드 실패:`, error);
           }
         }
-
       }
 
       // 포럼 마지막 활동 시각 업데이트 (post_count는 Trigger가 자동 처리)
-      await supabase
-        .from('forums')
-        .update({ last_activity_at: new Date().toISOString() })
-        .eq('isbn', forum.isbn);
+      await PostService.updateForumActivity(forum.isbn);
 
       // 태그 통계 업데이트
       if (tags && tags.length > 0) {
@@ -414,17 +209,10 @@ const ForumView: React.FC = () => {
       await UserService.incrementStat(currentUser.uid, 'post_count');
 
       // 로컬 state에 새 글 즉시 추가 (Realtime 지연 대비)
-      const { data: newPostFull } = await supabase
-        .from('posts')
-        .select(`
-          id, title, content, author_id, forum_isbn,
-          created_at, updated_at, comment_count, like_count, view_count
-        `)
-        .eq('id', postId)
-        .single();
+      const newPostFull = await PostService.getPostById(postId);
 
       if (newPostFull) {
-        const enriched = await enrichPostsData([newPostFull]);
+        const enriched = await PostService.enrichPosts([newPostFull]);
         if (enriched.length > 0) {
           setPosts(prev => {
             const exists = prev.some(p => p.id === enriched[0].id);

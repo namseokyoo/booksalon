@@ -1056,6 +1056,14 @@ export type Database = {
       increment_view_count: { Args: { post_id: string }; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       is_super_admin: { Args: never; Returns: boolean }
+      get_book_average_rating: {
+        Args: { target_book_isbn: string }
+        Returns: { avg_rating: number; total_count: number }[]
+      }
+      update_forum_popularity: {
+        Args: { target_isbn: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

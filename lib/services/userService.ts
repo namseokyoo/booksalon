@@ -479,6 +479,24 @@ export class UserService {
       throw new Error(`통계 감소 실패: ${error.message}`)
     }
   }
+
+  /**
+   * auth_id로 users 테이블의 id(UUID) 조회
+   * 컴포넌트에서 반복되는 auth_id → users.id 변환 패턴을 통합
+   */
+  static async getUserIdByAuthId(authId: string): Promise<string> {
+    const { data, error } = await supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', authId)
+      .single()
+
+    if (error || !data) {
+      throw new Error('사용자 정보를 찾을 수 없습니다.')
+    }
+
+    return (data as { id: string }).id
+  }
 }
 
 export default UserService

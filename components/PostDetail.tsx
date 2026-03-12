@@ -9,7 +9,7 @@ import { formatRelativeDate } from '../lib/dateUtils';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useModals } from '../contexts/ModalContext';
-import { UserService, PostImageService, SocialService, ViewCountService, CommentService } from '../lib/services';
+import { UserService, PostImageService, SocialService, ViewCountService, CommentService, PostService } from '../lib/services';
 import type { CommentWithReplies } from '../lib/services';
 import { LikeIcon } from './icons/LikeIcon';
 import LoginRequiredPopup from './LoginRequiredPopup';
@@ -73,17 +73,9 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         const checkLikeStatus = async () => {
             if (currentUser) {
                 try {
-                    // 사용자 ID 조회
-                    const { data: userData } = await supabase
-                        .from('users')
-                        .select('id')
-                        .eq('auth_id', currentUser.uid)
-                        .single();
-
-                    if (userData) {
-                        const liked = await SocialService.isLiked((userData as { id: string }).id, 'post', post.id);
-                        setIsLiked(liked);
-                    }
+                    const userId = await UserService.getUserIdByAuthId(currentUser.uid);
+                    const liked = await SocialService.isLiked(userId, 'post', post.id);
+                    setIsLiked(liked);
                 } catch (error) {
                     console.error('좋아요 상태 확인 실패:', error);
                 }
@@ -133,18 +125,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
         try {
             // 사용자 ID 조회
-            const { data: userData } = await supabase
-                .from('users')
-                .select('id')
-                .eq('auth_id', currentUser.uid)
-                .single();
-
-            if (!userData) {
-                throw new Error('사용자 정보를 찾을 수 없습니다.');
-            }
+            const userId = await UserService.getUserIdByAuthId(currentUser.uid);
 
             const newIsLiked = await SocialService.toggleLike(
-                (userData as { id: string }).id,
+                userId,
                 'post',
                 post.id
             );
@@ -213,22 +197,12 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
 
         try {
             // 사용자 ID 조회
-            const { data: userData, error: userError } = await supabase
-                .from('users')
-                .select('id')
-                .eq('auth_id', currentUser.uid)
-                .single();
-
-            if (userError || !userData) {
-                throw new Error('사용자 정보를 찾을 수 없습니다.');
-            }
-
-            const typedUserData = userData as { id: string };
+            const userId = await UserService.getUserIdByAuthId(currentUser.uid);
 
             // 댓글 또는 대댓글 생성 (CommentService 사용)
             const insertedComment = await CommentService.createComment({
                 postId: post.id,
-                authorId: typedUserData.id,
+                authorId: userId,
                 content,
                 parentId: parentId || null,
             });
@@ -289,18 +263,10 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
         setEditError(null);
 
         try {
-            const { error } = await supabase
-                .from('posts')
-                .update({
-                    title: editTitle,
-                    content: editContent,
-                    updated_at: new Date().toISOString(),
-                })
-                .eq('id', post.id);
-
-            if (error) {
-                throw error;
-            }
+            await PostService.updatePost(post.id, {
+                title: editTitle,
+                content: editContent,
+            });
 
             // 낙관적 업데이트: 저장 성공 즉시 로컬 표시값 갱신 (Realtime 이벤트 대기 없이)
             setLocalTitle(editTitle);
@@ -325,14 +291,7 @@ const PostDetail: React.FC<PostDetailProps> = ({ post, isbn, onBack, onUserClick
             }
 
             // 게시물 삭제
-            const { error: deleteError } = await supabase
-                .from('posts')
-                .delete()
-                .eq('id', post.id);
-
-            if (deleteError) {
-                throw deleteError;
-            }
+            await PostService.deletePost(post.id);
 
             // 사용자 통계 업데이트
             await UserService.decrementStat(currentUser.uid, 'post_count');

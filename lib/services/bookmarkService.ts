@@ -15,9 +15,6 @@ type BookmarkRow = Database['public']['Tables']['bookmarks']['Row']
 type BookmarkInsert = Database['public']['Tables']['bookmarks']['Insert']
 type ForumRow = Database['public']['Tables']['forums']['Row']
 type BookRow = Database['public']['Tables']['books']['Row']
-type NotificationSettingsRow = Database['public']['Tables']['user_notification_settings']['Row']
-type NotificationSettingsInsert = Database['public']['Tables']['user_notification_settings']['Insert']
-type NotificationSettingsUpdate = Database['public']['Tables']['user_notification_settings']['Update']
 
 // 기존 types.ts Forum과 호환
 export interface Forum {
@@ -186,86 +183,6 @@ export class BookmarkService {
     if (error || !data) return []
     const bookmarkData = data as Pick<BookmarkRow, 'forum_isbn'>[]
     return bookmarkData.map((b) => b.forum_isbn)
-  }
-
-  /**
-   * 알림 설정 업데이트 (기존 BookmarkService에서 관리)
-   * Note: UserService로 이동 권장, 호환성을 위해 유지
-   */
-  static async updateNotificationSettings(
-    userId: string,
-    settings: {
-      newPosts?: boolean
-      newComments?: boolean
-      forumUpdates?: boolean
-    }
-  ): Promise<void> {
-    // 기존 설정 확인
-    const { data: existing } = await supabase
-      .from('user_notification_settings')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle()
-
-    if (existing) {
-      // 업데이트
-      const updateData: NotificationSettingsUpdate = {
-        new_posts: settings.newPosts,
-        new_comments: settings.newComments,
-        forum_updates: settings.forumUpdates,
-        updated_at: new Date().toISOString(),
-      }
-      const { error } = await supabase
-        .from('user_notification_settings')
-        .update(updateData)
-        .eq('user_id', userId)
-
-      if (error) throw new Error(`알림 설정 업데이트 실패: ${error.message}`)
-    } else {
-      // 새로 생성
-      const insertData: NotificationSettingsInsert = {
-        user_id: userId,
-        new_posts: settings.newPosts ?? true,
-        new_comments: settings.newComments ?? true,
-        forum_updates: settings.forumUpdates ?? true,
-      }
-      const { error } = await supabase
-        .from('user_notification_settings')
-        .insert(insertData)
-
-      if (error) throw new Error(`알림 설정 생성 실패: ${error.message}`)
-    }
-  }
-
-  /**
-   * 알림 설정 조회
-   */
-  static async getNotificationSettings(userId: string): Promise<{
-    newPosts: boolean
-    newComments: boolean
-    forumUpdates: boolean
-  }> {
-    const { data, error } = await supabase
-      .from('user_notification_settings')
-      .select('new_posts, new_comments, forum_updates')
-      .eq('user_id', userId)
-      .maybeSingle()
-
-    if (error || !data) {
-      // 기본값 반환
-      return {
-        newPosts: true,
-        newComments: true,
-        forumUpdates: true,
-      }
-    }
-
-    const settings = data as Pick<NotificationSettingsRow, 'new_posts' | 'new_comments' | 'forum_updates'>
-    return {
-      newPosts: settings.new_posts,
-      newComments: settings.new_comments,
-      forumUpdates: settings.forum_updates,
-    }
   }
 
   /**

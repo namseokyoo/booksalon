@@ -84,3 +84,6 @@ export {
   type CommentWithReplies,
   type CommentAuthor,
 } from './commentService'
+
+// Post Service (BL-163: 게시물 CRUD 서비스 레이어)
+export { PostService } from './postService'

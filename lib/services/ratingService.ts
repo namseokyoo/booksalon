@@ -115,22 +115,18 @@ export class RatingService {
    * PostgreSQL 집계 함수 활용
    */
   static async getAverageRating(bookIsbn: string): Promise<{ average: number; total: number }> {
-    const { data, error } = await supabase
-      .from('ratings')
-      .select('rating')
-      .eq('book_isbn', bookIsbn)
+    const { data, error } = await supabase.rpc('get_book_average_rating', {
+      target_book_isbn: bookIsbn,
+    })
 
     if (error || !data || data.length === 0) {
       return { average: 0, total: 0 }
     }
 
-    const ratings = data as Pick<RatingRow, 'rating'>[]
-    const sum = ratings.reduce((acc, r) => acc + r.rating, 0)
-    const average = Math.round((sum / ratings.length) * 10) / 10 // 소수점 1자리
-
+    const result = data[0] as { avg_rating: number; total_count: number }
     return {
-      average,
-      total: ratings.length,
+      average: Number(result.avg_rating) || 0,
+      total: Number(result.total_count) || 0,
     }
   }
 
@@ -153,6 +149,9 @@ export class RatingService {
     if (error) {
       console.error('포럼 평점 업데이트 실패:', error)
     }
+
+    // popularity 갱신
+    await supabase.rpc('update_forum_popularity', { target_isbn: bookIsbn })
   }
 
   /**

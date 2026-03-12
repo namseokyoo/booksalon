@@ -39,6 +39,40 @@ Deno.serve(async (req) => {
 
     const authId = user.id  // JWT에서 추출한 auth_id만 사용 (요청 바디 신뢰 금지)
 
+    // 재귀 Storage 파일 삭제 헬퍼
+    async function deleteStorageFolder(
+      client: ReturnType<typeof createClient>,
+      bucket: string,
+      folder: string
+    ): Promise<void> {
+      const { data: items } = await client.storage.from(bucket).list(folder, { limit: 1000 })
+      if (!items || items.length === 0) return
+
+      const files: string[] = []
+      const subfolders: string[] = []
+
+      for (const item of items) {
+        const path = `${folder}/${item.name}`
+        if (item.id) {
+          // id가 있으면 파일
+          files.push(path)
+        } else {
+          // id가 없으면 폴더
+          subfolders.push(path)
+        }
+      }
+
+      // 하위 폴더 재귀 삭제
+      for (const sub of subfolders) {
+        await deleteStorageFolder(client, bucket, sub)
+      }
+
+      // 현재 폴더의 파일 삭제
+      if (files.length > 0) {
+        await client.storage.from(bucket).remove(files)
+      }
+    }
+
     // 3. admin client로 auth.users 삭제 (CASCADE 자동 처리)
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { autoRefreshToken: false, persistSession: false }
@@ -46,27 +80,13 @@ Deno.serve(async (req) => {
 
     // Storage 삭제 (best-effort)
     try {
-      const { data: postImageFiles } = await supabaseAdmin.storage
-        .from('post-images')
-        .list(authId, { limit: 1000 })
-
-      if (postImageFiles && postImageFiles.length > 0) {
-        const filePaths = postImageFiles.map((file) => `${authId}/${file.name}`)
-        await supabaseAdmin.storage.from('post-images').remove(filePaths)
-      }
+      await deleteStorageFolder(supabaseAdmin, 'post-images', authId)
     } catch (storageError) {
       console.error('post-images Storage 삭제 실패 (무시):', storageError)
     }
 
     try {
-      const { data: profileImageFiles } = await supabaseAdmin.storage
-        .from('profile-images')
-        .list(authId, { limit: 100 })
-
-      if (profileImageFiles && profileImageFiles.length > 0) {
-        const filePaths = profileImageFiles.map((file) => `${authId}/${file.name}`)
-        await supabaseAdmin.storage.from('profile-images').remove(filePaths)
-      }
+      await deleteStorageFolder(supabaseAdmin, 'profile-images', authId)
     } catch (storageError) {
       console.error('profile-images Storage 삭제 실패 (무시):', storageError)
     }
