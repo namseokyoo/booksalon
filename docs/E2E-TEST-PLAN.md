@@ -4,10 +4,10 @@
 
 | 항목 | 내용 |
 |------|------|
-| **문서 버전** | 1.0.0 |
-| **작성일** | 2026-03-09 |
+| **문서 버전** | 1.1.0 |
+| **작성일** | 2026-03-12 |
 | **작성자** | QA Engineer (해밀턴) |
-| **대상 버전** | 북살롱 v0.5.1 → v1.0.0 |
+| **대상 버전** | 북살롱 v1.0.0 (출시 완료, DB 정합성 스프린트 반영) |
 | **테스트 도구** | Playwright (chromium) |
 | **베이스 URL** | https://booksalon-nine.vercel.app |
 | **테스트 경로** | `projects/booksalon/tests/e2e/` |
@@ -73,6 +73,8 @@
 | `delete-account.spec.ts` | 계정 삭제 | 불명 (파일 미열람) | shared-state.json 의존성 |
 | `delete-account-reverify.spec.ts` | 계정 삭제 재검증 | 불명 (파일 미열람) | shared-state.json 의존성 |
 | `ui-changes-qa.spec.ts` | CTA 색상, 검색 탭, 히어로 텍스트 | 충분 (4 TC) | 프로덕션 URL 대상, 양호 |
+| `bl163-164-post-deploy.spec.ts` | DB 정합성 스프린트 배포 후 검증 | 충분 (14 TC) | **PROD_URL 하드코딩** — baseURL 참조로 리팩토링 필요 |
+| `post-deploy-verification.spec.ts` | 프로덕션 배포 후 통합 검증 | 충분 (5 TC) | **PROD_URL 하드코딩** — baseURL 참조로 리팩토링 필요 |
 
 ### 2.2 커버리지 갭 (기존 테스트에서 누락된 기능)
 
@@ -106,9 +108,11 @@
 | `pr12-category-filter-backbutton.spec.ts` | **유지** | 프로덕션 대상, 양호, 필터/네비게이션 커버 |
 | `pr14-nested-comments-qa.spec.ts` | **리팩토링 필요** | localhost:4000 하드코딩 → 프로덕션 URL로 교체 필요 |
 | `login-error.spec.ts` | **유지 + 통합 가능** | 로그인 에러 시나리오 커버, smoke 스위트에 통합 고려 |
-| `delete-account.spec.ts` | **유지** | 계정 삭제 기능 전용 |
-| `delete-account-reverify.spec.ts` | **유지** | 계정 삭제 재검증 전용 |
+| `delete-account.spec.ts` | **유지 (현재 FAIL)** | Edge Function JWT 401 이슈로 FAIL 상태. 수정 필요 (BL 후속 등록 대상) |
+| `delete-account-reverify.spec.ts` | **유지 (현재 FAIL 가능성)** | delete-account.spec.ts와 동일 이슈 영향 가능. 상태 확인 필요 |
 | `ui-changes-qa.spec.ts` | **유지** | UI 변경사항 회귀 검증 |
+| `bl163-164-post-deploy.spec.ts` | **리팩토링 필요** | PROD_URL 하드코딩 → playwright.config.ts baseURL 참조로 통일 필요 |
+| `post-deploy-verification.spec.ts` | **리팩토링 필요 + 통합 검토** | PROD_URL 하드코딩 → baseURL 참조. bl163-164 spec과 중복 커버리지 높아 장기적으로 post-deploy/ 디렉토리로 통합 검토 |
 
 ---
 
@@ -157,6 +161,8 @@ tests/e2e/
 ├── delete-account.spec.ts             # 유지
 ├── delete-account-reverify.spec.ts    # 유지
 ├── ui-changes-qa.spec.ts              # 유지
+├── bl163-164-post-deploy.spec.ts     # 리팩토링 대상 (PROD_URL 하드코딩)
+├── post-deploy-verification.spec.ts  # 리팩토링 대상 (PROD_URL 하드코딩 + 통합 검토)
 ├── results/
 │   └── test-results.json
 └── screenshots/
@@ -202,6 +208,8 @@ Then:
   - ForumList(list) → 살롱 목록 표시
   - ForumView(forum) → 살롱 카드 클릭 시 살롱 상세 표시
   - SearchModal(search) → 검색 아이콘 클릭 시 검색 모달 표시
+  - /privacy → 개인정보처리방침 페이지 정상 렌더링
+  - /terms → 이용약관 페이지 정상 렌더링
   - 각 뷰 전환 후 콘솔 에러 0건
 ```
 
@@ -215,6 +223,17 @@ Then:
   - 인기 게시물 섹션 표시 (데이터 있을 경우)
   - 최근 개설된 살롱 섹션 표시
   - 푸터 또는 페이지 하단 요소 표시
+```
+
+#### SC-SMOKE-04 | P2 | BookLoader 로딩 인디케이터
+
+```
+Given: 느린 네트워크 또는 초기 접속 시
+When:  페이지가 로딩 중일 때
+Then:
+  - BookLoader 브랜드 로딩 컴포넌트가 Suspense fallback으로 표시
+  - 로딩 완료 후 콘텐츠로 정상 전환
+  - console.error 0건
 ```
 
 ---
@@ -272,9 +291,12 @@ Then:
 Given: 비로그인 상태
 When:  로그인 필요 기능(게시물 작성 버튼, 좋아요 버튼 클릭)을 시도
 Then:
-  - 로그인 모달이 표시되거나 로그인 요구 메시지 표시
+  - LoginRequiredPopup이 표시됨 (게시물 작성, 좋아요, 북마크, 독서 상태, 댓글 답글 등 액션 시)
+  - LoginRequiredPopup에 "로그인이 필요합니다" 메시지 + 로그인/회원가입 버튼 표시
+  - 로그인 버튼 클릭 시 LoginModal 열림
   - 해당 작업이 수행되지 않음
 ```
+> 참고: LoginRequiredPopup은 CommentItem, ForumList, ForumView, PostDetail, ReadingStatusButton, ReplyItem 등 6개 컴포넌트에서 사용
 
 #### SC-AUTH-06 | P1 | Google OAuth UI 표시
 
@@ -403,6 +425,7 @@ When:  댓글 입력창에 내용 입력 → 제출
 Then:
   - 새 댓글이 목록에 즉시 표시
   - 작성자 이름, 작성 시간 표시
+  - 살롱 상세의 게시물 댓글 수(comment_count) 1 증가
 ```
 
 #### SC-COMMENT-02 | P0 | 비로그인 시 댓글 입력창 미표시
@@ -442,6 +465,16 @@ When:  댓글 삭제 버튼 클릭
 Then:
   - 댓글이 목록에서 제거
   - 대댓글이 있는 경우 처리 방식 확인 (함께 삭제 또는 "삭제된 댓글" 표시)
+```
+
+#### SC-COMMENT-06 | P1 | 대댓글 작성 시 comment_count 비증가 (DB 정합성)
+
+```
+Given: 로그인된 상태, 최상위 댓글이 있는 게시물 상세
+When:  대댓글(답글) 작성 후 살롱 상세 페이지에서 해당 게시물의 댓글 수 확인
+Then:
+  - 대댓글 작성 전후 게시물의 comment_count가 변하지 않음 (top-level only 트리거 검증)
+  - 대댓글 자체는 정상 표시
 ```
 
 ---
@@ -775,6 +808,27 @@ Then:
   - "목록으로 돌아가기" / "뒤로" 버튼이 보이지 않음 (CSS md:hidden)
 ```
 
+#### SC-NAV-04 | P1 | 딥링크 접근 검증
+
+```
+Given: 브라우저에서 직접 URL 입력
+When:  /forum/:isbn?post=:postId 형태의 딥링크 URL로 접속
+Then:
+  - 해당 살롱의 해당 게시물 상세로 직접 이동
+  - 게시물 제목, 본문, 댓글 섹션 정상 표시
+  - 콘솔 에러 0건
+```
+
+#### SC-NAV-05 | P0 | 브라우저 뒤로가기 시 랜딩 이탈 방지 (회귀 방지)
+
+```
+Given: 랜딩 페이지 → 살롱 상세 → 게시물 상세 순서로 네비게이션
+When:  브라우저 뒤로가기를 반복
+Then:
+  - 게시물 상세 → 살롱 상세 → 랜딩 페이지 순서로 복귀
+  - 랜딩 페이지에서 추가 뒤로가기 시 외부 사이트로 이탈하지 않음 (pushState 히스토리 정상 관리)
+```
+
 ---
 
 ### 4.14 접근 제어 (`navigation/access-control.spec.ts`)
@@ -916,6 +970,8 @@ Then:
 | **관리자 계정** | qa-admin@booksalon.test | 관리자 대시보드 검증 | `.env.local`에 `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD` |
 
 > 주의: 모든 테스트 계정 자격증명은 `.env.local`에서 관리. spec 파일에 하드코딩 절대 금지.
+
+> **Supabase 키 관리**: Supabase URL 및 Anon Key도 `.env.local`에서 관리할 것. spec 파일에 하드코딩 절대 금지. (기존 `delete-account.spec.ts`에 ANON_KEY 하드코딩 존재 — 리팩토링 대상)
 
 ```typescript
 // playwright.config.ts 또는 tests/e2e/helpers/auth.ts
@@ -1103,8 +1159,8 @@ jobs:
 | `pr11-landing-ui.spec.ts` | 랜딩 UI(인기 게시물, 살롱 목록 구조) 커버, 양호 |
 | `pr12-category-filter-backbutton.spec.ts` | 카테고리 필터 및 반응형 뒤로가기 커버, 양호 |
 | `login-error.spec.ts` | 로그인 에러 케이스 커버, SC-AUTH-02와 중복이나 독립 유지 |
-| `delete-account.spec.ts` | 계정 삭제 플로우 전용 |
-| `delete-account-reverify.spec.ts` | 계정 삭제 재검증 전용 |
+| `delete-account.spec.ts` | **유지 (현재 FAIL)** — Edge Function JWT 401 이슈로 FAIL 상태. 수정 필요 |
+| `delete-account-reverify.spec.ts` | **유지 (상태 확인 필요)** — delete-account와 동일 이슈 영향 가능 |
 | `ui-changes-qa.spec.ts` | UI 변경사항 회귀 검증, 신규 브랜딩과 일치 확인 |
 
 ### 8.2 리팩토링 필요
@@ -1112,6 +1168,8 @@ jobs:
 | 파일 | 수정 사항 | 우선순위 |
 |------|----------|----------|
 | `pr14-nested-comments-qa.spec.ts` | `LOCAL_URL = 'http://localhost:4000'` → `process.env.BASE_URL ?? 'https://booksalon-nine.vercel.app'` 로 교체. 정적 검증 코드(TC-03~06, TC-09~11, TC-15~16) 제거 또는 별도 unit test로 이관 | P1 |
+| `bl163-164-post-deploy.spec.ts` | PROD_URL 하드코딩 → playwright.config.ts baseURL 참조로 통일 | P1 |
+| `post-deploy-verification.spec.ts` | PROD_URL 하드코딩 → baseURL 참조. bl163-164와 중복 커버리지 높아 통합 검토 필요 | P1 |
 
 ### 8.3 신규 추가 필요 (본 플랜 기준)
 
@@ -1134,6 +1192,7 @@ jobs:
 | 관리자 | `admin/admin-access.spec.ts` |
 | 반응형 | `responsive/mobile.spec.ts` |
 | 접근성 | `accessibility/keyboard-navigation.spec.ts` |
+| 뷰 네비게이션 (추가) | `navigation/views.spec.ts` (SC-NAV-04, SC-NAV-05 추가) |
 
 ---
 
@@ -1141,25 +1200,25 @@ jobs:
 
 | 스위트 | P0 시나리오 수 | P1 시나리오 수 | P2 시나리오 수 | 합계 |
 |--------|-------------|-------------|-------------|------|
-| 스모크 | 3 | 0 | 0 | 3 |
+| 스모크 | 3 | 0 | 1 | 4 |
 | 인증 | 5 | 1 | 0 | 6 |
 | 살롱 CRUD | 3 | 1 | 0 | 4 |
 | 게시물 CRUD | 4 | 1 | 0 | 5 |
-| 댓글 시스템 | 4 | 1 | 0 | 5 |
+| 댓글 시스템 | 4 | 2 | 0 | 6 |
 | 검색 | 3 | 2 | 0 | 5 |
 | 태그 시스템 | 2 | 1 | 0 | 3 |
 | 이미지 업로드 | 2 | 2 | 0 | 4 |
 | 평점 시스템 | 2 | 2 | 0 | 4 |
 | 독서 로그·배지 | 1 | 1 | 1 | 3 |
 | 소셜 기능 | 0 | 4 | 0 | 4 |
-| 뷰 네비게이션 | 3 | 0 | 0 | 3 |
+| 뷰 네비게이션 | 4 | 1 | 0 | 5 |
 | 접근 제어 | 1 | 1 | 0 | 2 |
 | 반응형 | 2 | 0 | 0 | 2 |
 | 접근성 | 0 | 2 | 1 | 3 |
 | 프로필 | 0 | 2 | 1 | 3 |
 | 메시징·알림 | 0 | 1 | 1 | 2 |
 | 관리자 | 0 | 2 | 0 | 2 |
-| **합계** | **35** | **24** | **4** | **63** |
+| **합계** | **36** | **27** | **5** | **68** |
 
 ---
 
@@ -1201,6 +1260,9 @@ npx playwright test --reporter=json
 | selector | 위치 | 용도 |
 |----------|------|------|
 | `[data-testid="forum-list-loaded"]` | ForumList 컴포넌트 | 살롱 목록 로드 완료 확인 |
+| `PostCard` 컴포넌트 | ForumList, SearchModal, ProfilePage | 게시글 카드 공통 testid 추가 필요 (신규 컴포넌트) |
+| `BookLoader` 컴포넌트 | Suspense fallback | 로딩 인디케이터 testid 추가 필요 (신규 컴포넌트) |
+| `LoginRequiredPopup` 컴포넌트 | 6개 컴포넌트 | 로그인 유도 팝업 testid 추가 필요 (신규 공통 컴포넌트) |
 
 > 신규 스펙 작성 시 `data-testid` 추가가 필요한 경우 Fullstack Dev에게 요청.
 
@@ -1250,3 +1312,4 @@ export async function navigateToFirstForum(page: Page) {
 ---
 
 *작성: QA Engineer (해밀턴) | 2026-03-09 | 북살롱 v1.0 출시 준비*
+*v1.1.0 업데이트: CEO (노이만) + Board Advisor (오펜하이머) 검토 반영 | 2026-03-12 | DB 정합성 스프린트 반영*
