@@ -144,9 +144,9 @@ CommentService.createComment()과 PostDetail.tsx 양쪽에 알림 로직이 존�
 
 ## Action Items
 
-| # | 액션 | 담당 | 기한 |
-|---|------|------|------|
-| 1 | Pre-migration Safety Review를 CLAUDE.md 마이그레이션 규칙에 추가 | CEO → Historian | 다음 세션 |
-| 2 | LESSONS.md에 PAT-010 "Pre-migration Safety Review" 등록 | Historian | 이번 커밋 |
-| 3 | LESSONS.md에 ANTI-010 "서비스+컴포넌트 로직 중복" 등록 | Historian | 이번 커밋 |
-| 4 | 백로그 현행화 체크를 모닝 브리핑 프로토콜에 추가 검토 | CEO | 다음 세션 |
+| # | 액션 | 담당 | 기한 | 상태 |
+|---|------|------|------|------|
+| 1 | Pre-migration Safety Review를 CLAUDE.md 마이그레이션 규칙에 추가 | CEO → Historian | 다음 세션 | ✅ 완료 |
+| 2 | LESSONS.md에 PAT-010 "Pre-migration Safety Review" 등록 | Historian | 이번 커밋 | ✅ 완료 |
+| 3 | LESSONS.md에 ANTI-010 "서비스+컴포넌트 로직 중복" 등록 | Historian | 이번 커밋 | ✅ 완료 |
+| 4 | 백로그 현행화 체크를 모닝 브리핑 프로토콜에 추가 검토 | CEO | 다음 세션 | ✅ 완료 |
