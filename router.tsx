@@ -2,6 +2,7 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import RootLayout from './layouts/RootLayout';
 import ChunkErrorBoundary from './components/ChunkErrorBoundary';
+import AdminRoute from './components/AdminRoute';
 
 const ForumList = React.lazy(() => import('./components/ForumList'));
 const ForumView = React.lazy(() => import('./components/ForumView'));
@@ -28,7 +29,7 @@ export const router = createBrowserRouter([
       { path: 'messages', element: <MessagingPage /> },
       { path: 'messages/:userId', element: <MessagingPage /> },
       { path: 'notifications', element: <NotificationComponent /> },
-      { path: 'admin', element: <AdminDashboard /> },
+      { path: 'admin', element: <AdminRoute><AdminDashboard /></AdminRoute> },
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
     ],
