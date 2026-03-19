@@ -36,8 +36,8 @@ const Header: React.FC = () => {
     };
 
     return (
-        <header className="w-full overflow-hidden bg-surface border-b border-border shadow-sm sticky top-0 z-20">
-            <div className="w-full max-w-4xl mx-auto overflow-hidden px-4 sm:px-5 md:px-6 lg:px-8">
+        <header className="w-full bg-surface border-b border-border shadow-sm sticky top-0 z-20">
+            <div className="w-full max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 min-h-[64px]">
                     {/* 로고/홈 버튼 */}
                     <Link
