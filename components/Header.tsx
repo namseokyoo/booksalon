@@ -36,13 +36,13 @@ const Header: React.FC = () => {
     };
 
     return (
-        <header className="bg-surface border-b border-border shadow-sm sticky top-0 z-20">
-            <div className="max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+        <header className="w-full bg-surface border-b border-border shadow-sm sticky top-0 z-20">
+            <div className="w-full max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16 min-h-[64px]">
                     {/* 로고/홈 버튼 */}
                     <Link
                         to="/"
-                        className="flex items-center space-x-2 text-foreground hover:text-primary transition-colors duration-200"
+                        className="flex flex-shrink-0 items-center space-x-2 text-foreground hover:text-primary transition-colors duration-200"
                         aria-label="북살롱 홈으로 이동"
                     >
                         <BookOpenIcon className="h-6 w-6 sm:h-8 sm:w-8" />
@@ -50,7 +50,7 @@ const Header: React.FC = () => {
                     </Link>
 
                     {/* 검색 버튼 및 햄버거 메뉴 */}
-                    <nav className="flex items-center space-x-2 sm:space-x-3" aria-label="사이트 내비게이션">
+                    <nav className="flex flex-shrink-0 items-center space-x-2 sm:space-x-3" aria-label="사이트 내비게이션">
                         {/* 통합 검색 버튼 */}
                         <button
                             onClick={openSearch}
@@ -61,6 +61,8 @@ const Header: React.FC = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </button>
+
+                        <ThemeToggle />
 
                         {/* 햄버거 메뉴 버튼 */}
                         <div className="relative" ref={dropdownRef}>

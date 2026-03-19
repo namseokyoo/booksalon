@@ -42,7 +42,7 @@ const ThemeToggle: React.FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className="text-surface-foreground hover:bg-muted rounded-md p-2 transition-colors"
+      className="min-h-[44px] min-w-[44px] flex items-center justify-center text-surface-foreground hover:bg-muted rounded-md p-2 transition-colors"
       aria-label={nextLabel}
       title={`현재: ${label}`}
     >
