@@ -122,6 +122,19 @@
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
+
+  /* ===== Notification Card 전용 토큰 ===== */
+  --color-notification-unread-bar:      var(--color-primary);
+  --color-notification-icon-bg-comment: var(--color-primary-100);
+  --color-notification-icon-bg-like:    oklch(0.96 0.02 27);
+  --color-notification-icon-bg-system:  oklch(0.96 0.04 70);
+  --color-notification-icon-bg-message: var(--color-primary-100);
+  --color-notification-icon-bg-follow:  oklch(0.95 0.03 35);
+  --color-notification-icon-bg-invite:  var(--color-primary-50);
+  --color-notification-icon-bg-read:    var(--color-muted);
+  --color-notification-unread-dot:      var(--color-primary);
+  --shadow-notification-unread:         var(--shadow-sm);
+  --shadow-notification-read:           var(--shadow-xs);
 }
 
 /* ===== 기본 레이어 ===== */
@@ -215,6 +228,11 @@
     --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.25), 0 2px 4px -2px oklch(0 0 0 / 0.15);
     --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.25), 0 4px 6px -4px oklch(0 0 0 / 0.15);
     --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.25), 0 8px 10px -6px oklch(0 0 0 / 0.15);
+
+    /* Notification Card 다크모드 오버라이드 */
+    --color-notification-icon-bg-like:   oklch(0.22 0.04 27);
+    --color-notification-icon-bg-system: oklch(0.22 0.04 70);
+    --color-notification-icon-bg-follow: oklch(0.22 0.04 35);
   }
 }
 

@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Outlet } from 'react-router-dom';
 import BookLoader from '../components/BookLoader';
 import Header from '../components/Header';
@@ -41,6 +42,7 @@ export default function RootLayout() {
         {deleteAccountOpen && <DeleteAccountModal onClose={closeDeleteAccount} />}
         {searchOpen && <SearchModal onClose={closeSearch} />}
       </Suspense>
+      <Analytics />
     </div>
   );
 }

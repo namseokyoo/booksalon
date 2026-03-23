@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { NotificationService } from '../lib/services';
 import { useAuth } from '../contexts/AuthContext';
 import type { Notification } from '../types';
-import { formatDistanceToNow } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import NotificationCard from './NotificationCard';
 import NotificationSkeleton from './NotificationSkeleton';
 
 const NotificationComponent: React.FC = () => {
@@ -56,53 +56,6 @@ const NotificationComponent: React.FC = () => {
         }
     };
 
-    const getNotificationIcon = (type: Notification['type']) => {
-        switch (type) {
-            case 'message':
-                return (
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                );
-            case 'like':
-                return (
-                    <svg className="w-5 h-5 text-destructive" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                    </svg>
-                );
-            case 'comment':
-                return (
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                    </svg>
-                );
-            case 'follow':
-                return (
-                    <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                );
-            case 'system':
-                return (
-                    <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                );
-            default:
-                return (
-                    <svg className="w-5 h-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                );
-        }
-    };
-
-    const formatNotificationTime = (timestamp: string | Date | undefined) => {
-        if (!timestamp) return '';
-        const date = new Date(String(timestamp));
-        return formatDistanceToNow(date, { addSuffix: true, locale: ko });
-    };
-
     if (isLoading) {
         return <NotificationSkeleton />;
     }
@@ -113,9 +66,7 @@ const NotificationComponent: React.FC = () => {
                 <div className="mb-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
-                            <svg className="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
+                            <Bell size={24} aria-hidden="true" />
                             알림
                         </h1>
                         {unreadCount > 0 && (
@@ -134,14 +85,12 @@ const NotificationComponent: React.FC = () => {
 
                 {notifications.length === 0 ? (
                     <div className="text-center text-muted-foreground py-8">
-                        <svg className="w-16 h-16 mx-auto mb-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
+                        <Bell className="mx-auto mb-4 text-muted-foreground" size={64} aria-hidden="true" strokeWidth={1} />
                         <h3 className="text-lg font-semibold mb-2">알림이 없습니다</h3>
                         <p>새로운 활동이 있으면 여기에 알림이 표시됩니다.</p>
                     </div>
                 ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-3" role="list">
                         {notifications.map((notification) => {
                             const targetType = notification.metadata?.postId
                                 ? 'post'
@@ -157,8 +106,11 @@ const NotificationComponent: React.FC = () => {
                             const isClickable = !!targetType && !!targetId;
 
                             return (
-                                <div
+                                <NotificationCard
                                     key={notification.id}
+                                    notification={notification}
+                                    onMarkAsRead={handleMarkAsRead}
+                                    onDelete={handleDeleteNotification}
                                     onClick={isClickable ? async () => {
                                         if (!notification.isRead) {
                                             await handleMarkAsRead(notification.id);
@@ -172,43 +124,7 @@ const NotificationComponent: React.FC = () => {
                                             navigate('/');
                                         }
                                     } : undefined}
-                                    className={`bg-surface p-4 rounded-lg transition-colors ${!notification.isRead ? 'border-l-4 border-primary' : ''} ${isClickable ? 'cursor-pointer hover:bg-muted' : ''}`}
-                                >
-                                    <div className="flex items-start space-x-3">
-                                        <div className="flex-shrink-0 mt-1">
-                                            {getNotificationIcon(notification.type)}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className={`truncate font-semibold ${!notification.isRead ? 'text-foreground' : 'text-surface-foreground'}`}>
-                                                    {notification.title}
-                                                </h3>
-                                                <div className="shrink-0 flex items-center gap-3">
-                                                    <span className="text-muted-foreground text-sm">
-                                                        {formatNotificationTime(notification.createdAt)}
-                                                    </span>
-                                                    {!notification.isRead && (
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }}
-                                                            className="text-primary hover:text-primary-700 text-sm min-h-[40px] px-3"
-                                                        >
-                                                            읽음
-                                                        </button>
-                                                    )}
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDeleteNotification(notification.id); }}
-                                                        className="text-muted-foreground hover:text-destructive text-sm min-h-[40px] px-3"
-                                                    >
-                                                        삭제
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <p className={`mt-1 ${!notification.isRead ? 'text-surface-foreground' : 'text-muted-foreground'}`}>
-                                                {notification.content}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                />
                             );
                         })}
                     </div>
